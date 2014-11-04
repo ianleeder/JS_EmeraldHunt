@@ -13,6 +13,38 @@ var GRID;
 var canvas = document.getElementById('myCanvas');
 var canvasContext = canvas.getContext('2d');
 
+// Dozer image
+var dozerReady = false;
+var dozerImage = new Image();
+dozerImage.onload = function () {
+	dozerReady = true;
+};
+dozerImage.src = "images/dozer.png";
+
+// Dirt image
+var dirtReady = false;
+var dirtImage = new Image();
+dirtImage.onload = function () {
+	dirtReady = true;
+};
+dirtImage.src = "images/dirt.png";
+
+// Rock image
+var rockReady = false;
+var rockImage = new Image();
+rockImage.onload = function () {
+	rockReady = true;
+};
+rockImage.src = "images/rock.png";
+
+// Emerald image
+var emeraldReady = false;
+var emeraldImage = new Image();
+emeraldImage.onload = function () {
+	emeraldReady = true;
+};
+emeraldImage.src = "images/emerald.png";
+
 // Declare some classes
 function BaseObject(xPos, yPos, gravity, canBeCrushed, canPassThrough) {
     this.xPos = xPos;
@@ -20,12 +52,6 @@ function BaseObject(xPos, yPos, gravity, canBeCrushed, canPassThrough) {
     this.gravity = gravity;
     this.canBeCrushed = canBeCrushed;
     this.canPassThrough = canPassThrough;
-    this.imageReady = false;
-    this.image = new Image();
-	this.image.onload = function () {
-		console.log("Image loaded "+this.image.src);
-		this.imageReady = true;
-	};
 }
 
 function Dirt(xPos, yPos) {
@@ -34,7 +60,7 @@ function Dirt(xPos, yPos) {
     this.gravity = false;
     this.canBeCrushed = false;
     this.canPassThrough = true;
-	this.image.src = "images/dirt.png";
+	this.image = dirtImage;
 }
 
 function Rock(xPos, yPos) {
@@ -43,7 +69,7 @@ function Rock(xPos, yPos) {
     this.gravity = true;
     this.canBeCrushed = false;
     this.canPassThrough = false;
-    this.image.src = "images/rock.png";
+    this.image = rockImage;
 }
 
 function Gem(xPos, yPos) {
@@ -57,14 +83,13 @@ function Emerald(xPos, yPos) {
 	this.xPos = xPos;
     this.yPos = yPos;
     this.canBeCrushed = false;
-    this.image.src = "images/emerald.png";
+    this.image = emeraldImage;
 }
 
 function Sapphire(xPos, yPos) {
 	this.xPos = xPos;
     this.yPos = yPos;
     this.canBeCrushed = true;
-    this.image.src = "images/sapphire.png";
 }
 
 // set up the prototype chain
@@ -74,28 +99,33 @@ Gem.prototype = new BaseObject();
 Emerald.prototype = new Gem();
 Sapphire.prototype = new Gem();
 
-// Dozer image
-var dozerReady = false;
-var dozerImage = new Image();
-dozerImage.onload = function () {
-	dozerReady = true;
-};
-dozerImage.src = "images/dozer.png";
-
 // Game objects
 var dozer = {
 	speed: 256 // movement in pixels per second
 };
 
-// Handle keyboard controls
-var keysDown = {};
-
 addEventListener("keydown", function (e) {
-	keysDown[e.keyCode] = true;
-}, false);
+	switch(e.keyCode) {
+		case 38:
+			if(dozer.y > 0)
+				dozer.y -= 1;
+			break;
 
-addEventListener("keyup", function (e) {
-	delete keysDown[e.keyCode];
+		case 40:
+			if(dozer.y < FIELD_Y-1)
+				dozer.y += 1;
+			break;
+
+		case 37:
+			if(dozer.x > 0)
+				dozer.x -= 1;
+			break;
+
+		case 39:
+			if(dozer.x < FIELD_X-1)
+				dozer.x += 1;
+			break;
+	}
 }, false);
 
 // Reset the game when the player catches a monster
@@ -146,20 +176,7 @@ var reset = function () {
 };
 
 // Update game objects
-var update = function (modifier) {
-	if (38 in keysDown) { // Player holding up
-		dozer.y -= dozer.speed * modifier;
-	}
-	if (40 in keysDown) { // Player holding down
-		dozer.y += dozer.speed * modifier;
-	}
-	if (37 in keysDown) { // Player holding left
-		dozer.x -= dozer.speed * modifier;
-	}
-	if (39 in keysDown) { // Player holding right
-		dozer.x += dozer.speed * modifier;
-	}
-
+var update = function () {
 	// Are they touching?
 	/*
 	if (
@@ -187,7 +204,7 @@ var render = function () {
 	}
 
 	if (dozerReady) {
-		canvasContext.drawImage(dozerImage, dozer.x, dozer.y);
+		canvasContext.drawImage(dozerImage, dozer.x*TILE_SIZE, dozer.y*TILE_SIZE);
 	}
 };
 
