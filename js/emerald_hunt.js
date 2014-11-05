@@ -52,6 +52,7 @@ function BaseObject(xPos, yPos, gravity, canBeCrushed, canPassThrough) {
     this.gravity = gravity;
     this.canBeCrushed = canBeCrushed;
     this.canPassThrough = canPassThrough;
+    this.falling = false;
 }
 
 function Dirt(xPos, yPos) {
@@ -177,6 +178,17 @@ var reset = function () {
 
 // Update game objects
 var update = function () {
+	// Iterate through field in reverse
+	for(var i=GRID.length-1;i>=0;i--) {
+		// No point starting on bottom row, start 1 up
+		for(var j=GRID[i].length-2;j>=0;j--) {
+			// Check if cell is populated, AND is affected by gravity, AND cell below is empty
+			if(GRID[i][j] && GRID[i][j].gravity && !GRID[i][j+1]) {
+				GRID[i][j+1] = GRID[i][j];
+				GRID[i][j] = 0;
+			}
+		}
+	}
 	// Are they touching?
 	/*
 	if (
