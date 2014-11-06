@@ -52,7 +52,8 @@ function BaseObject(xPos, yPos, gravity, canBeCrushed, canPassThrough) {
     this.gravity = gravity;
     this.canBeCrushed = canBeCrushed;
     this.canPassThrough = canPassThrough;
-    this.falling = false;
+    this.isFalling = false;
+	this.isUneven = true;
 }
 
 function Dirt(xPos, yPos) {
@@ -62,6 +63,7 @@ function Dirt(xPos, yPos) {
     this.canBeCrushed = false;
     this.canPassThrough = true;
 	this.image = dirtImage;
+	this.isUneven = false;
 }
 
 function Rock(xPos, yPos) {
@@ -178,29 +180,36 @@ var reset = function () {
 
 // Update game objects
 var update = function () {
+	// We get ordering issues when moving items around.
+	// If we do a single pass through the field, items can be updated twice (two movements in one tick of time)
+	// If an item moves to the right (in order to fall down), and we are iterating left-to-right,
+	// it will be updated twice (right and down)
+	
 	// Iterate through field in reverse
 	for(var i=GRID.length-1;i>=0;i--) {
 		// No point starting on bottom row, start 1 up
 		for(var j=GRID[i].length-2;j>=0;j--) {
-			// Check if cell is populated, AND is affected by gravity, AND cell below is empty
-			if(GRID[i][j] && GRID[i][j].gravity && !GRID[i][j+1]) {
-				GRID[i][j+1] = GRID[i][j];
-				GRID[i][j] = 0;
+			// Check if cell is populated, AND is affected by gravity
+			if(GRID[i][j] && GRID[i][j].gravity) {
+				// Check if cell below is empty, OR if item is falling and item below can be crushed
+				if(!GRID[i][j+1]) {
+    				GRID[i][j+1] = GRID[i][j];
+					GRID[i][j+1].isFalling = true;
+    				GRID[i][j] = 0;
+				}
+				// Else check if item below is uneven and it can fall left (cell left and below left are empty)
+				else if(i>0 && GRID[i][j+1].isUneven && !GRID[i-1][j] && !GRID[i-1][j+1]) {
+					GRID[i-1][j] = GRID[i][j];
+    				GRID[i][j] = 0;
+				}
+				// Else check if item below is uneven and it can fall right (cell right and below right are empty)
+				else if(i<=GRID.length-2 && GRID[i][j+1].isUneven && !GRID[i+1][j] && !GRID[i+1][j+1]) {
+					GRID[i+1][j] = GRID[i][j];
+    				GRID[i][j] = 0;
+				}
 			}
 		}
 	}
-	// Are they touching?
-	/*
-	if (
-		dozer.x <= (monster.x + 32)
-		&& monster.x <= (dozer.x + 32)
-		&& dozer.y <= (monster.y + 32)
-		&& monster.y <= (dozer.y + 32)
-		) {
-		++monstersCaught;
-		reset();
-	}
-	*/
 };
 
 // Draw everything
@@ -222,16 +231,13 @@ var render = function () {
 
 // The main game loop
 var main = function () {
-	var now = Date.now();
-	var delta = now - then;
-
-	update(delta / 1000);
-	render();
-
-	then = now;
-
-	// Request to do this again ASAP
-	requestAnimationFrame(main);
+	var fps = 1;
+    
+    var game = this;
+    var gameloop = setInterval(function() {
+    	update();
+    	render();
+    }, 1000 / fps);
 };
 
 // Cross-browser support for requestAnimationFrame
@@ -239,6 +245,5 @@ var w = window;
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
 // Let's play this game!
-var then = Date.now();
 reset();
 main();
