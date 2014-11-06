@@ -4,8 +4,8 @@
 
 // Declare constants
 var TILE_SIZE = 24;
-var FIELD_X = 10;
-var FIELD_Y = 10;
+var FIELD_X = 15;
+var FIELD_Y = 15;
 var GRID;
 var SCORE = 0;
 var MENU = 1;
@@ -366,14 +366,14 @@ function drawField() {
 
 	// Draw a black rectangle
 	canvasContext.fillStyle = "#000000";
-	canvasContext.fillRect(200, 270, 88, 18);
+	canvasContext.fillRect(canvas.width-88, canvas.height-20, 88, 20);
 	
 	// Write score over the top of it.
-	canvasContext.fillStyle = "rgb(250, 250, 250)";
+	canvasContext.fillStyle = "#FFFFFF";
 	canvasContext.font = "14px Helvetica";
 	canvasContext.textAlign = "left";
 	canvasContext.textBaseline = "top";
-	canvasContext.fillText("Score: " + SCORE, 200, 270);
+	canvasContext.fillText("Score: " + SCORE, canvas.width-88, canvas.height-20);
 }
 
 // The main game loop
