@@ -328,6 +328,16 @@ function render() {
 	}
 }
 
+function drawButton(x, y, width, height, color, highlight) {
+	var grd=canvasContext.createRadialGradient(75,50,5,90,60,100);
+	grd.addColorStop(0,"red");
+	grd.addColorStop(1,"white");
+
+	// Fill with gradient
+	canvasContext.fillStyle=grd;
+	canvasContext.fillRect(10,10,150,100);
+}
+
 function drawEndGame() {
 	drawField();
 	canvasContext.fillStyle = "#000000";
