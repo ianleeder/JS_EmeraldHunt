@@ -1,6 +1,29 @@
-// Created using tutorials from:
-// http://www.lostdecadegames.com/how-to-make-a-simple-html5-canvas-game/
-// http://manuel.kiessling.net/2012/04/02/tutorial-developing-html5-canvas-games-for-facebook-with-javascript-part-1/
+// Author: Ian Leeder
+// Date: 07 November 2014
+// This game is a clone/port of a game I fondly remember playing as a child.
+// I have been unable to track down the original (PC) game, so at this time I am unable
+// to 100% verify gameplay.  What is implemented is from my memory, and (PocketPC) screenshots
+// I have found on the web.
+
+// To-do:
+// (See review at http://www.svpocketpc.com/reviews/emeraldhunt/EmeraldHunt.html for more details of gameplay)
+// Implement proper image pre-loading
+// Implement bombs and explosions
+// Implement grenades
+// Implement a menu
+// Improve score/status display to show emeralds/sapphires/grenades/total score
+// Add (rock and/or brick) walls
+// Review/investigate/improve level generation algorithm
+// Add page Favicon
+// Implement difficulty settings:
+// 	Easy		Rocks, emeralds, bombs
+// 	Medium	Easy + sapphires
+// 	Hard		Medium + bugs
+// Track statistics
+// Show win screen
+// Details of death on lose screen (crushed/exploded)
+// Find original sprite files, or improve resolution (redraw) existing ones
+
 
 // Declare constants
 var TILE_SIZE = 24;
