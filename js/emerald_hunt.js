@@ -150,6 +150,7 @@ addEventListener("keydown", function (e) {
 	switch(e.keyCode) {
 		// Up key
 		case 38:
+			e.preventDefault();
 			// If we're not on top edge AND cell is either empty or can pass through
 			if(dozer.y > 0 && (!GRID[dozer.x][dozer.y-1] || GRID[dozer.x][dozer.y-1].canPassThrough)) {
 				GRID[dozer.x][dozer.y] = 0;
@@ -159,6 +160,7 @@ addEventListener("keydown", function (e) {
 
 		// Down key
 		case 40:
+			e.preventDefault();
 			// If we're not on bottom edge AND cell is either empty or can pass through
 			if(dozer.y < FIELD_Y-1 && (!GRID[dozer.x][dozer.y+1] || GRID[dozer.x][dozer.y+1].canPassThrough)) {
 				GRID[dozer.x][dozer.y] = 0;
@@ -168,6 +170,7 @@ addEventListener("keydown", function (e) {
 
 		// Left key
 		case 37:
+			e.preventDefault();
 			// If we're not on left edge AND cell is either empty or can pass through
 			if(dozer.x > 0 && (!GRID[dozer.x-1][dozer.y] || GRID[dozer.x-1][dozer.y].canPassThrough)) {
 				GRID[dozer.x][dozer.y] = 0;
@@ -183,6 +186,7 @@ addEventListener("keydown", function (e) {
 
 		// Right key
 		case 39:
+			e.preventDefault();
 			// If we're not on bottom edge AND cell is either empty or can pass through
 			if(dozer.x < FIELD_X-1 && (!GRID[dozer.x+1][dozer.y] || GRID[dozer.x+1][dozer.y].canPassThrough)) {
 				GRID[dozer.x][dozer.y] = 0;
