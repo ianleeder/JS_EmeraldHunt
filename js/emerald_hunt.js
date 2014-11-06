@@ -45,6 +45,14 @@ emeraldImage.onload = function () {
 };
 emeraldImage.src = "images/emerald.png";
 
+// Sapphire image
+var sapphireReady = false;
+var sapphireImage = new Image();
+sapphireImage.onload = function () {
+	sapphireReady = true;
+};
+sapphireImage.src = "images/sapphire.png";
+
 // Declare some classes
 function BaseObject(xPos, yPos, gravity, canBeCrushed, canPassThrough) {
     this.xPos = xPos;
@@ -93,6 +101,7 @@ function Sapphire(xPos, yPos) {
 	this.xPos = xPos;
     this.yPos = yPos;
     this.canBeCrushed = true;
+	this.image = sapphireImage;
 }
 
 // set up the prototype chain
@@ -149,7 +158,7 @@ var reset = function () {
 			if(i==0 && j==0)
 				continue;
 
-			var rnd = Math.floor(Math.random()*5);
+			var rnd = Math.floor(Math.random()*6);
 			var val;
 			switch(rnd) {
 				case 0:
@@ -192,7 +201,7 @@ var update = function () {
 			// Check if cell is populated, AND is affected by gravity
 			if(GRID[i][j] && GRID[i][j].gravity) {
 				// Check if cell below is empty, OR if item is falling and item below can be crushed
-				if(!GRID[i][j+1]) {
+				if(!GRID[i][j+1] || (GRID[i][j].isFalling && GRID[i][j+1].canBeCrushed)) {
     				GRID[i][j+1] = GRID[i][j];
 					GRID[i][j+1].isFalling = true;
     				GRID[i][j] = 0;
@@ -206,6 +215,10 @@ var update = function () {
 				else if(i<=GRID.length-2 && GRID[i][j+1].isUneven && !GRID[i+1][j] && !GRID[i+1][j+1]) {
 					GRID[i+1][j] = GRID[i][j];
     				GRID[i][j] = 0;
+				}
+				// Else check if item below is solid (can't be crushed) to disable falling.
+				else if(GRID[i][j+1] && !GRID[i][j+1].canBeCrushed) {
+					GRID[i][j].isFalling = false;
 				}
 			}
 		}
