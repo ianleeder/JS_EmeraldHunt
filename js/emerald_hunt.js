@@ -53,6 +53,14 @@ sapphireImage.onload = function () {
 };
 sapphireImage.src = "images/sapphire.png";
 
+// Brick image
+var brickReady = false;
+var brickImage = new Image();
+brickImage.onload = function () {
+	brickReady = true;
+};
+brickImage.src = "images/brick.png";
+
 // Declare some classes
 function BaseObject(xPos, yPos, gravity, canBeCrushed, canPassThrough) {
     this.xPos = xPos;
@@ -162,10 +170,10 @@ var reset = function () {
 			var val;
 			switch(rnd) {
 				case 0:
-				case 1:
 					val = 0;
 					break;
-
+				
+				case 1:
 				case 2:
 					val = new Dirt(i,j);
 					break
@@ -194,10 +202,11 @@ var update = function () {
 	// If an item moves to the right (in order to fall down), and we are iterating left-to-right,
 	// it will be updated twice (right and down)
 	
-	// Iterate through field in reverse
-	for(var i=GRID.length-1;i>=0;i--) {
-		// No point starting on bottom row, start 1 up
-		for(var j=GRID[i].length-2;j>=0;j--) {
+	// Iterate through bottom to top
+	// No point starting on bottom row, start 1 up
+	for(var j=FIELD_Y-2;j>=0;j--) {
+		// Iterate through field left to right
+		for(var i=0;i<FIELD_X;i++) {
 			// Check if cell is populated, AND is affected by gravity
 			if(GRID[i][j] && GRID[i][j].gravity) {
 				// Check if cell below is empty, OR if item is falling and item below can be crushed
@@ -212,9 +221,11 @@ var update = function () {
     				GRID[i][j] = 0;
 				}
 				// Else check if item below is uneven and it can fall right (cell right and below right are empty)
+				// If we move item to the right, advance the i counter so it doesn't get hit twice
 				else if(i<=GRID.length-2 && GRID[i][j+1].isUneven && !GRID[i+1][j] && !GRID[i+1][j+1]) {
 					GRID[i+1][j] = GRID[i][j];
     				GRID[i][j] = 0;
+					i++;
 				}
 				// Else check if item below is solid (can't be crushed) to disable falling.
 				else if(GRID[i][j+1] && !GRID[i][j+1].canBeCrushed) {
@@ -229,16 +240,28 @@ var update = function () {
 var render = function () {
 	canvasContext.fillStyle = "#000000";
 	canvasContext.fillRect(0, 0, canvas.width, canvas.height);
+	
+	// Draw a pretty brick border
+	for(var i=0;i<FIELD_X+2;i++) {
+		// Draw across top
+		canvasContext.drawImage(brickImage, TILE_SIZE*i, 0);
+		// Draw down left edge
+		canvasContext.drawImage(brickImage, 0, TILE_SIZE*i);
+		// Draw down right edge
+		canvasContext.drawImage(brickImage, TILE_SIZE*(FIELD_X+1), TILE_SIZE*i);
+		// Draw across bottom edge
+		canvasContext.drawImage(brickImage, TILE_SIZE*i, TILE_SIZE*(FIELD_X+1));
+	}
 
 	for(var i=0;i<GRID.length;i++) {
 		for(var j=0;j<GRID[i].length;j++) {
 			if(GRID[i][j])// && GRID[i][j].imageReady)
-				canvasContext.drawImage(GRID[i][j].image, TILE_SIZE*i, TILE_SIZE*j);
+				canvasContext.drawImage(GRID[i][j].image, TILE_SIZE*(i+1), TILE_SIZE*(j+1));
 		}
 	}
 
 	if (dozerReady) {
-		canvasContext.drawImage(dozerImage, dozer.x*TILE_SIZE, dozer.y*TILE_SIZE);
+		canvasContext.drawImage(dozerImage, (dozer.x+1)*TILE_SIZE, (dozer.y+1)*TILE_SIZE);
 	}
 };
 
