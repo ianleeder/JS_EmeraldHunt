@@ -4,11 +4,15 @@
 
 // Declare constants
 var TILE_SIZE = 24;
-var ANIMATION_SPEED = 100;
 var FIELD_X = 10;
 var FIELD_Y = 10;
 var GRID;
 var SCORE = 0;
+var MENU = 1;
+var RUNNING = 2;
+var DYING = 3;
+var DEAD = 4;
+var GAMESTATE = RUNNING;
 
 // Get the canvas context
 var canvas = document.getElementById('myCanvas');
@@ -71,6 +75,17 @@ function BaseObject(xPos, yPos, gravity, canBeCrushed, canPassThrough) {
     this.canPassThrough = canPassThrough;
     this.isFalling = false;
 	this.isUneven = true;
+	this.isPushable = false;
+}
+
+function Dozer(xPos, yPos) {
+	this.xPos = xPos;
+    this.yPos = yPos;
+    this.gravity = false;
+    this.canBeCrushed = true;
+    this.canPassThrough = false;
+	this.image = dozerImage;
+	this.isUneven = false;
 }
 
 function Dirt(xPos, yPos) {
@@ -81,7 +96,6 @@ function Dirt(xPos, yPos) {
     this.canPassThrough = true;
 	this.image = dirtImage;
 	this.isUneven = false;
-	this.score = 0;
 }
 
 function Rock(xPos, yPos) {
@@ -90,6 +104,7 @@ function Rock(xPos, yPos) {
     this.gravity = true;
     this.canBeCrushed = false;
     this.canPassThrough = false;
+    this.isPushable = true;
     this.image = rockImage;
 }
 
@@ -117,6 +132,7 @@ function Sapphire(xPos, yPos) {
 }
 
 // set up the prototype chain
+Dozer.prototype = new BaseObject();
 Dirt.prototype = new BaseObject();
 Rock.prototype = new BaseObject();
 Gem.prototype = new BaseObject();
@@ -124,47 +140,67 @@ Emerald.prototype = new Gem();
 Sapphire.prototype = new Gem();
 
 // Game objects
-var dozer = {
-	x: 0,
-	y: 0
-};
+var dozer = new Dozer(0, 0);
 
 addEventListener("keydown", function (e) {
+
+	if(GAMESTATE!=RUNNING)
+		return;
+
 	switch(e.keyCode) {
 		// Up key
 		case 38:
 			// If we're not on top edge AND cell is either empty or can pass through
-			if(dozer.y > 0 && (!GRID[dozer.x][dozer.y-1] || GRID[dozer.x][dozer.y-1].canPassThrough))
+			if(dozer.y > 0 && (!GRID[dozer.x][dozer.y-1] || GRID[dozer.x][dozer.y-1].canPassThrough)) {
+				GRID[dozer.x][dozer.y] = 0;
 				dozer.y -= 1;
+			}
 			break;
 
 		// Down key
 		case 40:
 			// If we're not on bottom edge AND cell is either empty or can pass through
-			if(dozer.y < FIELD_Y-1 && (!GRID[dozer.x][dozer.y+1] || GRID[dozer.x][dozer.y+1].canPassThrough))
+			if(dozer.y < FIELD_Y-1 && (!GRID[dozer.x][dozer.y+1] || GRID[dozer.x][dozer.y+1].canPassThrough)) {
+				GRID[dozer.x][dozer.y] = 0;
 				dozer.y += 1;
+			}
 			break;
 
 		// Left key
 		case 37:
 			// If we're not on left edge AND cell is either empty or can pass through
-			if(dozer.x > 0 && (!GRID[dozer.x-1][dozer.y] || GRID[dozer.x-1][dozer.y].canPassThrough))
+			if(dozer.x > 0 && (!GRID[dozer.x-1][dozer.y] || GRID[dozer.x-1][dozer.y].canPassThrough)) {
+				GRID[dozer.x][dozer.y] = 0;
 				dozer.x -= 1;
+			}
+			// If we are at least 2 squares from left edge, item to left is rock AND item to left of that is empty
+			else if(dozer.x > 1 && GRID[dozer.x-1][dozer.y] && GRID[dozer.x-1][dozer.y].isPushable && !GRID[dozer.x-2][dozer.y]) {
+				GRID[dozer.x-2][dozer.y] = GRID[dozer.x-1][dozer.y];
+				GRID[dozer.x][dozer.y] = 0;
+				dozer.x -= 1;
+			}
 			break;
 
 		// Right key
 		case 39:
 			// If we're not on bottom edge AND cell is either empty or can pass through
-
-			if(dozer.x < FIELD_X-1 && (!GRID[dozer.x+1][dozer.y] || GRID[dozer.x+1][dozer.y].canPassThrough))
+			if(dozer.x < FIELD_X-1 && (!GRID[dozer.x+1][dozer.y] || GRID[dozer.x+1][dozer.y].canPassThrough)) {
+				GRID[dozer.x][dozer.y] = 0;
 				dozer.x += 1;
+			}
+			// If we are at least 2 squares from right edge, item to right is rock AND item to right of that is empty
+			else if(dozer.x < FIELD_Y-2 && GRID[dozer.x+1][dozer.y] && GRID[dozer.x+1][dozer.y].isPushable && !GRID[dozer.x+2][dozer.y]) {
+				GRID[dozer.x+2][dozer.y] = GRID[dozer.x+1][dozer.y];
+				GRID[dozer.x][dozer.y] = 0;
+				dozer.x += 1;
+			}
 			break;
 	}
 
-	if(GRID[dozer.x][dozer.y]) {
+	if(GRID[dozer.x][dozer.y].hasOwnProperty("score"))
 		SCORE += GRID[dozer.x][dozer.y].score;
-		GRID[dozer.x][dozer.y] = 0;
-	}
+	
+	GRID[dozer.x][dozer.y] = dozer;
 
 	render();
 }, false);
@@ -181,11 +217,16 @@ var reset = function () {
 	for (var i = 0; i < GRID.length; i++) {
 		GRID[i] = new Array(FIELD_Y);
 	}
+
+	// Generata a random start position for the dozer
+	var rnd = Math.floor(Math.random()*FIELD_X);
+	dozer.x = rnd;
+	GRID[rnd][0] = dozer;
 	
 	for(var i=0;i<GRID.length;i++) {
 		for(var j=0;j<GRID[i].length;j++) {
 
-			if(i==0 && j==0)
+			if(GRID[i][j] == dozer)
 				continue;
 
 			var rnd = Math.floor(Math.random()*6);
@@ -233,6 +274,10 @@ var update = function () {
 			if(GRID[i][j] && GRID[i][j].gravity) {
 				// Check if cell below is empty, OR if item is falling and item below can be crushed
 				if(!GRID[i][j+1] || (GRID[i][j].isFalling && GRID[i][j+1].canBeCrushed)) {
+					if(GRID[i][j+1]==dozer) {
+						GAMESTATE = DYING;
+					}
+
     				GRID[i][j+1] = GRID[i][j];
 					GRID[i][j+1].isFalling = true;
     				GRID[i][j] = 0;
@@ -259,10 +304,45 @@ var update = function () {
 };
 
 // Draw everything
-var render = function () {
+function render() {
+	clearCanvas();
+	drawBorder();
+
+	switch(GAMESTATE) {
+		case RUNNING:
+			drawField();
+			break;
+
+		case DYING:
+			GAMESTATE = DEAD;
+			drawField();
+			break;
+
+		case DEAD:
+			drawEndGame();
+			break;
+	}
+}
+
+function drawEndGame() {
+	drawField();
+	canvasContext.fillStyle = "#000000";
+	canvasContext.fillRect(75, 75, canvas.width-150, canvas.height-150);
+
+	canvasContext.fillStyle = "#FFFFFF";
+	canvasContext.font = "14px Helvetica";
+	canvasContext.textAlign = "center";
+	canvasContext.textBaseline = "top";
+	canvasContext.fillText("You died!", canvas.width/2, canvas.height/2-20);
+	canvasContext.fillText("Score: " + SCORE, canvas.width/2, canvas.height/2);
+}
+
+function clearCanvas() {
 	canvasContext.fillStyle = "#000000";
 	canvasContext.fillRect(0, 0, canvas.width, canvas.height);
-	
+}
+
+function drawBorder() {
 	// Draw a pretty brick border
 	for(var i=0;i<FIELD_X+2;i++) {
 		// Draw across top
@@ -274,31 +354,31 @@ var render = function () {
 		// Draw across bottom edge
 		canvasContext.drawImage(brickImage, TILE_SIZE*i, TILE_SIZE*(FIELD_X+1));
 	}
+}
 
+function drawField() {
 	for(var i=0;i<GRID.length;i++) {
 		for(var j=0;j<GRID[i].length;j++) {
-			if(GRID[i][j])// && GRID[i][j].imageReady)
+			if(GRID[i][j])
 				canvasContext.drawImage(GRID[i][j].image, TILE_SIZE*(i+1), TILE_SIZE*(j+1));
 		}
 	}
 
-	if (dozerReady) {
-		canvasContext.drawImage(dozerImage, (dozer.x+1)*TILE_SIZE, (dozer.y+1)*TILE_SIZE);
-	}
-	
+	// Draw a black rectangle
+	canvasContext.fillStyle = "#000000";
 	canvasContext.fillRect(200, 270, 88, 18);
 	
-	// Display score
+	// Write score over the top of it.
 	canvasContext.fillStyle = "rgb(250, 250, 250)";
 	canvasContext.font = "14px Helvetica";
 	canvasContext.textAlign = "left";
 	canvasContext.textBaseline = "top";
 	canvasContext.fillText("Score: " + SCORE, 200, 270);
-};
+}
 
 // The main game loop
 var main = function () {
-	var fps = 1;
+	var fps = 10;
     
     var game = this;
     var gameloop = setInterval(function() {
