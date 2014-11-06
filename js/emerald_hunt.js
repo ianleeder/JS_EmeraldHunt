@@ -81,6 +81,7 @@ function Dirt(xPos, yPos) {
     this.canPassThrough = true;
 	this.image = dirtImage;
 	this.isUneven = false;
+	this.score = 0;
 }
 
 function Rock(xPos, yPos) {
@@ -97,7 +98,6 @@ function Gem(xPos, yPos) {
     this.yPos = yPos;
     this.gravity = true;
     this.canPassThrough = true;
-	this.score = 0;
 }
 
 function Emerald(xPos, yPos) {
@@ -131,26 +131,42 @@ var dozer = {
 
 addEventListener("keydown", function (e) {
 	switch(e.keyCode) {
+		// Up key
 		case 38:
-			if(dozer.y > 0)
+			// If we're not on top edge AND cell is either empty or can pass through
+			if(dozer.y > 0 && (!GRID[dozer.x][dozer.y-1] || GRID[dozer.x][dozer.y-1].canPassThrough))
 				dozer.y -= 1;
 			break;
 
+		// Down key
 		case 40:
-			if(dozer.y < FIELD_Y-1)
+			// If we're not on bottom edge AND cell is either empty or can pass through
+			if(dozer.y < FIELD_Y-1 && (!GRID[dozer.x][dozer.y+1] || GRID[dozer.x][dozer.y+1].canPassThrough))
 				dozer.y += 1;
 			break;
 
+		// Left key
 		case 37:
-			if(dozer.x > 0)
+			// If we're not on left edge AND cell is either empty or can pass through
+			if(dozer.x > 0 && (!GRID[dozer.x-1][dozer.y] || GRID[dozer.x-1][dozer.y].canPassThrough))
 				dozer.x -= 1;
 			break;
 
+		// Right key
 		case 39:
-			if(dozer.x < FIELD_X-1)
+			// If we're not on bottom edge AND cell is either empty or can pass through
+
+			if(dozer.x < FIELD_X-1 && (!GRID[dozer.x+1][dozer.y] || GRID[dozer.x+1][dozer.y].canPassThrough))
 				dozer.x += 1;
 			break;
 	}
+
+	if(GRID[dozer.x][dozer.y]) {
+		SCORE += GRID[dozer.x][dozer.y].score;
+		GRID[dozer.x][dozer.y] = 0;
+	}
+
+	render();
 }, false);
 
 // Reset the game when the player catches a monster
