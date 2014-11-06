@@ -8,6 +8,7 @@ var ANIMATION_SPEED = 100;
 var FIELD_X = 10;
 var FIELD_Y = 10;
 var GRID;
+var SCORE = 0;
 
 // Get the canvas context
 var canvas = document.getElementById('myCanvas');
@@ -96,6 +97,7 @@ function Gem(xPos, yPos) {
     this.yPos = yPos;
     this.gravity = true;
     this.canPassThrough = true;
+	this.score = 0;
 }
 
 function Emerald(xPos, yPos) {
@@ -103,6 +105,7 @@ function Emerald(xPos, yPos) {
     this.yPos = yPos;
     this.canBeCrushed = false;
     this.image = emeraldImage;
+	this.score = 1;
 }
 
 function Sapphire(xPos, yPos) {
@@ -110,6 +113,7 @@ function Sapphire(xPos, yPos) {
     this.yPos = yPos;
     this.canBeCrushed = true;
 	this.image = sapphireImage;
+	this.score = 5;
 }
 
 // set up the prototype chain
@@ -121,7 +125,8 @@ Sapphire.prototype = new Gem();
 
 // Game objects
 var dozer = {
-	speed: 256 // movement in pixels per second
+	x: 0,
+	y: 0
 };
 
 addEventListener("keydown", function (e) {
@@ -152,6 +157,7 @@ addEventListener("keydown", function (e) {
 var reset = function () {
 	dozer.x = 0;
 	dozer.y = 0;
+	SCORE = 0;
 
 	GRID = new Array(FIELD_X);
 
@@ -263,6 +269,15 @@ var render = function () {
 	if (dozerReady) {
 		canvasContext.drawImage(dozerImage, (dozer.x+1)*TILE_SIZE, (dozer.y+1)*TILE_SIZE);
 	}
+	
+	canvasContext.fillRect(200, 270, 88, 18);
+	
+	// Display score
+	canvasContext.fillStyle = "rgb(250, 250, 250)";
+	canvasContext.font = "14px Helvetica";
+	canvasContext.textAlign = "left";
+	canvasContext.textBaseline = "top";
+	canvasContext.fillText("Score: " + SCORE, 200, 270);
 };
 
 // The main game loop
