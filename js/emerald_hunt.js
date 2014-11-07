@@ -349,16 +349,39 @@ function render() {
 			drawEndGame();
 			break;
 	}
+
+	drawButton(100,0,100,20,true);
 }
 
 function drawButton(x, y, width, height, color, highlight) {
-	var grd=canvasContext.createRadialGradient(75,50,5,90,60,100);
-	grd.addColorStop(0,"red");
-	grd.addColorStop(1,"white");
+	var radius = 8;
+
+	// Draw shape
+	canvasContext.beginPath();
+	canvasContext.moveTo(x + radius, y);
+	canvasContext.lineTo(x + width - radius, y);
+	canvasContext.quadraticCurveTo(x + width, y, x + width, y + radius);
+	canvasContext.lineTo(x + width, y + height - radius);
+	canvasContext.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+	canvasContext.lineTo(x + radius, y + height);
+	canvasContext.quadraticCurveTo(x, y + height, x, y + height - radius);
+	canvasContext.lineTo(x, y + radius);
+	canvasContext.quadraticCurveTo(x, y, x + radius, y);
+	canvasContext.closePath();
+
+	canvasContext.strokeStyle = "#000000";
+	canvasContext.lineWidth=5;
+	canvasContext.stroke();
+
+	var gradient=canvasContext.createRadialGradient((width/2)+x,(height/2)+y,Math.max(width, height)/10,(width/2)+x,(height/2)+y,Math.max(width, height));
+	// light blue
+    gradient.addColorStop(0, '#8ED6FF');
+    // dark blue
+    gradient.addColorStop(1, '#004CB3');
 
 	// Fill with gradient
-	canvasContext.fillStyle=grd;
-	canvasContext.fillRect(10,10,150,100);
+	canvasContext.fillStyle=gradient;
+	canvasContext.fill();
 }
 
 function drawEndGame() {
