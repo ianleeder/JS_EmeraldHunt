@@ -350,11 +350,28 @@ function render() {
 			break;
 	}
 
-	drawButton(100,0,100,20,true);
+	drawButton(100,0,100,20,false);
 }
 
-function drawButton(x, y, width, height, color, highlight) {
+function drawButton(x, y, width, height, highlight) {
 	var radius = 8;
+	var lineWidth = 5;
+	var gradient=canvasContext.createRadialGradient((width/2)+x,(height/2)+y,Math.max(width, height)/10,(width/2)+x,(height/2)+y,Math.max(width, height));
+
+	if(highlight) {
+		// light blue
+		gradient.addColorStop(0, '#8ED6FF');
+		// dark blue
+		gradient.addColorStop(1, '#004CB3');
+		canvasContext.strokeStyle = "#0060FF";
+	}
+	else {
+		// light green
+		gradient.addColorStop(0, '#00FF60');
+		// dark green
+		gradient.addColorStop(1, '#00B34C');
+		canvasContext.strokeStyle = "#00B060";
+	}
 
 	// Draw shape
 	canvasContext.beginPath();
@@ -369,15 +386,9 @@ function drawButton(x, y, width, height, color, highlight) {
 	canvasContext.quadraticCurveTo(x, y, x + radius, y);
 	canvasContext.closePath();
 
-	canvasContext.strokeStyle = "#000000";
-	canvasContext.lineWidth=5;
+	// Draw outline around path (rounded rectangle)
+	canvasContext.lineWidth=lineWidth;
 	canvasContext.stroke();
-
-	var gradient=canvasContext.createRadialGradient((width/2)+x,(height/2)+y,Math.max(width, height)/10,(width/2)+x,(height/2)+y,Math.max(width, height));
-	// light blue
-    gradient.addColorStop(0, '#8ED6FF');
-    // dark blue
-    gradient.addColorStop(1, '#004CB3');
 
 	// Fill with gradient
 	canvasContext.fillStyle=gradient;
