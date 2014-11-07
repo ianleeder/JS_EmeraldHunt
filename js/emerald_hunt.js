@@ -349,8 +349,17 @@ function render() {
 			drawEndGame();
 			break;
 	}
+	//drawMenu();
+}
 
-	drawButton(100,0,100,20,false);
+function drawMenu() {
+	var w = 150;
+	var h = 40;
+	var gap = 20;
+
+	drawButton(10,10,w,h,true);
+	drawButton(10,60,w,h,false);
+	drawButton(10,110,w,h,false);
 }
 
 function drawButton(x, y, width, height, highlight) {
@@ -360,17 +369,17 @@ function drawButton(x, y, width, height, highlight) {
 
 	if(highlight) {
 		// light blue
-		gradient.addColorStop(0, '#8ED6FF');
+		gradient.addColorStop(0, '#2985E2');
 		// dark blue
-		gradient.addColorStop(1, '#004CB3');
-		canvasContext.strokeStyle = "#0060FF";
+		gradient.addColorStop(1, '#0300F9');
+		canvasContext.strokeStyle = "#0500A7";
 	}
 	else {
 		// light green
-		gradient.addColorStop(0, '#00FF60');
+		gradient.addColorStop(0, '#46EE3A');
 		// dark green
-		gradient.addColorStop(1, '#00B34C');
-		canvasContext.strokeStyle = "#00B060";
+		gradient.addColorStop(1, '#195508');
+		canvasContext.strokeStyle = "#1A5A0F";
 	}
 
 	// Draw shape
