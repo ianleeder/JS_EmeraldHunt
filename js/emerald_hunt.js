@@ -35,7 +35,8 @@ var MENU = 1;
 var RUNNING = 2;
 var DYING = 3;
 var DEAD = 4;
-var GAMESTATE = RUNNING;
+var GAMESTATE = MENU;
+var MENUBUTTONS = generateMenuButtons();
 
 // Get the canvas context
 var canvas = document.getElementById('myCanvas');
@@ -90,9 +91,7 @@ brickImage.onload = function () {
 brickImage.src = "images/brick.png";
 
 // Declare some classes
-function BaseObject(xPos, yPos, gravity, canBeCrushed, canPassThrough) {
-    this.xPos = xPos;
-    this.yPos = yPos;
+function BaseObject(gravity, canBeCrushed, canPassThrough) {
     this.gravity = gravity;
     this.canBeCrushed = canBeCrushed;
     this.canPassThrough = canPassThrough;
@@ -111,9 +110,7 @@ function Dozer(xPos, yPos) {
 	this.isUneven = false;
 }
 
-function Dirt(xPos, yPos) {
-	this.xPos = xPos;
-    this.yPos = yPos;
+function Dirt() {
     this.gravity = false;
     this.canBeCrushed = false;
     this.canPassThrough = true;
@@ -121,9 +118,7 @@ function Dirt(xPos, yPos) {
 	this.isUneven = false;
 }
 
-function Rock(xPos, yPos) {
-	this.xPos = xPos;
-    this.yPos = yPos;
+function Rock() {
     this.gravity = true;
     this.canBeCrushed = false;
     this.canPassThrough = false;
@@ -131,27 +126,30 @@ function Rock(xPos, yPos) {
     this.image = rockImage;
 }
 
-function Gem(xPos, yPos) {
-	this.xPos = xPos;
-    this.yPos = yPos;
+function Gem() {
     this.gravity = true;
     this.canPassThrough = true;
 }
 
-function Emerald(xPos, yPos) {
-	this.xPos = xPos;
-    this.yPos = yPos;
+function Emerald() {
     this.canBeCrushed = false;
     this.image = emeraldImage;
 	this.score = 1;
 }
 
-function Sapphire(xPos, yPos) {
-	this.xPos = xPos;
-    this.yPos = yPos;
+function Sapphire() {
     this.canBeCrushed = true;
 	this.image = sapphireImage;
 	this.score = 5;
+}
+
+function Button(x, y, w, h, isHighlighted, text) {
+	this.x = x;
+	this.y = y;
+	this.w = w;
+	this.h = h;
+	this.isHighlighted = isHighlighted;
+	this.text = text;
 }
 
 // set up the prototype chain
@@ -162,14 +160,68 @@ Gem.prototype = new BaseObject();
 Emerald.prototype = new Gem();
 Sapphire.prototype = new Gem();
 
+Button.prototype.draw = function() {
+	var radius = 8;
+	var lineWidth = 5;
+	var gradient=canvasContext.createRadialGradient((this.w/2)+this.x,(this.h/2)+this.y,Math.max(this.w, this.h)/10,(this.w/2)+this.x,(this.h/2)+this.y,Math.max(this.w, this.h));
+
+	if(this.isHighlighted) {
+		// light blue
+		gradient.addColorStop(0, '#2985E2');
+		// dark blue
+		gradient.addColorStop(1, '#0300F9');
+		canvasContext.strokeStyle = "#0500A7";
+	}
+	else {
+		// light green
+		gradient.addColorStop(0, '#46EE3A');
+		// dark green
+		gradient.addColorStop(1, '#195508');
+		canvasContext.strokeStyle = "#1A5A0F";
+	}
+
+	// Draw shape
+	canvasContext.beginPath();
+	canvasContext.moveTo(this.x + radius, this.y);
+	canvasContext.lineTo(this.x + this.w - radius, this.y);
+	canvasContext.quadraticCurveTo(this.x + this.w, this.y, this.x + this.w, this.y + radius);
+	canvasContext.lineTo(this.x + this.w, this.y + this.h - radius);
+	canvasContext.quadraticCurveTo(this.x + this.w, this.y + this.h, this.x + this.w - radius, this.y + this.h);
+	canvasContext.lineTo(this.x + radius, this.y + this.h);
+	canvasContext.quadraticCurveTo(this.x, this.y + this.h, this.x, this.y + this.h - radius);
+	canvasContext.lineTo(this.x, this.y + radius);
+	canvasContext.quadraticCurveTo(this.x, this.y, this.x + radius, this.y);
+	canvasContext.closePath();
+
+	// Draw outline around path (rounded rectangle)
+	canvasContext.lineWidth=lineWidth;
+	canvasContext.stroke();
+
+	// Fill with gradient
+	canvasContext.fillStyle=gradient;
+	canvasContext.fill();
+
+	// Write text
+	canvasContext.fillStyle = "#FFFFFF";
+	canvasContext.font = "18px Helvetica";
+	canvasContext.textAlign = "center";
+	canvasContext.textBaseline = "middle";
+	canvasContext.fillText(this.text, this.x + (this.w/2), this.y + (this.h/2));
+}
+
 // Game objects
 var dozer = new Dozer(0, 0);
 
 addEventListener("keydown", function (e) {
 
-	if(GAMESTATE!=RUNNING)
-		return;
+	switch(GAMESTATE) {
+		case RUNNING:
+			handleGameInput(e);
+			break;
+	}
+}, false);
 
+function handleGameInput(e) {
 	switch(e.keyCode) {
 		// Up key
 		case 38:
@@ -230,10 +282,20 @@ addEventListener("keydown", function (e) {
 	GRID[dozer.x][dozer.y] = dozer;
 
 	render();
-}, false);
+}
 
-// Reset the game when the player catches a monster
-var reset = function () {
+// Initialise the board to a pretty moving background for the menu
+function initFieldForMenu() {
+	GRID = new Array(FIELD_X);
+
+	// Create empty array for grid
+	for (var i = 0; i < GRID.length; i++) {
+		GRID[i] = new Array(FIELD_Y);
+	}
+}
+
+// Initialise the board for a new game
+function newGame() {
 	dozer.x = 0;
 	dozer.y = 0;
 	SCORE = 0;
@@ -265,19 +327,19 @@ var reset = function () {
 				
 				case 1:
 				case 2:
-					val = new Dirt(i,j);
+					val = new Dirt();
 					break
 
 				case 3:
-					val = new Rock(i,j);
+					val = new Rock();
 					break
 
 				case 4:
-					val = new Emerald(i,j);
+					val = new Emerald();
 					break
 
 				case 5:
-					val = new Sapphire(i,j);
+					val = new Sapphire();
 					break
 			}
 			GRID[i][j]=val;
@@ -286,7 +348,25 @@ var reset = function () {
 };
 
 // Update game objects
-var update = function () {
+function update() {
+	switch(GAMESTATE) {
+		case MENU:
+			addRandomSapphire();
+			updateField();
+			break;
+
+		case RUNNING:
+			updateField();
+			break;
+	}
+}
+
+function addRandomSapphire() {
+	var rnd = Math.floor(Math.random()*FIELD_X);
+	GRID[rnd][0] = new Sapphire(rnd, 0);
+}
+
+function updateField() {
 	// We get ordering issues when moving items around.
 	// If we do a single pass through the field, items can be updated twice (two movements in one tick of time)
 	// If an item moves to the right (in order to fall down), and we are iterating left-to-right,
@@ -336,10 +416,18 @@ function render() {
 	drawBorder();
 
 	switch(GAMESTATE) {
+
+		case MENU:
+			drawField();
+			drawMenu();
+			break;
+
 		case RUNNING:
 			drawField();
 			break;
 
+		// Having a "dying" game state allows for the final "crushed" move to occur
+		// Otherwise death would be detected in Update step, but not drawn.
 		case DYING:
 			GAMESTATE = DEAD;
 			drawField();
@@ -349,7 +437,6 @@ function render() {
 			drawEndGame();
 			break;
 	}
-	//drawMenu();
 }
 
 function drawMenu() {
@@ -357,51 +444,28 @@ function drawMenu() {
 	var h = 40;
 	var gap = 20;
 
-	drawButton(10,10,w,h,true);
-	drawButton(10,60,w,h,false);
-	drawButton(10,110,w,h,false);
+	for(var i=0;i<MENUBUTTONS.length;i++)
+		MENUBUTTONS[i].draw();
 }
 
-function drawButton(x, y, width, height, highlight) {
-	var radius = 8;
-	var lineWidth = 5;
-	var gradient=canvasContext.createRadialGradient((width/2)+x,(height/2)+y,Math.max(width, height)/10,(width/2)+x,(height/2)+y,Math.max(width, height));
+function generateMenuButtons() {
+	var w = 150;
+	var h = 40;
+	var gap = 20;
 
-	if(highlight) {
-		// light blue
-		gradient.addColorStop(0, '#2985E2');
-		// dark blue
-		gradient.addColorStop(1, '#0300F9');
-		canvasContext.strokeStyle = "#0500A7";
-	}
-	else {
-		// light green
-		gradient.addColorStop(0, '#46EE3A');
-		// dark green
-		gradient.addColorStop(1, '#195508');
-		canvasContext.strokeStyle = "#1A5A0F";
-	}
+	var x = (myCanvas.width - w)/2;
+	var y = 90;
 
-	// Draw shape
-	canvasContext.beginPath();
-	canvasContext.moveTo(x + radius, y);
-	canvasContext.lineTo(x + width - radius, y);
-	canvasContext.quadraticCurveTo(x + width, y, x + width, y + radius);
-	canvasContext.lineTo(x + width, y + height - radius);
-	canvasContext.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-	canvasContext.lineTo(x + radius, y + height);
-	canvasContext.quadraticCurveTo(x, y + height, x, y + height - radius);
-	canvasContext.lineTo(x, y + radius);
-	canvasContext.quadraticCurveTo(x, y, x + radius, y);
-	canvasContext.closePath();
+	var buttonArray = [];
+	buttonArray[buttonArray.length] = new Button(x, y, w, h, true, "Start");
+	y += h + gap;
+	buttonArray[buttonArray.length] = new Button(x, y, w, h, false, "Difficulty");
+	y += h + gap;
+	buttonArray[buttonArray.length] = new Button(x, y, w, h, false, "High Scores");
+	y += h + gap;
+	buttonArray[buttonArray.length] = new Button(x, y, w, h, false, "Help");
 
-	// Draw outline around path (rounded rectangle)
-	canvasContext.lineWidth=lineWidth;
-	canvasContext.stroke();
-
-	// Fill with gradient
-	canvasContext.fillStyle=gradient;
-	canvasContext.fill();
+	return buttonArray;
 }
 
 function drawEndGame() {
@@ -457,10 +521,14 @@ function drawField() {
 }
 
 // The main game loop
-var main = function () {
+function main () {
 	var fps = 10;
+
+	// GAMESTATE = MENU;
+	GAMESTATE = RUNNING;
+	// initFieldForMenu();
+	newGame();
     
-    var game = this;
     var gameloop = setInterval(function() {
     	update();
     	render();
@@ -472,5 +540,4 @@ var w = window;
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
 // Let's play this game!
-reset();
 main();
