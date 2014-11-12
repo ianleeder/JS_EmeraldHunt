@@ -7,22 +7,23 @@
 
 // To-do:
 // (See review at http://www.svpocketpc.com/reviews/emeraldhunt/EmeraldHunt.html for more details of gameplay)
-// Implement proper image pre-loading
+// Implement proper image pre-loading (possibly display loading progress bar)
 // Implement bombs and explosions
 // Implement grenades
-// Implement a menu
+// Implement all menu items
 // Improve score/status display to show emeralds/sapphires/grenades/total score
 // Add (rock and/or brick) walls
 // Review/investigate/improve level generation algorithm
 // Add page Favicon
 // Implement difficulty settings:
-// 	Easy		Rocks, emeralds, bombs
-// 	Medium	Easy + sapphires
-// 	Hard		Medium + bugs
+// 	 Easy		Rocks, emeralds, bombs
+// 	 Medium		Easy + sapphires
+// 	 Hard		Medium + bugs
 // Track statistics
 // Show win screen
 // Details of death on lose screen (crushed/exploded)
 // Find original sprite files, or improve resolution (redraw) existing ones
+// Set canvas size from javascript directly?  Better or worse than setting in HTML?
 
 
 // Declare constants
@@ -36,7 +37,9 @@ var RUNNING = 2;
 var DYING = 3;
 var DEAD = 4;
 var GAMESTATE = MENU;
-var MENUBUTTONS = generateMenuButtons();
+var menuButtons;
+var deathButtons;
+generateButtons();
 
 // Get the canvas context
 var canvas = document.getElementById('myCanvas');
@@ -151,7 +154,7 @@ function Sapphire() {
 	this.score = 5;
 }
 
-function Button(x, y, w, h, isHighlighted, text, action) {
+function Button(x, y, w, h, isHighlighted, text, font, action) {
 	this.x = x;
 	this.y = y;
 	this.w = w;
@@ -169,6 +172,7 @@ Gem.prototype = new BaseObject();
 Emerald.prototype = new Gem();
 Sapphire.prototype = new Gem();
 
+// Add a class function to Button
 Button.prototype.draw = function() {
 	var radius = 8;
 	var lineWidth = 5;
@@ -212,10 +216,13 @@ Button.prototype.draw = function() {
 
 	// Write text
 	canvasContext.fillStyle = "#FFFFFF";
-	canvasContext.font = "18px Helvetica";
+	canvasContext.font = this.font;
 	canvasContext.textAlign = "center";
 	canvasContext.textBaseline = "middle";
 	canvasContext.fillText(this.text, this.x + (this.w/2), this.y + (this.h/2));
+
+	if(this.isHighlighted)
+		canvasContext.drawImage(dozerImage, this.x+5, this.y+((this.h-TILE_SIZE)/2));
 }
 
 // Game objects
@@ -231,32 +238,45 @@ addEventListener("keydown", function (e) {
 		case MENU:
 			handleMenuInput(e);
 			break;
+
+		case DEAD:
+			handleDeathInput(e);
+			break;
 	}
 }, false);
 
+function findHighlightedButton(a) {
+	for(var i=0;i<a.length;i++)
+		if(a[i].isHighlighted)
+			return i;
+}
+
+function setHighlightedButton(a, n) {
+	for(var i=0;i<a.length;i++)
+		a[i].isHighlighted = false;
+	a[n].isHighlighted = true;
+}
+
 function handleMenuInput(e) {
 	// Find current highlighted button
-	var highlighted;
-	for(var i=0;i<MENUBUTTONS.length;i++)
-		if(MENUBUTTONS[i].isHighlighted)
-			highlighted = i;
+	var h = findHighlightedButton(menuButtons);
 
 	switch(e.keyCode) {
 		// Up key
 		case 38:
 			e.preventDefault();
-			MENUBUTTONS[highlighted].isHighlighted = false;
-			if(highlighted==0)
-				highlighted=MENUBUTTONS.length;
-			MENUBUTTONS[--highlighted].isHighlighted = true;
+			menuButtons[h].isHighlighted = false;
+			if(h==0)
+				h=menuButtons.length;
+			menuButtons[--h].isHighlighted = true;
 			break;
 
 		// Down key
 		case 40:
 			e.preventDefault();
-			MENUBUTTONS[highlighted].isHighlighted = false;
-			highlighted = ++highlighted%MENUBUTTONS.length;
-			MENUBUTTONS[highlighted].isHighlighted = true;
+			menuButtons[h].isHighlighted = false;
+			h = ++h%menuButtons.length;
+			menuButtons[h].isHighlighted = true;
 			break;
 
 		// Left key
@@ -274,7 +294,51 @@ function handleMenuInput(e) {
 		// Space key
 		case 32:
 			e.preventDefault();
-			MENUBUTTONS[highlighted].action();
+			setHighlightedButton(menuButtons, 0);
+			menuButtons[h].action();
+			break;
+	}
+}
+
+function handleDeathInput(e) {
+	// Find current highlighted button
+	var h = findHighlightedButton(deathButtons);
+
+	switch(e.keyCode) {
+		// Up key
+		case 38:
+			e.preventDefault();
+			break;
+
+		// Down key
+		case 40:
+			e.preventDefault();
+			break;
+
+		// Left key
+		case 37:
+			e.preventDefault();
+			deathButtons[h].isHighlighted = false;
+			if(h==0)
+				h=deathButtons.length;
+			deathButtons[--h].isHighlighted = true;
+			break;
+
+		// Right key
+		case 39:
+			e.preventDefault();
+			deathButtons[h].isHighlighted = false;
+			h = ++h%deathButtons.length;
+			deathButtons[h].isHighlighted = true;
+			break;
+
+		// Enter key
+		case 13:
+		// Space key
+		case 32:
+			e.preventDefault();
+			setHighlightedButton(deathButtons, 0);
+			deathButtons[h].action();
 			break;
 	}
 }
@@ -503,11 +567,12 @@ function drawMenu() {
 	var h = 40;
 	var gap = 20;
 
-	for(var i=0;i<MENUBUTTONS.length;i++)
-		MENUBUTTONS[i].draw();
+	for(var i=0;i<menuButtons.length;i++)
+		menuButtons[i].draw();
 }
 
-function generateMenuButtons() {
+function generateButtons() {
+	var f = "18px Helvetica";
 	var w = 150;
 	var h = 40;
 	var gap = 20;
@@ -515,18 +580,27 @@ function generateMenuButtons() {
 	var x = (myCanvas.width - w)/2;
 	var y = 60;
 
-	var buttonArray = [];
-	buttonArray[buttonArray.length] = new Button(x, y, w, h, true, "Start", newGame);
+	menuButtons = [];
+	menuButtons[menuButtons.length] = new Button(x, y, w, h, true, "Start", f, newGame);
 	y += h + gap;
-	buttonArray[buttonArray.length] = new Button(x, y, w, h, false, "Difficulty");
+	menuButtons[menuButtons.length] = new Button(x, y, w, h, false, "Difficulty", f);
 	y += h + gap;
-	buttonArray[buttonArray.length] = new Button(x, y, w, h, false, "High Scores");
+	menuButtons[menuButtons.length] = new Button(x, y, w, h, false, "High Scores", f);
 	y += h + gap;
-	buttonArray[buttonArray.length] = new Button(x, y, w, h, false, "Help");
+	menuButtons[menuButtons.length] = new Button(x, y, w, h, false, "Help", f);
 	y += h + gap;
-	buttonArray[buttonArray.length] = new Button(x, y, w, h, false, "About");
+	menuButtons[menuButtons.length] = new Button(x, y, w, h, false, "About", f);
 
-	return buttonArray;
+	deathButtons = [];
+	f = "14px Helvetica";
+	w = 80;
+	h = 30;
+	x = 120;
+	y = 260;
+	gap = 10;
+	deathButtons[deathButtons.length] = new Button(x, y, w, h, true, "Retry", f, newGame);
+	x += w + gap;
+	deathButtons[deathButtons.length] = new Button(x, y, w, h, false, "Menu", f, showMenu);
 }
 
 function drawEndGame() {
@@ -563,6 +637,9 @@ function drawEndGame() {
 	canvasContext.fillStyle = "#FFFFFF";
 	canvasContext.font = "14px Helvetica";
 	canvasContext.fillText("Score: " + SCORE, canvas.width/2, canvas.height/2);
+
+	for(var i=0;i<deathButtons.length;i++)
+		deathButtons[i].draw();
 }
 
 function clearCanvas() {
@@ -604,14 +681,16 @@ function drawField() {
 	canvasContext.fillText("Score: " + SCORE, canvas.width-88, canvas.height-20);
 }
 
+function showMenu() {
+	GAMESTATE = MENU;
+	initFieldForMenu();
+}
+
 // The main game loop
 function main () {
 	var fps = 10;
 
-	GAMESTATE = MENU;
-	// GAMESTATE = RUNNING;
-	initFieldForMenu();
-	// newGame();
+	showMenu();
     
     var gameloop = setInterval(function() {
     	update();
