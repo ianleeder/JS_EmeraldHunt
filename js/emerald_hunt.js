@@ -90,6 +90,14 @@ brickImage.onload = function () {
 };
 brickImage.src = "images/brick.png";
 
+// Skull image
+var skullReady = false;
+var skullImage = new Image();
+skullImage.onload = function () {
+	skullReady = true;
+};
+skullImage.src = "images/skull.png";
+
 // Declare some classes
 function BaseObject(gravity, canBeCrushed, canPassThrough) {
     this.gravity = gravity;
@@ -143,13 +151,14 @@ function Sapphire() {
 	this.score = 5;
 }
 
-function Button(x, y, w, h, isHighlighted, text) {
+function Button(x, y, w, h, isHighlighted, text, action) {
 	this.x = x;
 	this.y = y;
 	this.w = w;
 	this.h = h;
 	this.isHighlighted = isHighlighted;
 	this.text = text;
+	this.action = action;
 }
 
 // set up the prototype chain
@@ -239,7 +248,7 @@ function handleMenuInput(e) {
 			MENUBUTTONS[highlighted].isHighlighted = false;
 			if(highlighted==0)
 				highlighted=MENUBUTTONS.length;
-			MENUBUTTONS[highlighted-1].isHighlighted = true;
+			MENUBUTTONS[--highlighted].isHighlighted = true;
 			break;
 
 		// Down key
@@ -258,6 +267,14 @@ function handleMenuInput(e) {
 		// Right key
 		case 39:
 			e.preventDefault();
+			break;
+
+		// Enter key
+		case 13:
+		// Space key
+		case 32:
+			e.preventDefault();
+			MENUBUTTONS[highlighted].action();
 			break;
 	}
 }
@@ -337,9 +354,8 @@ function initFieldForMenu() {
 
 // Initialise the board for a new game
 function newGame() {
-	dozer.x = 0;
-	dozer.y = 0;
 	SCORE = 0;
+	GAMESTATE = RUNNING;
 
 	GRID = new Array(FIELD_X);
 
@@ -351,6 +367,8 @@ function newGame() {
 	// Generata a random start position for the dozer
 	var rnd = Math.floor(Math.random()*FIELD_X);
 	dozer.x = rnd;
+	dozer.y = 0;
+
 	GRID[rnd][0] = dozer;
 	
 	for(var i=0;i<GRID.length;i++) {
@@ -495,30 +513,55 @@ function generateMenuButtons() {
 	var gap = 20;
 
 	var x = (myCanvas.width - w)/2;
-	var y = 90;
+	var y = 60;
 
 	var buttonArray = [];
-	buttonArray[buttonArray.length] = new Button(x, y, w, h, true, "Start");
+	buttonArray[buttonArray.length] = new Button(x, y, w, h, true, "Start", newGame);
 	y += h + gap;
 	buttonArray[buttonArray.length] = new Button(x, y, w, h, false, "Difficulty");
 	y += h + gap;
 	buttonArray[buttonArray.length] = new Button(x, y, w, h, false, "High Scores");
 	y += h + gap;
 	buttonArray[buttonArray.length] = new Button(x, y, w, h, false, "Help");
+	y += h + gap;
+	buttonArray[buttonArray.length] = new Button(x, y, w, h, false, "About");
 
 	return buttonArray;
 }
 
 function drawEndGame() {
 	drawField();
+
+	// Number of tiles to make death message
+	var n = 10;
+	var npx = n*TILE_SIZE;
+
+	var x = (canvas.width - npx)/2;
+	var y = (canvas.height - npx)/2;
+
 	canvasContext.fillStyle = "#000000";
-	canvasContext.fillRect(75, 75, canvas.width-150, canvas.height-150);
+	canvasContext.fillRect(x, y, npx, npx);
+
+	// Draw a border of skulls
+	for(var i=0;i<10;i++) {
+		// Draw across top
+		canvasContext.drawImage(skullImage, x+(TILE_SIZE*i), y);
+		// Draw down left edge
+		canvasContext.drawImage(skullImage, x, y+(TILE_SIZE*i));
+		// Draw down right edge
+		canvasContext.drawImage(skullImage, x+(TILE_SIZE*(n-1)), y+(TILE_SIZE*i));
+		// Draw across bottom edge
+		canvasContext.drawImage(skullImage, x+(TILE_SIZE*i), y+(TILE_SIZE*(n-1)));
+	}
+
+	canvasContext.fillStyle = "#A00000";
+	canvasContext.font = "bold 18px Helvetica";
+	canvasContext.textAlign = "center";
+	canvasContext.textBaseline = "middle";
+	canvasContext.fillText("You died!", canvas.width/2, canvas.height/2-50);
 
 	canvasContext.fillStyle = "#FFFFFF";
 	canvasContext.font = "14px Helvetica";
-	canvasContext.textAlign = "center";
-	canvasContext.textBaseline = "top";
-	canvasContext.fillText("You died!", canvas.width/2, canvas.height/2-20);
 	canvasContext.fillText("Score: " + SCORE, canvas.width/2, canvas.height/2);
 }
 
