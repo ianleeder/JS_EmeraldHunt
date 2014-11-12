@@ -218,8 +218,49 @@ addEventListener("keydown", function (e) {
 		case RUNNING:
 			handleGameInput(e);
 			break;
+
+		case MENU:
+			handleMenuInput(e);
+			break;
 	}
 }, false);
+
+function handleMenuInput(e) {
+	// Find current highlighted button
+	var highlighted;
+	for(var i=0;i<MENUBUTTONS.length;i++)
+		if(MENUBUTTONS[i].isHighlighted)
+			highlighted = i;
+
+	switch(e.keyCode) {
+		// Up key
+		case 38:
+			e.preventDefault();
+			MENUBUTTONS[highlighted].isHighlighted = false;
+			if(highlighted==0)
+				highlighted=MENUBUTTONS.length;
+			MENUBUTTONS[highlighted-1].isHighlighted = true;
+			break;
+
+		// Down key
+		case 40:
+			e.preventDefault();
+			MENUBUTTONS[highlighted].isHighlighted = false;
+			highlighted = ++highlighted%MENUBUTTONS.length;
+			MENUBUTTONS[highlighted].isHighlighted = true;
+			break;
+
+		// Left key
+		case 37:
+			e.preventDefault();
+			break;
+
+		// Right key
+		case 39:
+			e.preventDefault();
+			break;
+	}
+}
 
 function handleGameInput(e) {
 	switch(e.keyCode) {
@@ -524,10 +565,10 @@ function drawField() {
 function main () {
 	var fps = 10;
 
-	// GAMESTATE = MENU;
-	GAMESTATE = RUNNING;
-	// initFieldForMenu();
-	newGame();
+	GAMESTATE = MENU;
+	// GAMESTATE = RUNNING;
+	initFieldForMenu();
+	// newGame();
     
     var gameloop = setInterval(function() {
     	update();
