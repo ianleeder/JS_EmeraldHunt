@@ -154,7 +154,7 @@ function Sapphire() {
 	this.score = 5;
 }
 
-function Button(x, y, w, h, isHighlighted, text, font, action) {
+function Button(x, y, w, h, isHighlighted, text, text2, font, action) {
 	this.x = x;
 	this.y = y;
 	this.w = w;
@@ -162,6 +162,7 @@ function Button(x, y, w, h, isHighlighted, text, font, action) {
 	this.isHighlighted = isHighlighted;
 	this.text = text;
 	this.action = action;
+	this.text2 = text2;
 }
 
 // set up the prototype chain
@@ -219,7 +220,12 @@ Button.prototype.draw = function() {
 	canvasContext.font = this.font;
 	canvasContext.textAlign = "center";
 	canvasContext.textBaseline = "middle";
-	canvasContext.fillText(this.text, this.x + (this.w/2), this.y + (this.h/2));
+	if(this.text2) {
+		canvasContext.fillText(this.text, this.x + (this.w/2), this.y + (this.h/2)-10);
+		canvasContext.fillText(this.text2, this.x + (this.w/2), this.y + (this.h/2)+10);
+	}
+	else
+		canvasContext.fillText(this.text, this.x + (this.w/2), this.y + (this.h/2));
 
 	if(this.isHighlighted)
 		canvasContext.drawImage(dozerImage, this.x+5, this.y+((this.h-TILE_SIZE)/2));
@@ -581,15 +587,15 @@ function generateButtons() {
 	var y = 60;
 
 	menuButtons = [];
-	menuButtons[menuButtons.length] = new Button(x, y, w, h, true, "Start", f, newGame);
+	menuButtons[menuButtons.length] = new Button(x, y, w, h, true, "Start", undefined, f, newGame);
 	y += h + gap;
-	menuButtons[menuButtons.length] = new Button(x, y, w, h, false, "Difficulty", f);
+	menuButtons[menuButtons.length] = new Button(x, y, w, h, false, "Difficulty", "Easy", f);
 	y += h + gap;
-	menuButtons[menuButtons.length] = new Button(x, y, w, h, false, "High Scores", f);
+	menuButtons[menuButtons.length] = new Button(x, y, w, h, false, "High Scores", undefined, f);
 	y += h + gap;
-	menuButtons[menuButtons.length] = new Button(x, y, w, h, false, "Help", f);
+	menuButtons[menuButtons.length] = new Button(x, y, w, h, false, "Help", undefined, f);
 	y += h + gap;
-	menuButtons[menuButtons.length] = new Button(x, y, w, h, false, "About", f);
+	menuButtons[menuButtons.length] = new Button(x, y, w, h, false, "About", undefined, f);
 
 	deathButtons = [];
 	f = "14px Helvetica";
@@ -598,9 +604,9 @@ function generateButtons() {
 	x = 120;
 	y = 260;
 	gap = 10;
-	deathButtons[deathButtons.length] = new Button(x, y, w, h, true, "Retry", f, newGame);
+	deathButtons[deathButtons.length] = new Button(x, y, w, h, true, "Retry", undefined, f, newGame);
 	x += w + gap;
-	deathButtons[deathButtons.length] = new Button(x, y, w, h, false, "Menu", f, showMenu);
+	deathButtons[deathButtons.length] = new Button(x, y, w, h, false, "Menu", undefined, f, showMenu);
 }
 
 function drawEndGame() {
