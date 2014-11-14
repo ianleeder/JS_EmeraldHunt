@@ -8,7 +8,6 @@
 // To-do:
 // (See review at http://www.svpocketpc.com/reviews/emeraldhunt/EmeraldHunt.html for more details of gameplay)
 // Implement proper image pre-loading (possibly display loading progress bar)
-// Implement bombs and explosions
 // Implement grenades
 // Implement all menu items
 // Implement ESC menu from gameplay to allow restart when stuck
@@ -17,8 +16,8 @@
 // Review/investigate/improve level generation algorithm
 // Add page Favicon
 // Implement difficulty settings:
-// 	 Easy		Rocks, emeralds, bombs
-// 	 Medium		Easy + sapphires
+// DONE	 Easy		Rocks, emeralds, bombs
+// DONE	 Medium		Easy + sapphires
 // 	 Hard		Medium + bugs
 // Track statistics
 // Show win screen
@@ -546,13 +545,22 @@ function addRandomSapphire() {
 }
 
 function createExplosion(x, y) {
+	// Clear center square contents to avoid infinite recursion.
+	gameGrid[x][y] = 0;
+
 	// Create a 3x3 explosion grid
 	for(var i=x-1; i<=x+1; i++) {
 		for(var j=y-1; j<=y+1; j++) {
 			// Check we are within grid boundaries
 			if(i>=0 && i<FIELD_X && j>=0 && j<FIELD_Y) {
-				if(gameGrid[i][j] && gameGrid[i][j]==dozer) {
-					gameState = DYING;
+				// Check if cell we are exploding contains anything
+				if(gameGrid[i][j]) {
+					// If it contains dozer, die
+					if(gameGrid[i][j]==dozer)
+						gameState = DYING;
+					// If it contains another explosive item, explode
+					else if(gameGrid[i][j].isExplosive)
+						createExplosion(i,j);
 				}
 				gameGrid[i][j] = new Explosion();
 			}
@@ -572,7 +580,7 @@ function updateField() {
 		// Iterate through field left to right
 		for(var i=0;i<FIELD_X;i++) {
 			// Check if cell is an explosion
-			if(gameGrid[i][j] && gameGrid[i][j].image==explosionImage) {
+			if(gameGrid[i][j] && Explosion.prototype.isPrototypeOf(gameGrid[i][j])) {
 				if(gameGrid[i][j].newExplosion) {
 					gameGrid[i][j].newExplosion = false;
 				} else {
