@@ -265,6 +265,10 @@ Button.prototype.draw = function() {
 
 // Game objects
 var dozer = new Dozer(0, 0);
+var emerald = new Emerald();
+var sapphire = new Sapphire();
+var rock = new Rock();
+var dirt = new Dirt();
 
 // Add a key listener to handle input
 addEventListener("keydown", function (e) {
@@ -488,19 +492,19 @@ function newGame() {
 				
 				case 1:
 				case 2:
-					val = new Dirt();
+					val = dirt;
 					break;
 
 				case 3:
-					val = new Rock();
+					val = rock;
 					break;
 
 				case 4:
-					val = new Emerald();
+					val = emerald;
 					break;
 
 				case 5:
-					val = new Sapphire();
+					val = sapphire;
 					break;
 
 				case 6:
