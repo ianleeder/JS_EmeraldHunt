@@ -105,14 +105,31 @@ skullImage.onload = function () {
 };
 skullImage.src = "images/skull.png";
 
+// Bomb image
+var bombReady = false;
+var bombImage = new Image();
+bombImage.onload = function () {
+	bombReady = true;
+};
+bombImage.src = "images/bomb.png";
+
+// Explosion image
+var explosionReady = false;
+var explosionImage = new Image();
+explosionImage.onload = function () {
+	explosionReady = true;
+};
+explosionImage.src = "images/explosion.png";
+
 // Declare some classes
-function BaseObject(gravity, canBeCrushed, canPassThrough) {
-    this.gravity = gravity;
-    this.canBeCrushed = canBeCrushed;
-    this.canPassThrough = canPassThrough;
+function BaseObject() {
+    this.gravity = true;
+    this.canBeCrushed = false;
+    this.canPassThrough = true;
     this.isFalling = false;
 	this.isUneven = true;
 	this.isPushable = false;
+	this.isExplosive = false;
 }
 
 function Dozer(xPos, yPos) {
@@ -127,15 +144,11 @@ function Dozer(xPos, yPos) {
 
 function Dirt() {
     this.gravity = false;
-    this.canBeCrushed = false;
-    this.canPassThrough = true;
 	this.image = dirtImage;
 	this.isUneven = false;
 }
 
 function Rock() {
-    this.gravity = true;
-    this.canBeCrushed = false;
     this.canPassThrough = false;
     this.isPushable = true;
     this.image = rockImage;
@@ -158,6 +171,20 @@ function Sapphire() {
 	this.score = 5;
 }
 
+function Bomb() {
+	this.isExplosive = true;
+	this.canPassThrough = false;
+	this.canBeCrushed = true;
+	this.isPushable = true;
+	this.image = bombImage;
+}
+
+function Explosion() {
+	this.canPassThrough = false;
+	this.image = explosionImage;
+	this.newExplosion = true;
+}
+
 function Button(x, y, w, h, isHighlighted, text, text2, font, action) {
 	this.x = x;
 	this.y = y;
@@ -173,6 +200,7 @@ function Button(x, y, w, h, isHighlighted, text, text2, font, action) {
 Dozer.prototype = new BaseObject();
 Dirt.prototype = new BaseObject();
 Rock.prototype = new BaseObject();
+Bomb.prototype = new BaseObject();
 Gem.prototype = new BaseObject();
 Emerald.prototype = new Gem();
 Sapphire.prototype = new Gem();
@@ -451,7 +479,7 @@ function newGame() {
 			if(gameGrid[i][j] == dozer)
 				continue;
 
-			var rnd = Math.floor(Math.random()*6);
+			var rnd = Math.floor(Math.random()*7);
 			var val;
 			switch(rnd) {
 				case 0:
@@ -461,19 +489,23 @@ function newGame() {
 				case 1:
 				case 2:
 					val = new Dirt();
-					break
+					break;
 
 				case 3:
 					val = new Rock();
-					break
+					break;
 
 				case 4:
 					val = new Emerald();
-					break
+					break;
 
 				case 5:
 					val = new Sapphire();
-					break
+					break;
+
+				case 6:
+					val = new Bomb();
+					break;
 			}
 			gameGrid[i][j]=val;
 		}
@@ -499,28 +531,74 @@ function addRandomSapphire() {
 	gameGrid[rnd][0] = new Sapphire(rnd, 0);
 }
 
+function createExplosion(x, y) {
+	// Create a 3x3 explosion grid
+	for(var i=x-1; i<=x+1; i++) {
+		for(var j=y-1; j<=y+1; j++) {
+			// Check we are within grid boundaries
+			if(i>=0 && i<FIELD_X && j>=0 && j<FIELD_Y) {
+				if(gameGrid[i][j] && gameGrid[i][j]==dozer) {
+					gameState = DYING;
+				}
+				gameGrid[i][j] = new Explosion();
+			}
+		}
+	}
+}
+
 function updateField() {
 	// We get ordering issues when moving items around.
 	// If we do a single pass through the field, items can be updated twice (two movements in one tick of time)
 	// If an item moves to the right (in order to fall down), and we are iterating left-to-right,
 	// it will be updated twice (right and down)
-	
+
 	// Iterate through bottom to top
 	// No point starting on bottom row, start 1 up
-	for(var j=FIELD_Y-2;j>=0;j--) {
+	for(var j=FIELD_Y-1;j>=0;j--) {
 		// Iterate through field left to right
 		for(var i=0;i<FIELD_X;i++) {
+			// Check if cell is an explosion
+			if(gameGrid[i][j] && gameGrid[i][j].image==explosionImage) {
+				if(gameGrid[i][j].newExplosion) {
+					gameGrid[i][j].newExplosion = false;
+				} else {
+					gameGrid[i][j] = 0;
+					continue;
+				}
+			}
+
+			// Deal with items on the bottom row
+			if(j==FIELD_Y-1) {
+				// If item is falling and explosive
+				if(gameGrid[i][j] && gameGrid[i][j].isFalling && gameGrid[i][j].isExplosive)
+					createExplosion(i, j);
+
+				// Don't bother checking other items on bottom row
+				continue;
+			}
+
 			// Check if cell is populated, AND is affected by gravity
 			if(gameGrid[i][j] && gameGrid[i][j].gravity) {
 				// Check if cell below is empty, OR if item is falling and item below can be crushed
 				if(!gameGrid[i][j+1] || (gameGrid[i][j].isFalling && gameGrid[i][j+1].canBeCrushed)) {
-					if(gameGrid[i][j+1]==dozer) {
+					// If item below is explosive, go bang!
+					if(gameGrid[i][j+1] && gameGrid[i][j+1].isExplosive) {
+						createExplosion(i, j+1);
+						continue;
+					}
+					// If item below is dozer, die
+					else if(gameGrid[i][j+1]==dozer) {
 						gameState = DYING;
 					}
 
+					// Propogate item down
     				gameGrid[i][j+1] = gameGrid[i][j];
 					gameGrid[i][j+1].isFalling = true;
     				gameGrid[i][j] = 0;
+				}
+				// Else check if item is falling and explosive (already ruled out empty cell below)
+				else if(gameGrid[i][j] && gameGrid[i][j].isExplosive) {
+					createExplosion(i, j);
 				}
 				// Else check if item below is uneven and it can fall left (cell left and below left are empty)
 				else if(i>0 && gameGrid[i][j+1].isUneven && !gameGrid[i-1][j] && !gameGrid[i-1][j+1]) {
@@ -537,6 +615,8 @@ function updateField() {
 				// Else check if item below is solid (can't be crushed) to disable falling.
 				else if(gameGrid[i][j+1] && !gameGrid[i][j+1].canBeCrushed) {
 					gameGrid[i][j].isFalling = false;
+					if(gameGrid[i][j].isExplosive)
+						createExplosion(i, j);
 				}
 			}
 		}
