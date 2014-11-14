@@ -33,8 +33,8 @@ var FIELD_Y = 15;
 // Array will be populated as follows (after items created)
 // [empty, dirt, rock, emerald, bomb, grenade, sapphire]
 var DIFFICULTY_TILE_TYPE;
-var DIFFICULTY_EASY = [20, 40, 20, 20, 10, 1, 0];
-var DIFFICULTY_MEDIUM = [20, 40, 20, 10, 10, 1, 10];
+var DIFFICULTY_EASY = [20, 40, 20, 20, 5, 1, 0];
+var DIFFICULTY_MEDIUM = [20, 40, 20, 10, 5, 1, 10];
 var DIFFICULTY_HARD;
 
 var MENU = 1;
@@ -212,8 +212,9 @@ function Button(x, y, w, h, isHighlighted, text, text2, font, action) {
 	this.h = h;
 	this.isHighlighted = isHighlighted;
 	this.text = text;
-	this.action = action;
 	this.text2 = text2;
+	this.action = action;
+	this.font = font;
 }
 
 // set up the prototype chain
@@ -685,7 +686,7 @@ function drawMenu() {
 }
 
 function generateButtons() {
-	var f = "18px Helvetica";
+	var f = "16px Helvetica";
 	var w = 150;
 	var h = 40;
 	var gap = 20;
