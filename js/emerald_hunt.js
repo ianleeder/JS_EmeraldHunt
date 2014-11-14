@@ -2,7 +2,7 @@
 // Date: 07 November 2014
 // This game is a clone/port of a game I fondly remember playing as a child.
 // I have been unable to track down the original (PC) game, so at this time I am unable
-// to 100% verify gameplay.  What is implemented is from my memory, and (PocketPC) screenshots
+// to 100% verify gameplay.  What is implemented is from memory, and (PocketPC) screenshots
 // I have found on the web.
 
 // To-do:
@@ -11,6 +11,7 @@
 // Implement bombs and explosions
 // Implement grenades
 // Implement all menu items
+// Implement ESC menu from gameplay to allow restart when stuck
 // Improve score/status display to show emeralds/sapphires/grenades/total score
 // Add (rock and/or brick) walls
 // Review/investigate/improve level generation algorithm
