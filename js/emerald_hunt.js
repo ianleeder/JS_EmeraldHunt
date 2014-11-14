@@ -31,6 +31,12 @@
 var TILE_SIZE = 24;
 var FIELD_X = 15;
 var FIELD_Y = 15;
+// Array will be populated as follows (after items created)
+// [empty, dirt, rock, emerald, bomb, grenade, sapphire]
+var DIFFICULTY_TILE_TYPE;
+var DIFFICULTY_EASY = [20, 40, 20, 20, 10, 1, 0];
+var DIFFICULTY_MEDIUM = [20, 40, 20, 10, 10, 1, 10];
+var DIFFICULTY_HARD;
 
 var MENU = 1;
 var RUNNING = 2;
@@ -38,6 +44,7 @@ var DYING = 3;
 var DEAD = 4;
 
 // Declare variables
+var difficulty = DIFFICULTY_EASY;
 var gameGrid;
 var gameState = MENU;
 var gameScore = 0;
@@ -113,6 +120,14 @@ bombImage.onload = function () {
 };
 bombImage.src = "images/bomb.png";
 
+// Grenade image
+var grenadeReady = false;
+var grenadeImage = new Image();
+grenadeImage.onload = function () {
+	grenadeReady = true;
+};
+grenadeImage.src = "images/grenade.png";
+
 // Explosion image
 var explosionReady = false;
 var explosionImage = new Image();
@@ -185,6 +200,12 @@ function Explosion() {
 	this.newExplosion = true;
 }
 
+function Grenade() {
+	this.gravity = false;
+	this.isExplosive = true;
+	this.image = grenadeImage;
+}
+
 function Button(x, y, w, h, isHighlighted, text, text2, font, action) {
 	this.x = x;
 	this.y = y;
@@ -201,6 +222,7 @@ Dozer.prototype = new BaseObject();
 Dirt.prototype = new BaseObject();
 Rock.prototype = new BaseObject();
 Bomb.prototype = new BaseObject();
+Grenade.prototype = new BaseObject();
 Gem.prototype = new BaseObject();
 Emerald.prototype = new Gem();
 Sapphire.prototype = new Gem();
@@ -265,10 +287,7 @@ Button.prototype.draw = function() {
 
 // Game objects
 var dozer = new Dozer(0, 0);
-var emerald = new Emerald();
-var sapphire = new Sapphire();
-var rock = new Rock();
-var dirt = new Dirt();
+DIFFICULTY_TILE_TYPE = [0, Dirt, Rock, Emerald, Bomb, Grenade, Sapphire];
 
 // Add a key listener to handle input
 addEventListener("keydown", function (e) {
@@ -466,7 +485,7 @@ function newGame() {
 	gameGrid = new Array(FIELD_X);
 
 	// Create empty array for grid
-	for (var i = 0; i < gameGrid.length; i++) {
+	for(var i = 0; i < gameGrid.length; i++) {
 		gameGrid[i] = new Array(FIELD_Y);
 	}
 
@@ -476,6 +495,11 @@ function newGame() {
 	dozer.y = 0;
 
 	gameGrid[rnd][0] = dozer;
+
+	var sum = 0;
+	for(var i=0;i<difficulty.length;i++) {
+		sum += difficulty[i];
+	}
 	
 	for(var i=0;i<gameGrid.length;i++) {
 		for(var j=0;j<gameGrid[i].length;j++) {
@@ -483,35 +507,21 @@ function newGame() {
 			if(gameGrid[i][j] == dozer)
 				continue;
 
-			var rnd = Math.floor(Math.random()*7);
 			var val;
-			switch(rnd) {
-				case 0:
-					val = 0;
-					break;
-				
-				case 1:
-				case 2:
-					val = dirt;
-					break;
+			var rnd = Math.floor(Math.random()*sum);
+			var cumulative=0;
 
-				case 3:
-					val = rock;
+			for(var k=0;k<difficulty.length;k++) {
+				cumulative += difficulty[k];
+				// console.log("  cumulative="+cumulative);
+				if(rnd<cumulative) {
+					val = DIFFICULTY_TILE_TYPE[k];
 					break;
-
-				case 4:
-					val = emerald;
-					break;
-
-				case 5:
-					val = sapphire;
-					break;
-
-				case 6:
-					val = new Bomb();
-					break;
+				}
 			}
-			gameGrid[i][j]=val;
+
+			if(val)
+				gameGrid[i][j]=new val();
 		}
 	}
 };
