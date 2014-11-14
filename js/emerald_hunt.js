@@ -31,13 +31,16 @@
 var TILE_SIZE = 24;
 var FIELD_X = 15;
 var FIELD_Y = 15;
-var GRID;
-var SCORE = 0;
+
 var MENU = 1;
 var RUNNING = 2;
 var DYING = 3;
 var DEAD = 4;
-var GAMESTATE = MENU;
+
+// Declare variables
+var gameGrid;
+var gameState = MENU;
+var gameScore = 0;
 var menuButtons;
 var deathButtons;
 generateButtons();
@@ -235,9 +238,9 @@ Button.prototype.draw = function() {
 // Game objects
 var dozer = new Dozer(0, 0);
 
+// Add a key listener to handle input
 addEventListener("keydown", function (e) {
-
-	switch(GAMESTATE) {
+	switch(gameState) {
 		case RUNNING:
 			handleGameInput(e);
 			break;
@@ -356,8 +359,8 @@ function handleGameInput(e) {
 		case 38:
 			e.preventDefault();
 			// If we're not on top edge AND cell is either empty or can pass through
-			if(dozer.y > 0 && (!GRID[dozer.x][dozer.y-1] || GRID[dozer.x][dozer.y-1].canPassThrough)) {
-				GRID[dozer.x][dozer.y] = 0;
+			if(dozer.y > 0 && (!gameGrid[dozer.x][dozer.y-1] || gameGrid[dozer.x][dozer.y-1].canPassThrough)) {
+				gameGrid[dozer.x][dozer.y] = 0;
 				dozer.y -= 1;
 			}
 			break;
@@ -366,8 +369,8 @@ function handleGameInput(e) {
 		case 40:
 			e.preventDefault();
 			// If we're not on bottom edge AND cell is either empty or can pass through
-			if(dozer.y < FIELD_Y-1 && (!GRID[dozer.x][dozer.y+1] || GRID[dozer.x][dozer.y+1].canPassThrough)) {
-				GRID[dozer.x][dozer.y] = 0;
+			if(dozer.y < FIELD_Y-1 && (!gameGrid[dozer.x][dozer.y+1] || gameGrid[dozer.x][dozer.y+1].canPassThrough)) {
+				gameGrid[dozer.x][dozer.y] = 0;
 				dozer.y += 1;
 			}
 			break;
@@ -376,14 +379,14 @@ function handleGameInput(e) {
 		case 37:
 			e.preventDefault();
 			// If we're not on left edge AND cell is either empty or can pass through
-			if(dozer.x > 0 && (!GRID[dozer.x-1][dozer.y] || GRID[dozer.x-1][dozer.y].canPassThrough)) {
-				GRID[dozer.x][dozer.y] = 0;
+			if(dozer.x > 0 && (!gameGrid[dozer.x-1][dozer.y] || gameGrid[dozer.x-1][dozer.y].canPassThrough)) {
+				gameGrid[dozer.x][dozer.y] = 0;
 				dozer.x -= 1;
 			}
 			// If we are at least 2 squares from left edge, item to left is rock AND item to left of that is empty
-			else if(dozer.x > 1 && GRID[dozer.x-1][dozer.y] && GRID[dozer.x-1][dozer.y].isPushable && !GRID[dozer.x-2][dozer.y]) {
-				GRID[dozer.x-2][dozer.y] = GRID[dozer.x-1][dozer.y];
-				GRID[dozer.x][dozer.y] = 0;
+			else if(dozer.x > 1 && gameGrid[dozer.x-1][dozer.y] && gameGrid[dozer.x-1][dozer.y].isPushable && !gameGrid[dozer.x-2][dozer.y]) {
+				gameGrid[dozer.x-2][dozer.y] = gameGrid[dozer.x-1][dozer.y];
+				gameGrid[dozer.x][dozer.y] = 0;
 				dozer.x -= 1;
 			}
 			break;
@@ -392,47 +395,47 @@ function handleGameInput(e) {
 		case 39:
 			e.preventDefault();
 			// If we're not on bottom edge AND cell is either empty or can pass through
-			if(dozer.x < FIELD_X-1 && (!GRID[dozer.x+1][dozer.y] || GRID[dozer.x+1][dozer.y].canPassThrough)) {
-				GRID[dozer.x][dozer.y] = 0;
+			if(dozer.x < FIELD_X-1 && (!gameGrid[dozer.x+1][dozer.y] || gameGrid[dozer.x+1][dozer.y].canPassThrough)) {
+				gameGrid[dozer.x][dozer.y] = 0;
 				dozer.x += 1;
 			}
 			// If we are at least 2 squares from right edge, item to right is rock AND item to right of that is empty
-			else if(dozer.x < FIELD_Y-2 && GRID[dozer.x+1][dozer.y] && GRID[dozer.x+1][dozer.y].isPushable && !GRID[dozer.x+2][dozer.y]) {
-				GRID[dozer.x+2][dozer.y] = GRID[dozer.x+1][dozer.y];
-				GRID[dozer.x][dozer.y] = 0;
+			else if(dozer.x < FIELD_Y-2 && gameGrid[dozer.x+1][dozer.y] && gameGrid[dozer.x+1][dozer.y].isPushable && !gameGrid[dozer.x+2][dozer.y]) {
+				gameGrid[dozer.x+2][dozer.y] = gameGrid[dozer.x+1][dozer.y];
+				gameGrid[dozer.x][dozer.y] = 0;
 				dozer.x += 1;
 			}
 			break;
 	}
 
-	if(GRID[dozer.x][dozer.y].hasOwnProperty("score"))
-		SCORE += GRID[dozer.x][dozer.y].score;
+	if(gameGrid[dozer.x][dozer.y].hasOwnProperty("score"))
+		gameScore += gameGrid[dozer.x][dozer.y].score;
 	
-	GRID[dozer.x][dozer.y] = dozer;
+	gameGrid[dozer.x][dozer.y] = dozer;
 
 	render();
 }
 
 // Initialise the board to a pretty moving background for the menu
 function initFieldForMenu() {
-	GRID = new Array(FIELD_X);
+	gameGrid = new Array(FIELD_X);
 
 	// Create empty array for grid
-	for (var i = 0; i < GRID.length; i++) {
-		GRID[i] = new Array(FIELD_Y);
+	for (var i = 0; i < gameGrid.length; i++) {
+		gameGrid[i] = new Array(FIELD_Y);
 	}
 }
 
 // Initialise the board for a new game
 function newGame() {
-	SCORE = 0;
-	GAMESTATE = RUNNING;
+	gameScore = 0;
+	gameState = RUNNING;
 
-	GRID = new Array(FIELD_X);
+	gameGrid = new Array(FIELD_X);
 
 	// Create empty array for grid
-	for (var i = 0; i < GRID.length; i++) {
-		GRID[i] = new Array(FIELD_Y);
+	for (var i = 0; i < gameGrid.length; i++) {
+		gameGrid[i] = new Array(FIELD_Y);
 	}
 
 	// Generata a random start position for the dozer
@@ -440,12 +443,12 @@ function newGame() {
 	dozer.x = rnd;
 	dozer.y = 0;
 
-	GRID[rnd][0] = dozer;
+	gameGrid[rnd][0] = dozer;
 	
-	for(var i=0;i<GRID.length;i++) {
-		for(var j=0;j<GRID[i].length;j++) {
+	for(var i=0;i<gameGrid.length;i++) {
+		for(var j=0;j<gameGrid[i].length;j++) {
 
-			if(GRID[i][j] == dozer)
+			if(gameGrid[i][j] == dozer)
 				continue;
 
 			var rnd = Math.floor(Math.random()*6);
@@ -472,14 +475,14 @@ function newGame() {
 					val = new Sapphire();
 					break
 			}
-			GRID[i][j]=val;
+			gameGrid[i][j]=val;
 		}
 	}
 };
 
 // Update game objects
 function update() {
-	switch(GAMESTATE) {
+	switch(gameState) {
 		case MENU:
 			addRandomSapphire();
 			updateField();
@@ -493,7 +496,7 @@ function update() {
 
 function addRandomSapphire() {
 	var rnd = Math.floor(Math.random()*FIELD_X);
-	GRID[rnd][0] = new Sapphire(rnd, 0);
+	gameGrid[rnd][0] = new Sapphire(rnd, 0);
 }
 
 function updateField() {
@@ -508,32 +511,32 @@ function updateField() {
 		// Iterate through field left to right
 		for(var i=0;i<FIELD_X;i++) {
 			// Check if cell is populated, AND is affected by gravity
-			if(GRID[i][j] && GRID[i][j].gravity) {
+			if(gameGrid[i][j] && gameGrid[i][j].gravity) {
 				// Check if cell below is empty, OR if item is falling and item below can be crushed
-				if(!GRID[i][j+1] || (GRID[i][j].isFalling && GRID[i][j+1].canBeCrushed)) {
-					if(GRID[i][j+1]==dozer) {
-						GAMESTATE = DYING;
+				if(!gameGrid[i][j+1] || (gameGrid[i][j].isFalling && gameGrid[i][j+1].canBeCrushed)) {
+					if(gameGrid[i][j+1]==dozer) {
+						gameState = DYING;
 					}
 
-    				GRID[i][j+1] = GRID[i][j];
-					GRID[i][j+1].isFalling = true;
-    				GRID[i][j] = 0;
+    				gameGrid[i][j+1] = gameGrid[i][j];
+					gameGrid[i][j+1].isFalling = true;
+    				gameGrid[i][j] = 0;
 				}
 				// Else check if item below is uneven and it can fall left (cell left and below left are empty)
-				else if(i>0 && GRID[i][j+1].isUneven && !GRID[i-1][j] && !GRID[i-1][j+1]) {
-					GRID[i-1][j] = GRID[i][j];
-    				GRID[i][j] = 0;
+				else if(i>0 && gameGrid[i][j+1].isUneven && !gameGrid[i-1][j] && !gameGrid[i-1][j+1]) {
+					gameGrid[i-1][j] = gameGrid[i][j];
+    				gameGrid[i][j] = 0;
 				}
 				// Else check if item below is uneven and it can fall right (cell right and below right are empty)
 				// If we move item to the right, advance the i counter so it doesn't get hit twice
-				else if(i<=GRID.length-2 && GRID[i][j+1].isUneven && !GRID[i+1][j] && !GRID[i+1][j+1]) {
-					GRID[i+1][j] = GRID[i][j];
-    				GRID[i][j] = 0;
+				else if(i<=gameGrid.length-2 && gameGrid[i][j+1].isUneven && !gameGrid[i+1][j] && !gameGrid[i+1][j+1]) {
+					gameGrid[i+1][j] = gameGrid[i][j];
+    				gameGrid[i][j] = 0;
 					i++;
 				}
 				// Else check if item below is solid (can't be crushed) to disable falling.
-				else if(GRID[i][j+1] && !GRID[i][j+1].canBeCrushed) {
-					GRID[i][j].isFalling = false;
+				else if(gameGrid[i][j+1] && !gameGrid[i][j+1].canBeCrushed) {
+					gameGrid[i][j].isFalling = false;
 				}
 			}
 		}
@@ -545,7 +548,7 @@ function render() {
 	clearCanvas();
 	drawBorder();
 
-	switch(GAMESTATE) {
+	switch(gameState) {
 
 		case MENU:
 			drawField();
@@ -554,12 +557,13 @@ function render() {
 
 		case RUNNING:
 			drawField();
+			drawScore();
 			break;
 
 		// Having a "dying" game state allows for the final "crushed" move to occur
 		// Otherwise death would be detected in Update step, but not drawn.
 		case DYING:
-			GAMESTATE = DEAD;
+			gameState = DEAD;
 			drawField();
 			break;
 
@@ -643,7 +647,7 @@ function drawEndGame() {
 
 	canvasContext.fillStyle = "#FFFFFF";
 	canvasContext.font = "14px Helvetica";
-	canvasContext.fillText("Score: " + SCORE, canvas.width/2, canvas.height/2);
+	canvasContext.fillText("Score: " + gameScore, canvas.width/2, canvas.height/2);
 
 	for(var i=0;i<deathButtons.length;i++)
 		deathButtons[i].draw();
@@ -669,13 +673,15 @@ function drawBorder() {
 }
 
 function drawField() {
-	for(var i=0;i<GRID.length;i++) {
-		for(var j=0;j<GRID[i].length;j++) {
-			if(GRID[i][j])
-				canvasContext.drawImage(GRID[i][j].image, TILE_SIZE*(i+1), TILE_SIZE*(j+1));
+	for(var i=0;i<gameGrid.length;i++) {
+		for(var j=0;j<gameGrid[i].length;j++) {
+			if(gameGrid[i][j])
+				canvasContext.drawImage(gameGrid[i][j].image, TILE_SIZE*(i+1), TILE_SIZE*(j+1));
 		}
 	}
+}
 
+function drawScore() {
 	// Draw a black rectangle
 	canvasContext.fillStyle = "#000000";
 	canvasContext.fillRect(canvas.width-88, canvas.height-20, 88, 20);
@@ -685,11 +691,11 @@ function drawField() {
 	canvasContext.font = "14px Helvetica";
 	canvasContext.textAlign = "left";
 	canvasContext.textBaseline = "top";
-	canvasContext.fillText("Score: " + SCORE, canvas.width-88, canvas.height-20);
+	canvasContext.fillText("Score: " + gameScore, canvas.width-88, canvas.height-20);
 }
 
 function showMenu() {
-	GAMESTATE = MENU;
+	gameState = MENU;
 	initFieldForMenu();
 }
 
