@@ -9,10 +9,7 @@
 // (See review at http://www.svpocketpc.com/reviews/emeraldhunt/EmeraldHunt.html for more details of gameplay)
 // Implement proper image pre-loading (possibly display loading progress bar)
 // Implement all menu items
-// Implement ESC menu from gameplay to allow restart when stuck
-// Improve level generation algorithm (put dirt under bombs?)
 // Add (rock and/or brick) walls
-// Add page Favicon
 // Implement difficulty settings:
 // DONE	 Easy		Rocks, emeralds, bombs
 // DONE	 Medium		Easy + sapphires
@@ -31,7 +28,7 @@ var FIELD_Y = 15;
 // Array will be populated as follows (after items created)
 // [empty, dirt, rock, emerald, bomb, grenade, sapphire]
 var DIFFICULTY_TILE_TYPE;
-var DIFFICULTY_EASY = [20, 40, 20, 20, 5, 1, 0];
+var DIFFICULTY_EASY = [20, 30, 20, 20, 5, 1, 0];
 var DIFFICULTY_MEDIUM = [20, 40, 20, 10, 5, 1, 10];
 var DIFFICULTY_HARD;
 
@@ -39,6 +36,7 @@ var MENU = 1;
 var RUNNING = 2;
 var DYING = 3;
 var DEAD = 4;
+var PAUSED = 5;
 
 // Declare variables
 var difficulty = DIFFICULTY_EASY;
@@ -47,6 +45,7 @@ var gameState = MENU;
 var gameScore = 0;
 var menuButtons;
 var deathButtons;
+var pauseButtons;
 generateButtons();
 
 // Get the canvas context
@@ -294,6 +293,11 @@ Button.prototype.draw = function() {
 var dozer = new Dozer(0, 0);
 DIFFICULTY_TILE_TYPE = [0, Dirt, Rock, Emerald, Bomb, Grenade, Sapphire];
 
+// Add key listeners
+// keypress doesn't detect arrow keys
+// keydown detects arrow, but detects multiple ESC events
+// ESC only triggers a single keyup
+
 // Add a key listener to handle input
 addEventListener("keydown", function (e) {
 	switch(gameState) {
@@ -302,14 +306,30 @@ addEventListener("keydown", function (e) {
 			break;
 
 		case MENU:
-			handleMenuInput(e);
+			handleMenuInput(e, true, menuButtons);
 			break;
 
 		case DEAD:
-			handleDeathInput(e);
+			handleMenuInput(e, false, deathButtons);
+			break;
+
+		case PAUSED:
+			handleMenuInput(e, true, pauseButtons);
 			break;
 	}
 }, false);
+
+// Add another key listener for ESC
+addEventListener("keyup", function(e) {
+	if(e.keyCode==27) {
+		console.log("ESC pressed");
+		if(gameState == RUNNING) {
+			gameState = PAUSED;
+		} else if(gameState == PAUSED) {
+			gameState = RUNNING;
+		}
+	}
+});
 
 function findHighlightedButton(a) {
 	for(var i=0;i<a.length;i++)
@@ -323,36 +343,51 @@ function setHighlightedButton(a, n) {
 	a[n].isHighlighted = true;
 }
 
-function handleMenuInput(e) {
+function handleMenuInput(e, vertical, buttonArray) {
 	// Find current highlighted button
-	var h = findHighlightedButton(menuButtons);
+	var h = findHighlightedButton(buttonArray);
 
 	switch(e.keyCode) {
 		// Up key
 		case 38:
 			e.preventDefault();
-			menuButtons[h].isHighlighted = false;
-			if(h==0)
-				h=menuButtons.length;
-			menuButtons[--h].isHighlighted = true;
+			if(vertical) {
+				buttonArray[h].isHighlighted = false;
+				if(h==0)
+					h=buttonArray.length;
+				buttonArray[--h].isHighlighted = true;
+			}
 			break;
 
 		// Down key
 		case 40:
 			e.preventDefault();
-			menuButtons[h].isHighlighted = false;
-			h = ++h%menuButtons.length;
-			menuButtons[h].isHighlighted = true;
+			if(vertical) {
+				buttonArray[h].isHighlighted = false;
+				h = ++h%buttonArray.length;
+				buttonArray[h].isHighlighted = true;
+			}
 			break;
 
 		// Left key
 		case 37:
 			e.preventDefault();
+			if(!vertical) {
+				buttonArray[h].isHighlighted = false;
+				if(h==0)
+					h=buttonArray.length;
+				buttonArray[--h].isHighlighted = true;
+			}
 			break;
 
 		// Right key
 		case 39:
 			e.preventDefault();
+			if(!vertical) {
+				buttonArray[h].isHighlighted = false;
+				h = ++h%buttonArray.length;
+				buttonArray[h].isHighlighted = true;
+			}
 			break;
 
 		// Enter key
@@ -360,51 +395,8 @@ function handleMenuInput(e) {
 		// Space key
 		case 32:
 			e.preventDefault();
-			setHighlightedButton(menuButtons, 0);
-			menuButtons[h].action();
-			break;
-	}
-}
-
-function handleDeathInput(e) {
-	// Find current highlighted button
-	var h = findHighlightedButton(deathButtons);
-
-	switch(e.keyCode) {
-		// Up key
-		case 38:
-			e.preventDefault();
-			break;
-
-		// Down key
-		case 40:
-			e.preventDefault();
-			break;
-
-		// Left key
-		case 37:
-			e.preventDefault();
-			deathButtons[h].isHighlighted = false;
-			if(h==0)
-				h=deathButtons.length;
-			deathButtons[--h].isHighlighted = true;
-			break;
-
-		// Right key
-		case 39:
-			e.preventDefault();
-			deathButtons[h].isHighlighted = false;
-			h = ++h%deathButtons.length;
-			deathButtons[h].isHighlighted = true;
-			break;
-
-		// Enter key
-		case 13:
-		// Space key
-		case 32:
-			e.preventDefault();
-			setHighlightedButton(deathButtons, 0);
-			deathButtons[h].action();
+			setHighlightedButton(buttonArray, 0);
+			buttonArray[h].action();
 			break;
 	}
 }
@@ -537,8 +529,8 @@ function newGame() {
 	
 	for(var i=0;i<gameGrid.length;i++) {
 		for(var j=0;j<gameGrid[i].length;j++) {
-
-			if(gameGrid[i][j] == dozer)
+			// If cell is already populated continue
+			if(gameGrid[i][j])
 				continue;
 
 			var val;
@@ -554,6 +546,11 @@ function newGame() {
 			}
 
 			gameGrid[i][j]= val ? new val() : 0;
+
+			// Check if item is bomb (can fall), and put dirt below it
+			if(val == Bomb && j<FIELD_Y-1) {
+				gameGrid[i][j+1] = new Dirt();
+			}
 		}
 	}
 };
@@ -639,15 +636,16 @@ function updateField() {
 			// Deal with items on the bottom row
 			if(j==FIELD_Y-1) {
 				// If item is falling and explosive
-				if(gameGrid[i][j] && gameGrid[i][j].isFalling && gameGrid[i][j].isExplosive)
+				if(gameGrid[i][j] && gameGrid[i][j].isFalling && gameGrid[i][j].isExplosive) {
 					createExplosion(i, j);
+				}
 
 				// Don't bother checking other items on bottom row
 				continue;
 			}
 
-			// Check if cell is populated, AND is affected by gravity
-			if(gameGrid[i][j] && gameGrid[i][j].gravity) {
+			// Check if cell is affected by gravity
+			if(gameGrid[i][j].gravity) {
 				// Check if cell below is empty, OR if item is falling and item below can be crushed
 				if(!gameGrid[i][j+1] || (gameGrid[i][j].isFalling && gameGrid[i][j+1].canBeCrushed)) {
 					// If item below is explosive, go bang!
@@ -666,7 +664,7 @@ function updateField() {
     				gameGrid[i][j] = 0;
 				}
 				// Else check if item is falling and explosive (already ruled out empty cell below)
-				else if(gameGrid[i][j] && gameGrid[i][j].isExplosive) {
+				else if(gameGrid[i][j].isFalling && gameGrid[i][j].isExplosive) {
 					createExplosion(i, j);
 				}
 				// Else check if item below is uneven and it can fall left (cell left and below left are empty)
@@ -684,8 +682,6 @@ function updateField() {
 				// Else check if item below is solid (can't be crushed) to disable falling.
 				else if(gameGrid[i][j+1] && !gameGrid[i][j+1].canBeCrushed) {
 					gameGrid[i][j].isFalling = false;
-					if(gameGrid[i][j].isExplosive)
-						createExplosion(i, j);
 				}
 			}
 		}
@@ -722,14 +718,19 @@ function render() {
 			drawEndGame();
 			drawScore();
 			break;
+
+		case PAUSED:
+			drawPauseScreen();
+			break;
 	}
 }
 
-function drawMenu() {
-	var w = 150;
-	var h = 40;
-	var gap = 20;
+function drawPauseScreen() {
+	for(var i=0;i<pauseButtons.length;i++)
+		pauseButtons[i].draw();
+}
 
+function drawMenu() {
 	for(var i=0;i<menuButtons.length;i++)
 		menuButtons[i].draw();
 }
@@ -764,6 +765,18 @@ function generateButtons() {
 	deathButtons[deathButtons.length] = new Button(x, y, w, h, true, "Retry", undefined, f, newGame);
 	x += w + gap;
 	deathButtons[deathButtons.length] = new Button(x, y, w, h, false, "Menu", undefined, f, showMenu);
+
+	pauseButtons = [];
+	f = "16px Helvetica";
+	w = 150;
+	h = 40;
+	gap = 20;
+
+	x = (myCanvas.width - w)/2;
+	y = 150;
+	pauseButtons[pauseButtons.length] = new Button(x, y, w, h, true, "Restart", undefined, f, newGame);
+	y += h + gap;
+	pauseButtons[pauseButtons.length] = new Button(x, y, w, h, false, "Menu", undefined, f, showMenu);
 }
 
 function drawEndGame() {
