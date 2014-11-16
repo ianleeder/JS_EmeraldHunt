@@ -16,7 +16,6 @@
 // 	 Hard		Medium + bugs
 // Track statistics
 // Show win screen
-// Details of death on lose screen (crushed/exploded)
 // Find original sprite files, or improve resolution (redraw) existing ones
 // Set canvas size from javascript directly?  Better or worse than setting in HTML?
 
@@ -43,6 +42,7 @@ var difficulty = DIFFICULTY_EASY;
 var gameGrid;
 var gameState = MENU;
 var gameScore = 0;
+var deathMessage;
 var menuButtons;
 var deathButtons;
 var pauseButtons;
@@ -587,8 +587,10 @@ function createExplosion(x, y) {
 				if(gameGrid[i][j]) {
 					// Can't check gamegrid, since if we sit on a dropped grenade we don't existing in the grid
 					// If it contains dozer, die
-					if(i==dozer.x && j==dozer.y)
+					if(i==dozer.x && j==dozer.y) {
+						deathMessage = "You got a-sploded!";
 						gameState = DYING;
+					}
 					// If it contains another explosive item, explode
 					else if(gameGrid[i][j].isExplosive)
 						createExplosion(i,j);
@@ -655,6 +657,7 @@ function updateField() {
 					}
 					// If item below is dozer, die
 					else if(gameGrid[i][j+1]==dozer) {
+						deathMessage = "You got crushed!";
 						gameState = DYING;
 					}
 
@@ -806,7 +809,7 @@ function drawEndGame() {
 	canvasContext.font = "bold 18px Helvetica";
 	canvasContext.textAlign = "center";
 	canvasContext.textBaseline = "middle";
-	canvasContext.fillText("You died!", canvas.width/2, canvas.height/2-50);
+	canvasContext.fillText(deathMessage, canvas.width/2, canvas.height/2-50);
 
 	canvasContext.fillStyle = "#FFFFFF";
 	canvasContext.font = "14px Helvetica";
