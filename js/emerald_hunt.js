@@ -8,12 +8,9 @@
 // To-do:
 // (See review at http://www.svpocketpc.com/reviews/emeraldhunt/EmeraldHunt.html for more details of gameplay)
 // Implement proper image pre-loading (possibly display loading progress bar)
-// Implement grenades
 // Implement all menu items
 // Implement ESC menu from gameplay to allow restart when stuck
-// Improve score/status display to show emeralds/sapphires/grenades/total score
 // Add (rock and/or brick) walls
-// Review/investigate/improve level generation algorithm
 // Add page Favicon
 // Implement difficulty settings:
 // DONE	 Easy		Rocks, emeralds, bombs
@@ -834,16 +831,32 @@ function drawField() {
 }
 
 function drawScore() {
+	var size = 2 * TILE_SIZE / 3;
+
+	var w = 6*size;
+	var h = size;
+	var x = canvas.width-(7*size);
+	var y = (TILE_SIZE-size)/2;
+
 	// Draw a black rectangle
 	canvasContext.fillStyle = "#000000";
-	canvasContext.fillRect(canvas.width-88, canvas.height-20, 88, 20);
+	canvasContext.fillRect(x, y, w, h);
+
+	// Scale emerald to half size
+	canvasContext.drawImage(emeraldImage, x, y, size, size);
 	
-	// Write score over the top of it.
+	// Write teh score
 	canvasContext.fillStyle = "#FFFFFF";
 	canvasContext.font = "14px Helvetica";
 	canvasContext.textAlign = "left";
 	canvasContext.textBaseline = "top";
-	canvasContext.fillText("Score: " + gameScore, canvas.width-88, canvas.height-20);
+	canvasContext.fillText(gameScore, x+size, y);
+
+	// Draw half size grenade
+	canvasContext.drawImage(grenadeImage, x+(3*size), y, size, size);
+
+	// Write number of grenades
+	canvasContext.fillText(dozer.numGrenades, x+(4*size), y);
 }
 
 function showMenu() {
