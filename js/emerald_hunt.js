@@ -154,6 +154,7 @@ function Dozer(xPos, yPos) {
     this.canPassThrough = false;
 	this.image = dozerImage;
 	this.isUneven = false;
+	this.numGrenades = 0;
 }
 
 function Dirt() {
@@ -205,6 +206,11 @@ function Grenade() {
 	this.image = grenadeImage;
 }
 
+function DroppedGrenade() {
+	this.canPassThrough = false;
+	this.timer = 10;
+}
+
 function Button(x, y, w, h, isHighlighted, text, text2, font, action) {
 	this.x = x;
 	this.y = y;
@@ -226,6 +232,7 @@ Grenade.prototype = new BaseObject();
 Gem.prototype = new BaseObject();
 Emerald.prototype = new Gem();
 Sapphire.prototype = new Gem();
+DroppedGrenade.prototype = new Grenade();
 
 // Add a class function to Button
 Button.prototype.draw = function() {
@@ -405,13 +412,17 @@ function handleDeathInput(e) {
 }
 
 function handleGameInput(e) {
+	var droppedItem = DroppedGrenade.prototype.isPrototypeOf(gameGrid[dozer.x][dozer.y]);
+
 	switch(e.keyCode) {
 		// Up key
 		case 38:
 			e.preventDefault();
 			// If we're not on top edge AND cell is either empty or can pass through
 			if(dozer.y > 0 && (!gameGrid[dozer.x][dozer.y-1] || gameGrid[dozer.x][dozer.y-1].canPassThrough)) {
-				gameGrid[dozer.x][dozer.y] = 0;
+				if(!droppedItem) {
+					gameGrid[dozer.x][dozer.y] = 0;
+				}
 				dozer.y -= 1;
 			}
 			break;
@@ -421,7 +432,9 @@ function handleGameInput(e) {
 			e.preventDefault();
 			// If we're not on bottom edge AND cell is either empty or can pass through
 			if(dozer.y < FIELD_Y-1 && (!gameGrid[dozer.x][dozer.y+1] || gameGrid[dozer.x][dozer.y+1].canPassThrough)) {
-				gameGrid[dozer.x][dozer.y] = 0;
+				if(!droppedItem) {
+					gameGrid[dozer.x][dozer.y] = 0;
+				}
 				dozer.y += 1;
 			}
 			break;
@@ -431,13 +444,17 @@ function handleGameInput(e) {
 			e.preventDefault();
 			// If we're not on left edge AND cell is either empty or can pass through
 			if(dozer.x > 0 && (!gameGrid[dozer.x-1][dozer.y] || gameGrid[dozer.x-1][dozer.y].canPassThrough)) {
-				gameGrid[dozer.x][dozer.y] = 0;
+				if(!droppedItem) {
+					gameGrid[dozer.x][dozer.y] = 0;
+				}
 				dozer.x -= 1;
 			}
 			// If we are at least 2 squares from left edge, item to left is rock AND item to left of that is empty
 			else if(dozer.x > 1 && gameGrid[dozer.x-1][dozer.y] && gameGrid[dozer.x-1][dozer.y].isPushable && !gameGrid[dozer.x-2][dozer.y]) {
 				gameGrid[dozer.x-2][dozer.y] = gameGrid[dozer.x-1][dozer.y];
-				gameGrid[dozer.x][dozer.y] = 0;
+				if(!droppedItem) {
+					gameGrid[dozer.x][dozer.y] = 0;
+				}
 				dozer.x -= 1;
 			}
 			break;
@@ -447,22 +464,41 @@ function handleGameInput(e) {
 			e.preventDefault();
 			// If we're not on bottom edge AND cell is either empty or can pass through
 			if(dozer.x < FIELD_X-1 && (!gameGrid[dozer.x+1][dozer.y] || gameGrid[dozer.x+1][dozer.y].canPassThrough)) {
-				gameGrid[dozer.x][dozer.y] = 0;
+				if(!droppedItem) {
+					gameGrid[dozer.x][dozer.y] = 0;
+				}
 				dozer.x += 1;
 			}
 			// If we are at least 2 squares from right edge, item to right is rock AND item to right of that is empty
 			else if(dozer.x < FIELD_Y-2 && gameGrid[dozer.x+1][dozer.y] && gameGrid[dozer.x+1][dozer.y].isPushable && !gameGrid[dozer.x+2][dozer.y]) {
 				gameGrid[dozer.x+2][dozer.y] = gameGrid[dozer.x+1][dozer.y];
-				gameGrid[dozer.x][dozer.y] = 0;
+				if(!droppedItem) {
+					gameGrid[dozer.x][dozer.y] = 0;
+				}
 				dozer.x += 1;
+			}
+			break;
+
+		// Space key
+		case 32:
+			e.preventDefault();
+			if(dozer.numGrenades > 0) {
+				dozer.numGrenades--;
+				gameGrid[dozer.x][dozer.y] = new DroppedGrenade();
 			}
 			break;
 	}
 
-	if(gameGrid[dozer.x][dozer.y].hasOwnProperty("score"))
+	if(Grenade.prototype.isPrototypeOf(gameGrid[dozer.x][dozer.y]) && !DroppedGrenade.prototype.isPrototypeOf(gameGrid[dozer.x][dozer.y])) {
+		dozer.numGrenades++;
+	} else if (gameGrid[dozer.x][dozer.y].hasOwnProperty("score")) {
 		gameScore += gameGrid[dozer.x][dozer.y].score;
+	}
 	
-	gameGrid[dozer.x][dozer.y] = dozer;
+	// Set grid location to dozer, unless a grenade was dropped
+	if(!DroppedGrenade.prototype.isPrototypeOf(gameGrid[dozer.x][dozer.y])) {
+		gameGrid[dozer.x][dozer.y] = dozer;
+	}
 
 	render();
 }
@@ -513,15 +549,13 @@ function newGame() {
 
 			for(var k=0;k<difficulty.length;k++) {
 				cumulative += difficulty[k];
-				// console.log("  cumulative="+cumulative);
 				if(rnd<cumulative) {
 					val = DIFFICULTY_TILE_TYPE[k];
 					break;
 				}
 			}
 
-			if(val)
-				gameGrid[i][j]=new val();
+			gameGrid[i][j]= val ? new val() : 0;
 		}
 	}
 };
@@ -556,8 +590,9 @@ function createExplosion(x, y) {
 			if(i>=0 && i<FIELD_X && j>=0 && j<FIELD_Y) {
 				// Check if cell we are exploding contains anything
 				if(gameGrid[i][j]) {
+					// Can't check gamegrid, since if we sit on a dropped grenade we don't existing in the grid
 					// If it contains dozer, die
-					if(gameGrid[i][j]==dozer)
+					if(i==dozer.x && j==dozer.y)
 						gameState = DYING;
 					// If it contains another explosive item, explode
 					else if(gameGrid[i][j].isExplosive)
@@ -580,13 +615,26 @@ function updateField() {
 	for(var j=FIELD_Y-1;j>=0;j--) {
 		// Iterate through field left to right
 		for(var i=0;i<FIELD_X;i++) {
+			// Check if cell is empty, and bypass
+			if(!gameGrid[i][j]){
+				continue;
+			}
+
 			// Check if cell is an explosion
-			if(gameGrid[i][j] && Explosion.prototype.isPrototypeOf(gameGrid[i][j])) {
+			if(Explosion.prototype.isPrototypeOf(gameGrid[i][j])) {
 				if(gameGrid[i][j].newExplosion) {
 					gameGrid[i][j].newExplosion = false;
 				} else {
 					gameGrid[i][j] = 0;
 					continue;
+				}
+			}
+
+			// Check if cell is a DroppedGrenade
+			if(DroppedGrenade.prototype.isPrototypeOf(gameGrid[i][j])) {
+				// Decrement timer and check for boom
+				if(--gameGrid[i][j].timer <= 0) {
+					createExplosion(i, j);
 				}
 			}
 
@@ -778,8 +826,9 @@ function drawBorder() {
 function drawField() {
 	for(var i=0;i<gameGrid.length;i++) {
 		for(var j=0;j<gameGrid[i].length;j++) {
-			if(gameGrid[i][j])
+			if(gameGrid[i][j]){
 				canvasContext.drawImage(gameGrid[i][j].image, TILE_SIZE*(i+1), TILE_SIZE*(j+1));
+			}
 		}
 	}
 }
