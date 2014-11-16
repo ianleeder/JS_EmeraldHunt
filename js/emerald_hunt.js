@@ -10,6 +10,7 @@
 // Implement proper image pre-loading (possibly display loading progress bar)
 // Implement all menu items
 // Implement ESC menu from gameplay to allow restart when stuck
+// Improve level generation algorithm (put dirt under bombs?)
 // Add (rock and/or brick) walls
 // Add page Favicon
 // Implement difficulty settings:
@@ -713,10 +714,13 @@ function render() {
 		case DYING:
 			gameState = DEAD;
 			drawField();
+			drawScore();
 			break;
 
 		case DEAD:
+			drawField();
 			drawEndGame();
+			drawScore();
 			break;
 	}
 }
@@ -763,8 +767,6 @@ function generateButtons() {
 }
 
 function drawEndGame() {
-	drawField();
-
 	// Number of tiles to make death message
 	var n = 10;
 	var npx = n*TILE_SIZE;
