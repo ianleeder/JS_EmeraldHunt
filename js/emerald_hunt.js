@@ -57,11 +57,15 @@ function preloadImages() {
 
 	for(var i=0;i<imageSources.length;i++) {
 		images[i] = new Image();
-		images[i].onload = function(e) {
+		images[i].onload = function() {
 			numLoaded++;
 			var pct = numLoaded / imageSources.length;
 			var str = "Loading " + (pct.toFixed(2)*100) + "%";
 			drawLoadingScreen(str, pct)
+
+			if(numLoaded == imageSources.length) {
+				setTimeout(showMenu, 1000);
+			}
 		}
 		images[i].src = imageSources[i];
 	}
