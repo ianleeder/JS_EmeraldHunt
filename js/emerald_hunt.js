@@ -38,7 +38,7 @@ var DEAD = 4;
 var PAUSED = 5;
 
 // Declare variables
-var difficulty = DIFFICULTY_EASY;
+var difficultyButton;
 var gameGrid;
 var gameState = MENU;
 var gameScore = 0;
@@ -46,7 +46,6 @@ var deathMessage;
 var menuButtons;
 var deathButtons;
 var pauseButtons;
-generateButtons();
 
 // Get the canvas context
 var canvas = document.getElementById('myCanvas');
@@ -220,17 +219,6 @@ function Button(x, y, w, h, isHighlighted, text, text2, font, action) {
 	this.font = font;
 }
 
-// set up the prototype chain
-Dozer.prototype = new BaseObject();
-Dirt.prototype = new BaseObject();
-Rock.prototype = new BaseObject();
-Bomb.prototype = new BaseObject();
-Grenade.prototype = new BaseObject();
-Gem.prototype = new BaseObject();
-Emerald.prototype = new Gem();
-Sapphire.prototype = new Gem();
-DroppedGrenade.prototype = new Grenade();
-
 // Add a class function to Button
 Button.prototype.draw = function() {
 	var radius = 8;
@@ -289,14 +277,35 @@ Button.prototype.draw = function() {
 		canvasContext.drawImage(dozerImage, this.x+5, this.y+((this.h-TILE_SIZE)/2));
 }
 
+function CyclingButton(x, y, w, h, isHighlighted, text, text2, font, action, textArray) {
+	Button.call(this, x, y, w, h, isHighlighted, text, text2, font, action);
+	this.textArray = textArray;
+	this.index = 0;
+	this.text2 = this.textArray[this.index];
+}
+
+// set up the prototype chain
+Dozer.prototype = new BaseObject();
+Dirt.prototype = new BaseObject();
+Rock.prototype = new BaseObject();
+Bomb.prototype = new BaseObject();
+Grenade.prototype = new BaseObject();
+Gem.prototype = new BaseObject();
+Emerald.prototype = new Gem();
+Sapphire.prototype = new Gem();
+DroppedGrenade.prototype = new Grenade();
+CyclingButton.prototype = new Button();
+
 // Game objects
 var dozer = new Dozer(0, 0);
 DIFFICULTY_TILE_TYPE = [0, Dirt, Rock, Emerald, Bomb, Grenade, Sapphire];
 
 // Add key listeners
-// keypress doesn't detect arrow keys
+// keypress doesn't detect arrow keys or ESC
 // keydown detects arrow, but detects multiple ESC events
 // ESC only triggers a single keyup
+// But we don't want (movement) actions to occur on keyup,
+// so need to add two listeners
 
 // Add a key listener to handle input
 addEventListener("keydown", function (e) {
@@ -322,7 +331,6 @@ addEventListener("keydown", function (e) {
 // Add another key listener for ESC
 addEventListener("keyup", function(e) {
 	if(e.keyCode==27) {
-		console.log("ESC pressed");
 		if(gameState == RUNNING) {
 			gameState = PAUSED;
 		} else if(gameState == PAUSED) {
@@ -372,7 +380,17 @@ function handleMenuInput(e, vertical, buttonArray) {
 		// Left key
 		case 37:
 			e.preventDefault();
-			if(!vertical) {
+			// If it is a vertical menu then horizontal arrows may move a CyclingButton
+			if(vertical && CyclingButton.prototype.isPrototypeOf(buttonArray[h])) {
+				if(buttonArray[h].index <= 0) {
+					buttonArray[h].index = buttonArray[h].textArray.length-1;
+				} else {
+					buttonArray[h].index--;
+				}
+				buttonArray[h].text2 = buttonArray[h].textArray[buttonArray[h].index];
+				buttonArray[h].draw();
+			} // Otherwise deal with a horizontal menu
+			else if (!vertical) {
 				buttonArray[h].isHighlighted = false;
 				if(h==0)
 					h=buttonArray.length;
@@ -383,7 +401,17 @@ function handleMenuInput(e, vertical, buttonArray) {
 		// Right key
 		case 39:
 			e.preventDefault();
-			if(!vertical) {
+			// If it is a vertical menu then horizontal arrows may move a CyclingButton
+			if(vertical && CyclingButton.prototype.isPrototypeOf(buttonArray[h])) {
+				if(buttonArray[h].index >= buttonArray[h].textArray.length-1) {
+					buttonArray[h].index = 0;
+				} else {
+					buttonArray[h].index++;
+				}
+				buttonArray[h].text2 = buttonArray[h].textArray[buttonArray[h].index];
+				buttonArray[h].draw();
+			} // Otherwise deal with a horizontal menu
+			else if(!vertical) {
 				buttonArray[h].isHighlighted = false;
 				h = ++h%buttonArray.length;
 				buttonArray[h].isHighlighted = true;
@@ -510,6 +538,22 @@ function newGame() {
 
 	gameGrid = new Array(FIELD_X);
 
+	// Determine selected difficulty level
+	var difficulty;
+	switch(difficultyButton.text2) {
+		case "Easy":
+			difficulty = DIFFICULTY_EASY;
+			break;
+
+		case "Medium":
+			difficulty = DIFFICULTY_MEDIUM;
+			break;
+
+		case "Hard":
+			difficulty = DIFFICULTY_HARD;
+			break;
+	}
+
 	// Create empty array for grid
 	for(var i = 0; i < gameGrid.length; i++) {
 		gameGrid[i] = new Array(FIELD_Y);
@@ -583,16 +627,15 @@ function createExplosion(x, y) {
 		for(var j=y-1; j<=y+1; j++) {
 			// Check we are within grid boundaries
 			if(i>=0 && i<FIELD_X && j>=0 && j<FIELD_Y) {
+				// Can't check gamegrid, since if we sit on a dropped grenade we don't existing in the grid
+				// If it contains dozer, die
+				if(i==dozer.x && j==dozer.y) {
+					deathMessage = "You got a-sploded!";
+					gameState = DYING;
+				}
+
 				// Check if cell we are exploding contains anything
-				if(gameGrid[i][j]) {
-					// Can't check gamegrid, since if we sit on a dropped grenade we don't existing in the grid
-					// If it contains dozer, die
-					if(i==dozer.x && j==dozer.y) {
-						deathMessage = "You got a-sploded!";
-						gameState = DYING;
-					}
-					// If it contains another explosive item, explode
-					else if(gameGrid[i][j].isExplosive)
+				if(gameGrid[i][j] && gameGrid[i][j].isExplosive) {
 						createExplosion(i,j);
 				}
 				gameGrid[i][j] = new Explosion();
@@ -708,8 +751,8 @@ function render() {
 			drawScore();
 			break;
 
-		// Having a "dying" game state allows for the final "crushed" move to occur
-		// Otherwise death would be detected in Update step, but not drawn.
+		// Having a "dying" game state allows for the final death move to occur (crushed/exploded)
+		// Otherwise death would be detected in Update step, but never drawn.
 		case DYING:
 			gameState = DEAD;
 			drawField();
@@ -734,8 +777,9 @@ function drawPauseScreen() {
 }
 
 function drawMenu() {
-	for(var i=0;i<menuButtons.length;i++)
+	for(var i=0;i<menuButtons.length;i++) {
 		menuButtons[i].draw();
+	}
 }
 
 function generateButtons() {
@@ -750,7 +794,7 @@ function generateButtons() {
 	menuButtons = [];
 	menuButtons[menuButtons.length] = new Button(x, y, w, h, true, "Start", undefined, f, newGame);
 	y += h + gap;
-	menuButtons[menuButtons.length] = new Button(x, y, w, h, false, "Difficulty", "Easy", f);
+	menuButtons[menuButtons.length] = new CyclingButton(x, y, w, h, false, "Difficulty", "Easy", f, undefined, ["Easy", "Medium", "Hard"]);
 	y += h + gap;
 	menuButtons[menuButtons.length] = new Button(x, y, w, h, false, "High Scores", undefined, f);
 	y += h + gap;
@@ -780,6 +824,8 @@ function generateButtons() {
 	pauseButtons[pauseButtons.length] = new Button(x, y, w, h, true, "Restart", undefined, f, newGame);
 	y += h + gap;
 	pauseButtons[pauseButtons.length] = new Button(x, y, w, h, false, "Menu", undefined, f, showMenu);
+
+	difficultyButton = menuButtons[1];
 }
 
 function drawEndGame() {
@@ -886,6 +932,7 @@ function showMenu() {
 function main () {
 	var fps = 10;
 
+	generateButtons();
 	showMenu();
     
     var gameloop = setInterval(function() {
