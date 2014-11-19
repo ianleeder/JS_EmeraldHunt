@@ -36,16 +36,36 @@ var RUNNING = 2;
 var DYING = 3;
 var DEAD = 4;
 var PAUSED = 5;
+var LOADING = 6;
 
 // Declare variables
 var difficultyButton;
 var gameGrid;
-var gameState = MENU;
+var gameState;
 var gameScore = 0;
 var deathMessage;
 var menuButtons;
 var deathButtons;
 var pauseButtons;
+var imageSources = ["images/dozer.png", "images/dirt.png", "images/rock.png", "images/emerald.png",
+					"images/sapphire.png", "images/brick.png", "images/bomb.png", "images/grenade.png",
+					"images/explosion.png", "images/skull.png"]
+var images = [];
+
+function preloadImages() {
+	var numLoaded = 0;
+
+	for(var i=0;i<imageSources.length;i++) {
+		images[i] = new Image();
+		images[i].onload = function(e) {
+			numLoaded++;
+			var pct = numLoaded / imageSources.length;
+			var str = "Loading " + (pct.toFixed(2)*100) + "%";
+			drawLoadingScreen(str, pct)
+		}
+		images[i].src = imageSources[i];
+	}
+}
 
 // Get the canvas context
 var canvas = document.getElementById('myCanvas');
@@ -736,17 +756,18 @@ function updateField() {
 
 // Draw everything
 function render() {
-	clearCanvas();
-	drawBorder();
-
 	switch(gameState) {
 
 		case MENU:
+			clearCanvas();
+			drawBorder();
 			drawField();
 			drawMenu();
 			break;
 
 		case RUNNING:
+			clearCanvas();
+			drawBorder();
 			drawField();
 			drawScore();
 			break;
@@ -754,19 +775,28 @@ function render() {
 		// Having a "dying" game state allows for the final death move to occur (crushed/exploded)
 		// Otherwise death would be detected in Update step, but never drawn.
 		case DYING:
+			clearCanvas();
+			drawBorder();
 			gameState = DEAD;
 			drawField();
 			drawScore();
 			break;
 
 		case DEAD:
+			clearCanvas();
+			drawBorder();
 			drawField();
 			drawEndGame();
 			drawScore();
 			break;
 
 		case PAUSED:
+			clearCanvas();
+			drawBorder();
 			drawPauseScreen();
+			break;
+
+		case LOADING:
 			break;
 	}
 }
@@ -865,6 +895,33 @@ function drawEndGame() {
 		deathButtons[i].draw();
 }
 
+function drawLoadingScreen(text, percentage) {
+	clearCanvas();
+
+	var w = canvas.width * 0.8;
+	var h = 50;
+	var x = (canvas.width - w)/2;
+	var y = (canvas.height - h)/2;
+
+	// Draw outline
+
+	canvasContext.strokeStyle = "#195508";
+	canvasContext.lineWidth = 5;
+	canvasContext.strokeRect(x, y, w, h);
+
+	// Fill with progress percentage
+	canvasContext.fillStyle = "#195508";
+	canvasContext.fillRect(x, y, (percentage*w), h);
+
+	// canvasContext.fillRect(x, y, w, h);
+
+	canvasContext.fillStyle = "#FFFFFF";
+	canvasContext.font = "bold 18px Helvetica";
+	canvasContext.textAlign = "center";
+	canvasContext.textBaseline = "middle";
+	canvasContext.fillText(text, canvas.width/2, canvas.height/2);
+}
+
 function clearCanvas() {
 	canvasContext.fillStyle = "#000000";
 	canvasContext.fillRect(0, 0, canvas.width, canvas.height);
@@ -887,7 +944,7 @@ function drawBorder() {
 function drawField() {
 	for(var i=0;i<gameGrid.length;i++) {
 		for(var j=0;j<gameGrid[i].length;j++) {
-			if(gameGrid[i][j]){
+			if(gameGrid[i][j]) {
 				canvasContext.drawImage(gameGrid[i][j].image, TILE_SIZE*(i+1), TILE_SIZE*(j+1));
 			}
 		}
@@ -932,9 +989,12 @@ function showMenu() {
 function main () {
 	var fps = 10;
 
+	gameState = LOADING;
+	drawLoadingScreen("Loading", 0);
 	generateButtons();
-	showMenu();
-    
+	preloadImages();
+	// showMenu();
+
     var gameloop = setInterval(function() {
     	update();
     	render();
