@@ -7,7 +7,7 @@
 
 // To-do:
 // (See review at http://www.svpocketpc.com/reviews/emeraldhunt/EmeraldHunt.html for more details of gameplay)
-// Implement proper image pre-loading (possibly display loading progress bar)
+// DONE Implement proper image pre-loading (possibly display loading progress bar)
 // Implement all menu items
 // Add (rock and/or brick) walls
 // Implement difficulty settings:
@@ -17,12 +17,12 @@
 // Track statistics
 // Show win screen
 // Find original sprite files, or improve resolution (redraw) existing ones
-// Set canvas size from javascript directly?  Better or worse than setting in HTML?
+// DONE Set canvas size from javascript directly?  Better or worse than setting in HTML?
 
 
 // Declare constants
 var TILE_SIZE = 24;
-var FIELD_X = 15;
+var FIELD_X = 30;
 var FIELD_Y = 15;
 // Array will be populated as follows (after items created)
 // [empty, dirt, rock, emerald, bomb, grenade, sapphire]
@@ -73,6 +73,8 @@ function preloadImages() {
 
 // Get the canvas context
 var canvas = document.getElementById('myCanvas');
+canvas.width = TILE_SIZE * (FIELD_X + 2);
+canvas.height = TILE_SIZE * (FIELD_Y + 2);
 var canvasContext = canvas.getContext('2d');
 
 // Dozer image
@@ -941,7 +943,7 @@ function drawBorder() {
 		// Draw down right edge
 		canvasContext.drawImage(brickImage, TILE_SIZE*(FIELD_X+1), TILE_SIZE*i);
 		// Draw across bottom edge
-		canvasContext.drawImage(brickImage, TILE_SIZE*i, TILE_SIZE*(FIELD_X+1));
+		canvasContext.drawImage(brickImage, TILE_SIZE*i, TILE_SIZE*(FIELD_Y+1));
 	}
 }
 
