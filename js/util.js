@@ -36,10 +36,56 @@ function parseDataFile(buffer) {
 	}
 }
 
+/*
+	Working with ArrayBuffers and TypedArrays:
+	https://javascript.info/arraybuffer-binary-arrays
+
+	Generating image from binary:
+	https://stackoverflow.com/questions/14915058/how-to-display-binary-data-as-image-extjs-4
+*/
 function parseSprite(buffer) {
+	let spriteBytes = 16;
+	let toReturn = new Uint8Array(spriteBytes);
+
 	let view = new Uint8Array(buffer);
-	console.log("view length = " + view.length);
-	console.log("view bytelength = " + view.byteLength);
+
+	// Let's check the magic header and footer, then discard them.
+	if(view[0] !== 15 || view[1] !== 0 || view[2] !== 15 || view[3] !== 0 || view[132] !== 144 || view[133] != 33) {
+		console.log("Invalid sprite, Magic numbers incorrect");
+		console.log("0 - " + view[0]);
+		console.log("1 - " + view[1]);
+		console.log("2 - " + view[2]);
+		console.log("3 - " + view[3]);
+		console.log("132 - " + view[132]);
+		console.log("133 - " + view[133]);
+		return;
+	}
+
+	/*
+		Pixel information uses a similar interlaced format to ADAM7 interlacing (but is not applied vertically):
+		http://en.wikipedia.org/wiki/Adam7_algorithm
+
+		Each sprite/tile is 8x8px (64px)
+		
+		Naming convention P1:4 refers to pixel 1, bit 4 (MSB)
+		Important to note these at 4-bit pixels (16-color, EGA)								
+		
+		Byte1 (0x04)	P1:4	P2:4	P3:4	P4:4	P5:4	P6:4	P7:4	P8:4
+		Byte2 (0x05)	P9:4	P10:4	P11:4	P12:4	P13:4	P14:4	P15:4	P16:4
+		Byte3 (0x06)	P1:3	P2:3	P3:3	P4:3	P5:3	P6:3	P7:3	P8:3
+		Byte4 (0x07)	P9:3	P10:3	P11:3	P12:3	P13:3	P14:3	P15:3	P16:3
+		…								
+		First 16 pixels finish at byte  8 (0x0B)
+
+		Each set of 8 bytes = 16 pixel row.
+		Sequence starts again for next row at following byte (0x0C)
+		16 rows go from 0x04 - 0x83 (or byte 4 to byte 131)
+		Magic footer at 0x84 90 21								
+	*/
+
+	// (re-slicing the buffer throws off the byte offsets given above)
+	view = new Uint8Array(buffer.slice(4,132));
+	console.log("New length: " + view.byteLength);
 }
 
 function openFile(e)
