@@ -514,7 +514,7 @@ function handleGameInput(e) {
 				dozer.x += 1;
 			}
 			// If we are at least 2 squares from right edge, item to right is rock AND item to right of that is empty
-			else if(dozer.x < FIELD_Y-2 && gameGrid[dozer.x+1][dozer.y] && gameGrid[dozer.x+1][dozer.y].isPushable && !gameGrid[dozer.x+2][dozer.y]) {
+			else if(dozer.x < FIELD_X-2 && gameGrid[dozer.x+1][dozer.y] && gameGrid[dozer.x+1][dozer.y].isPushable && !gameGrid[dozer.x+2][dozer.y]) {
 				gameGrid[dozer.x+2][dozer.y] = gameGrid[dozer.x+1][dozer.y];
 				if(!droppedItem) {
 					gameGrid[dozer.x][dozer.y] = 0;
@@ -653,7 +653,7 @@ function createExplosion(x, y) {
 		for(var j=y-1; j<=y+1; j++) {
 			// Check we are within grid boundaries
 			if(i>=0 && i<FIELD_X && j>=0 && j<FIELD_Y) {
-				// Can't check gamegrid, since if we sit on a dropped grenade we don't existing in the grid
+				// Can't check gamegrid, since if we sit on a dropped grenade we don't exist in the grid
 				// If it contains dozer, die
 				if(i==dozer.x && j==dozer.y) {
 					deathMessage = "You got a-sploded!";
