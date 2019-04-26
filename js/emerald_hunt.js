@@ -345,7 +345,7 @@ addEventListener("keydown", function (e) {
 			break;
 
 		case DEAD:
-			handleMenuInput(e, false, deathButtons);
+			handleMenuInput(e, true, deathButtons);
 			break;
 
 		case PAUSED:
@@ -840,13 +840,13 @@ function generateButtons() {
 
 	deathButtons = [];
 	f = "14px Helvetica";
-	w = 80;
+	w = 150;
 	h = 30;
-	x = 120;
-	y = 260;
+	x = (myCanvas.width - w)/2;
+	y = 220;
 	gap = 10;
 	deathButtons[deathButtons.length] = new Button(x, y, w, h, true, "Retry", undefined, f, newGame);
-	x += w + gap;
+	y += h + gap;
 	deathButtons[deathButtons.length] = new Button(x, y, w, h, false, "Menu", undefined, f, showMenu);
 
 	pauseButtons = [];
