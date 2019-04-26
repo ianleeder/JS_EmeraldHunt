@@ -960,9 +960,9 @@ function drawField() {
 function drawScore() {
 	var size = 2 * TILE_SIZE / 3;
 
-	var w = 6*size;
+	var w = 9*size;
 	var h = size;
-	var x = canvas.width-(7*size);
+	var x = canvas.width-(10*size);
 	var y = (TILE_SIZE-size)/2;
 
 	// Draw a black rectangle
