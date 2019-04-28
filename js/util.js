@@ -1,3 +1,24 @@
+// Palette taken from wiki:
+// https://en.wikipedia.org/wiki/Color_Graphics_Adapter
+var cgaPalette = [
+ [0x000000],
+ [0x0000AA],
+ [0x00AA00],
+ [0x00AAAA],
+ [0xAA0000],
+ [0xAA00AA],
+ [0xAA5500],
+ [0xAAAAAA],
+ [0x555555],
+ [0x5555FF],
+ [0x55FF55],
+ [0x55FFFF],
+ [0xFF5555],
+ [0xFF55FF],
+ [0xFFFF55],
+ [0xFFFFFF]
+ ];
+
 function readSingleFile(buffer) {
 	let dv = new DataView(buffer);
 	// displayContents(contents);
@@ -29,8 +50,7 @@ function parseDataFile(buffer) {
 		return;
 	}
 
-	//for(let i=0;i<16;i++) {
-	for(let i=1;i<2;i++) {
+	for(let i=0;i<16;i++) {
 		parseSprite(buffer.slice(i*tileSize, (i+1)*tileSize));
 	}
 }
@@ -93,26 +113,24 @@ function parseSprite(buffer) {
 	// If we split the data into 16-bit chunks, each chunk (Uint16)
 	// represents a pixel bit.
 	view = new Uint16Array(buffer.slice(4,132));
-	console.log("New length: " + view.byteLength);
-	console.log("length: " + view.length);
-
 	let pixels = new Array(256);
 
 	// There are 16 rows of 16 pixels
 	// Iterate the rows first
 	for(var row=0;row<16;row++)	{
-		console.log("row=" + row);
+		//console.log("row=" + row);
 		// Now iterate through our 16 pixels
 		// (this loop is used to iterate our pixels results array, but not our binary source buffer)
 		for(var p=0;p<16;p++) {
-			console.log("Working on pixel " + ((row*16) + p));
-			console.log("16 bit value is " + view[row].toString(2) + " (" + view[row] + ")");
+			pixels[row*16 + p] = 0;
+			//console.log("Working on pixel " + ((row*16) + p));
+			//console.log("16 bit value is " + view[row].toString(2) + " (" + view[row] + ")");
 			// The 16 pixels are stored across 4x Uint16 (1 bit each)
 			// (this loop is used to iterate our binary source buffer, but nor our pixel results array)
 			for(var bit=3;bit>=0;bit--) {
 				if(view[row*4 + (3-bit)] & 1<<p)
 					pixels[row*16 + p] |= 1<<bit;
-				console.log("pixels[" + row + "*16 + " + p + "] = " + pixels[row*16 + p]);
+				//console.log("pixels[" + row + "*16 + " + p + "] = " + pixels[row*16 + p]);
 			}
 		}
 	}
@@ -122,8 +140,49 @@ function parseSprite(buffer) {
 		for(var j=0;j<16;j++) {
 			res += pixels[i*16 + j].toString(2) + " (" + pixels[i*16 + j] + ")\t";
 		}
-		console.log(res);
+		//console.log(res);
 	}
+
+	var imgUrl = generateImageFrom4bitPixels(pixels);
+	var img = document.createElement("img");
+	img.src = imgUrl;
+	document.getElementById("imagesDiv").appendChild(img);
+}
+
+// Generate an image using a canvas
+// https://stackoverflow.com/questions/22823752/creating-image-from-array-in-javascript-and-html5
+function generateImageFrom4bitPixels(pixels) {
+	var width = 16,
+    height = 16,
+    buffer = new Uint8ClampedArray(width * height * 4); // have enough bytes
+
+    for(var y = 0; y < height; y++) {
+	    for(var x = 0; x < width; x++) {
+	        var pos = (y * width + x) * 4; // position in buffer based on x and y
+	        var rgb = cgaPalette[pixels[y * width + x]];
+	        buffer[pos  ] = (rgb & 0xff0000)>>16;
+	        buffer[pos+1] = (rgb & 0x00ff00)>>8;
+	        buffer[pos+2] = rgb & 0x0000ff;
+	        buffer[pos+3] = 255;           // set alpha channel
+	    }
+	}
+
+	// create off-screen canvas element
+	var canvas = document.createElement('canvas'),
+	    ctx = canvas.getContext('2d');
+
+	canvas.width = width;
+	canvas.height = height;
+
+	// create imageData object
+	var idata = ctx.createImageData(width, height);
+
+	// set our buffer as source
+	idata.data.set(buffer);
+
+	// update canvas with new data
+	ctx.putImageData(idata, 0, 0);
+	return canvas.toDataURL(); // produces a PNG file
 }
 
 function openFile(e)
