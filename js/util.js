@@ -110,12 +110,20 @@ function parseSprite(buffer) {
 			// The 16 pixels are stored across 4x Uint16 (1 bit each)
 			// (this loop is used to iterate our binary source buffer, but nor our pixel results array)
 			for(var bit=3;bit>=0;bit--) {
-				pixels[row*16 + p] |= (view[row] & 1<<bit);
-				
+				if(view[row*4 + (3-bit)] & 1<<p)
+					pixels[row*16 + p] |= 1<<bit;
+				console.log("pixels[" + row + "*16 + " + p + "] = " + pixels[row*16 + p]);
 			}
 		}
 	}
-	console.log(pixels);
+
+	for(var i=0;i<16;i++) {
+		var res = "";
+		for(var j=0;j<16;j++) {
+			res += pixels[i*16 + j].toString(2) + " (" + pixels[i*16 + j] + ")\t";
+		}
+		console.log(res);
+	}
 }
 
 function openFile(e)
