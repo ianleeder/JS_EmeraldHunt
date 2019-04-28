@@ -1,0 +1,25 @@
+  The object of this game is to collect as many emeralds
+and diamonds as possible without being killed in the process.
+Once your score reaches the goal amount you then proceed
+to the exit. You score 1 point for an emerald and 5 points
+for a diamond.
+  Events that will kill you are as follows :-
+       1. Any falling object hitting you on the head, or
+       2. A bomb or grenade exploding next to you, or
+       3. A bug being within a 1 unit radius of you.
+  Objects that fall due to gravity are: boulders, emeralds
+diamonds and bombs. Any piece of dirt, bricks, stone and
+yourself will support any number of these objects. However,
+some objects on top of other objects are unstable and thus
+they roll off each other. An object is unstable if :
+       1. it is resting on a non-flat surface, and
+       2. there is nothing supporting the object either
+	      to it's left or it's right.
+  Bombs, grenades and bugs are explodable objects. When they
+explode, everything in a one unit radius is destroyed except
+bricks. If another explodable object is within this radius, it
+also explodes, causing a chain reaction. Bugs can be killed by
+dropping an object such as a boulder onto them. Grenades are
+collected just like emeralds or diamonds but are detonated
+using the space bar. After a certain delay the grenade explodes.
+

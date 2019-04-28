@@ -1,0 +1,46 @@
+Emerald Hunt - Help File
+============
+
+Introduction
+------------
+
+   To run Emerald Hunt you need an EGA compatible graphics adapter.
+You do NOT need a mouse or joystick, instead you use the keyboard's
+arrow keys. Emerald Hunt is not a shoot-em-up or mindless action game.
+It requires considerable skill but is essentially simple to understand.
+If you want help on how to play the game, select YES when asked after
+the initial banner page.
+
+Files on disk
+-------------
+
+   HUNT.EXE        - Emerald Hunt
+   OBJECTS.DAT     - Graphics objects
+   BUILDOBJ.EXE    - Utility to edit OBJECTS.DAT
+   BUILD.EXE       - Utility to edit screens
+   *.PIC           - Screen picture files
+
+Notes and Hints
+---------------
+
+   The characters that appear on the screen (boulders, bombs etc.) can
+be modified to look any way you wish. To do this use BUILDOBJ.EXE.
+However, make sure you backup OBJECTS.DAT in case you want to go back
+to the original objects.
+   On the main menu of Emerald Hunt is an option to load a saved game.
+This is for resuming a game you previously saved or a game you have
+specially created using BUILD.EXE. If you are inclined to cheat, you
+can save a game you are playing then edit it with BUILD.EXE.
+   Below are some general hints on good playing strategies :-
+     - beware of objects that roll off other objects
+     - collect any diamonds (the blue ones) that are exposed before
+         doing anything else, as they may be squashed
+     - conserve grenades for emergencies
+     - use bombs as much as possible for clearing boulders and stone
+     - be careful not to bury valuable gems too much as it may become
+         impossible to collect them
+     - work from the bottom up
+     - bugs always follow terrain on their left, so make sure you know
+         where they will be so you can keep out of their way.
+
+
