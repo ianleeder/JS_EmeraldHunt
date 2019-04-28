@@ -123,13 +123,10 @@ function parseSprite(buffer) {
 	// There are 16 rows of 16 pixels
 	// Iterate the rows first
 	for(var row=0;row<16;row++)	{
-		//console.log("row=" + row);
 		// Now iterate through our 16 pixels
 		// (this loop is used to iterate our pixels results array, but not our binary source buffer)
 		for(var p=0;p<16;p++) {
 			pixels[row*16 + p] = 0;
-			//console.log("Working on pixel " + ((row*16) + p));
-			//console.log("16 bit value is " + view[row].toString(2) + " (" + view[row] + ")");
 			// The 16 pixels are stored across 4x Uint16 (1 bit each)
 			// (this loop is used to iterate our binary source buffer, but nor our pixel results array)
 			for(var bit=3;bit>=0;bit--) {
@@ -137,17 +134,8 @@ function parseSprite(buffer) {
 				// As such we need to multiply our "index" by 2
 				if(view.getUint16((row*4+3-bit)*2, false) & 1<<p)
 					pixels[row*16 + p] |= 1<<bit;
-				//console.log("pixels[" + row + "*16 + " + p + "] = " + pixels[row*16 + p]);
 			}
 		}
-	}
-
-	for(var i=0;i<16;i++) {
-		var res = "";
-		for(var j=0;j<16;j++) {
-			res += pixels[i*16 + j].toString(2) + " (" + pixels[i*16 + j] + ")\t";
-		}
-		//console.log(res);
 	}
 
 	var imgUrl = generateImageFrom4bitPixels(pixels);
