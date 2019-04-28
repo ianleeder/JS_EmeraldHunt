@@ -63,22 +63,22 @@ function parseDataFile(buffer) {
 	https://stackoverflow.com/questions/14915058/how-to-display-binary-data-as-image-extjs-4
 */
 function parseSprite(buffer) {
-	let view = new Uint8Array(buffer);
+	let view = new DataView(buffer);
 
 	// Let's check the magic header and footer, then discard them.
-	if(view[0] !== 15 ||
-	   view[1] !== 0 ||
-	   view[2] !== 15 ||
-	   view[3] !== 0 ||
-	   view[132] !== 144 ||
-	   view[133] != 33) {
+	if(view.getUint8(0) !== 15 ||
+	   view.getUint8(1) !== 0 ||
+	   view.getUint8(2) !== 15 ||
+	   view.getUint8(3) !== 0 ||
+	   view.getUint8(132) !== 144 ||
+	   view.getUint8(133) != 33) {
 		console.log("Invalid sprite, Magic numbers incorrect");
-		console.log("0 - " + view[0]);
-		console.log("1 - " + view[1]);
-		console.log("2 - " + view[2]);
-		console.log("3 - " + view[3]);
-		console.log("132 - " + view[132]);
-		console.log("133 - " + view[133]);
+		console.log("0 - " + view.getUint8(0));
+		console.log("1 - " + view.getUint8(1));
+		console.log("2 - " + view.getUint8(2));
+		console.log("3 - " + view.getUint8(3));
+		console.log("132 - " + view.getUint8(132));
+		console.log("133 - " + view.getUint8(133));
 		return;
 	}
 
@@ -114,7 +114,10 @@ function parseSprite(buffer) {
 
 	// If we split the data into 16-bit chunks, each chunk (Uint16)
 	// represents a pixel bit.
-	view = new Uint16Array(buffer.slice(4,132));
+	// We can't use Uint16Array because it does not allow us to specify endianness,
+	// and we end up with graphics split vertically (pixels 9-16 then 1-8)
+	// Instead we must use DataView
+	view = new DataView(buffer, 4, 128);
 	let pixels = new Array(256);
 
 	// There are 16 rows of 16 pixels
@@ -130,7 +133,9 @@ function parseSprite(buffer) {
 			// The 16 pixels are stored across 4x Uint16 (1 bit each)
 			// (this loop is used to iterate our binary source buffer, but nor our pixel results array)
 			for(var bit=3;bit>=0;bit--) {
-				if(view[row*4 + (3-bit)] & 1<<p)
+				// Dataview doesn't use an index like Uint16Array did, it uses a byte offset.
+				// As such we need to multiply our "index" by 2
+				if(view.getUint16((row*4+3-bit)*2, false) & 1<<p)
 					pixels[row*16 + p] |= 1<<bit;
 				//console.log("pixels[" + row + "*16 + " + p + "] = " + pixels[row*16 + p]);
 			}
