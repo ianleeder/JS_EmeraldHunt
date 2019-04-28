@@ -29,10 +29,9 @@ function parseDataFile(buffer) {
 		return;
 	}
 
-	let begin = 0;
-	for(let i=0;i<16;i++) {
-		parseSprite(buffer.slice(begin, begin + tileSize));
-		begin += tileSize;
+	//for(let i=0;i<16;i++) {
+	for(let i=1;i<2;i++) {
+		parseSprite(buffer.slice(i*tileSize, (i+1)*tileSize));
 	}
 }
 
@@ -65,27 +64,58 @@ function parseSprite(buffer) {
 		Pixel information uses a similar interlaced format to ADAM7 interlacing (but is not applied vertically):
 		http://en.wikipedia.org/wiki/Adam7_algorithm
 
-		Each sprite/tile is 8x8px (64px)
-		
+		Each sprite/tile is 16x16px (256px).
+		Each sprite/tile is 134 bytes.
+		4x Magic Header (00 0F 00 0F)
+		128x data
+		2x Magic Footer (90 21)
+
 		Naming convention P1:4 refers to pixel 1, bit 4 (MSB)
-		Important to note these at 4-bit pixels (16-color, EGA)								
-		
+		Important to note these at 4-bit pixels (16-color, CGA).
+		Need to map these values to the CGA color palette.
+
 		Byte1 (0x04)	P1:4	P2:4	P3:4	P4:4	P5:4	P6:4	P7:4	P8:4
 		Byte2 (0x05)	P9:4	P10:4	P11:4	P12:4	P13:4	P14:4	P15:4	P16:4
 		Byte3 (0x06)	P1:3	P2:3	P3:3	P4:3	P5:3	P6:3	P7:3	P8:3
 		Byte4 (0x07)	P9:3	P10:3	P11:3	P12:3	P13:3	P14:3	P15:3	P16:3
-		…								
-		First 16 pixels finish at byte  8 (0x0B)
+		...
+		...							
+		First row of 16 pixels finish at byte 8 (0x0B)
 
-		Each set of 8 bytes = 16 pixel row.
 		Sequence starts again for next row at following byte (0x0C)
 		16 rows go from 0x04 - 0x83 (or byte 4 to byte 131)
 		Magic footer at 0x84 90 21								
 	*/
 
-	// (re-slicing the buffer throws off the byte offsets given above)
-	view = new Uint8Array(buffer.slice(4,132));
+	// Re-slicing the buffer throws off the byte offsets given above
+	// Now data goes from 0x00 to 0x80 (128 bytes)
+
+	// If we split the data into 16-bit chunks, each chunk (Uint16)
+	// represents a pixel bit.
+	view = new Uint16Array(buffer.slice(4,132));
 	console.log("New length: " + view.byteLength);
+	console.log("length: " + view.length);
+
+	let pixels = new Array(256);
+
+	// There are 16 rows of 16 pixels
+	// Iterate the rows first
+	for(var row=0;row<16;row++)	{
+		console.log("row=" + row);
+		// Now iterate through our 16 pixels
+		// (this loop is used to iterate our pixels results array, but not our binary source buffer)
+		for(var p=0;p<16;p++) {
+			console.log("Working on pixel " + ((row*16) + p));
+			console.log("16 bit value is " + view[row].toString(2) + " (" + view[row] + ")");
+			// The 16 pixels are stored across 4x Uint16 (1 bit each)
+			// (this loop is used to iterate our binary source buffer, but nor our pixel results array)
+			for(var bit=3;bit>=0;bit--) {
+				pixels[row*16 + p] |= (view[row] & 1<<bit);
+				
+			}
+		}
+	}
+	console.log(pixels);
 }
 
 function openFile(e)
