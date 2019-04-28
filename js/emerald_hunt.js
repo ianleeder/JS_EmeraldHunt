@@ -22,8 +22,8 @@
 
 // Declare constants
 var TILE_SIZE = 24;
-var FIELD_X = 30;
-var FIELD_Y = 15;
+var FIELD_X = 40;
+var FIELD_Y = 20;
 // Array will be populated as follows (after items created)
 // [empty, dirt, rock, emerald, bomb, grenade, sapphire]
 var DIFFICULTY_TILE_TYPE;
