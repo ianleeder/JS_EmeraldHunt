@@ -4,20 +4,22 @@
 // I have been unable to track down the original (PC) game, so at this time I am unable
 // to 100% verify gameplay.  What is implemented is from memory, and (PocketPC) screenshots
 // I have found on the web.
+// Edit: since then I have found a copy of the game and uploaded to Abandonia:
+// http://www.abandonia.com/en/games/31445/.html
+// It has also appeared on dosgames.com:
+// https://www.dosgames.com/game/emerald-hunt
 
 // To-do:
-// (See review at http://www.svpocketpc.com/reviews/emeraldhunt/EmeraldHunt.html for more details of gameplay)
-// DONE Implement proper image pre-loading (possibly display loading progress bar)
+// Re-scale game and use original sprites (allow choice)
 // Implement all menu items
-// Add (rock and/or brick) walls
+// Add rock and brick walls
 // Implement difficulty settings:
 // DONE	 Easy		Rocks, emeralds, bombs
 // DONE	 Medium		Easy + sapphires
 // 	 Hard		Medium + bugs
 // Track statistics
-// Show win screen
-// Find original sprite files, or improve resolution (redraw) existing ones
-// DONE Set canvas size from javascript directly?  Better or worse than setting in HTML?
+// Add exit, goal score, and win screen
+// Add hardcore mode (cannot destroy any gems)
 
 
 // Declare constants
