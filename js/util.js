@@ -63,13 +63,15 @@ function parseDataFile(buffer) {
 	https://stackoverflow.com/questions/14915058/how-to-display-binary-data-as-image-extjs-4
 */
 function parseSprite(buffer) {
-	let spriteBytes = 16;
-	let toReturn = new Uint8Array(spriteBytes);
-
 	let view = new Uint8Array(buffer);
 
 	// Let's check the magic header and footer, then discard them.
-	if(view[0] !== 15 || view[1] !== 0 || view[2] !== 15 || view[3] !== 0 || view[132] !== 144 || view[133] != 33) {
+	if(view[0] !== 15 ||
+	   view[1] !== 0 ||
+	   view[2] !== 15 ||
+	   view[3] !== 0 ||
+	   view[132] !== 144 ||
+	   view[133] != 33) {
 		console.log("Invalid sprite, Magic numbers incorrect");
 		console.log("0 - " + view[0]);
 		console.log("1 - " + view[1]);
