@@ -17,9 +17,9 @@ var cgaPalette = [
  [0xFF55FF],
  [0xFFFF55],
  [0xFFFFFF]
- ];
+];
 
-function readSingleFile(buffer) {
+function readSaveFile(buffer) {
 	let dv = new DataView(buffer);
 	// displayContents(contents);
 	let score = dv.getUint16(0, true);
@@ -129,10 +129,10 @@ function parseSprite(buffer) {
 			pixels[row*16 + p] = 0;
 			// The 16 pixels are stored across 4x Uint16 (1 bit each)
 			// (this loop is used to iterate our binary source buffer, but nor our pixel results array)
-			for(var bit=3;bit>=0;bit--) {
+			for(var bit=0;bit<4;bit++) {
 				// Dataview doesn't use an index like Uint16Array did, it uses a byte offset.
-				// As such we need to multiply our "index" by 2
-				if(view.getUint16((row*4+3-bit)*2, false) & 1<<p)
+				// As such we need to multiply our "index" by 2 (2x bytes for every Uint16 we are after)
+				if(view.getUint16((row*4+3-bit)*2, false) & 1<<(15-p))
 					pixels[row*16 + p] |= 1<<bit;
 			}
 		}
