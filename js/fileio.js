@@ -1,6 +1,8 @@
+"use strict"
+
 // Palette taken from wiki:
 // https://en.wikipedia.org/wiki/Color_Graphics_Adapter
-var cgaPalette = [
+let cgaPalette = [
  [0x000000],
  [0x0000AA],
  [0x00AA00],
@@ -111,25 +113,24 @@ function parseSprite(buffer) {
 
 	// Re-slicing the buffer throws off the byte offsets given above
 	// Now data goes from 0x00 to 0x80 (128 bytes)
+	view = new DataView(buffer, 4, 128);
 
-	// If we split the data into 16-bit chunks, each chunk (Uint16)
-	// represents a pixel bit.
+	// If we split the data into 16-bit chunks, each chunk (Uint16) represents a pixel bit.
 	// We can't use Uint16Array because it does not allow us to specify endianness,
 	// and we end up with graphics split vertically (pixels 9-16 then 1-8)
 	// Instead we must use DataView
-	view = new DataView(buffer, 4, 128);
 	let pixels = new Array(256);
 
 	// There are 16 rows of 16 pixels
 	// Iterate the rows first
-	for(var row=0;row<16;row++)	{
+	for(let row=0;row<16;row++)	{
 		// Now iterate through our 16 pixels
 		// (this loop is used to iterate our pixels results array, but not our binary source buffer)
-		for(var p=0;p<16;p++) {
+		for(let p=0;p<16;p++) {
 			pixels[row*16 + p] = 0;
 			// The 16 pixels are stored across 4x Uint16 (1 bit each)
 			// (this loop is used to iterate our binary source buffer, but nor our pixel results array)
-			for(var bit=0;bit<4;bit++) {
+			for(let bit=0;bit<4;bit++) {
 				// Dataview doesn't use an index like Uint16Array did, it uses a byte offset.
 				// As such we need to multiply our "index" by 2 (2x bytes for every Uint16 we are after)
 				if(view.getUint16((row*4+3-bit)*2, false) & 1<<(15-p))
@@ -138,8 +139,8 @@ function parseSprite(buffer) {
 		}
 	}
 
-	var imgUrl = generateImageFrom4bitPixels(pixels);
-	var img = document.createElement("img");
+	let imgUrl = generateImageFrom4bitPixels(pixels);
+	let img = document.createElement("img");
 	img.src = imgUrl;
 	document.getElementById("imagesDiv").appendChild(img);
 }
@@ -147,14 +148,14 @@ function parseSprite(buffer) {
 // Generate an image using a canvas
 // https://stackoverflow.com/questions/22823752/creating-image-from-array-in-javascript-and-html5
 function generateImageFrom4bitPixels(pixels) {
-	var width = 16,
+	let width = 16,
     height = 16,
     buffer = new Uint8ClampedArray(width * height * 4); // have enough bytes
 
-    for(var y = 0; y < height; y++) {
-	    for(var x = 0; x < width; x++) {
-	        var pos = (y * width + x) * 4; // position in buffer based on x and y
-	        var rgb = cgaPalette[pixels[y * width + x]];
+    for(let y = 0; y < height; y++) {
+	    for(let x = 0; x < width; x++) {
+	        let pos = (y * width + x) * 4; // position in buffer based on x and y
+	        let rgb = cgaPalette[pixels[y * width + x]];
 	        buffer[pos  ] = (rgb & 0xff0000)>>16;
 	        buffer[pos+1] = (rgb & 0x00ff00)>>8;
 	        buffer[pos+2] = rgb & 0x0000ff;
@@ -163,14 +164,14 @@ function generateImageFrom4bitPixels(pixels) {
 	}
 
 	// create off-screen canvas element
-	var canvas = document.createElement('canvas'),
+	let canvas = document.createElement('canvas'),
 	    ctx = canvas.getContext('2d');
 
 	canvas.width = width;
 	canvas.height = height;
 
 	// create imageData object
-	var idata = ctx.createImageData(width, height);
+	let idata = ctx.createImageData(width, height);
 
 	// set our buffer as source
 	idata.data.set(buffer);
@@ -186,7 +187,7 @@ function openFile(e)
 	if (!file) {
 		return;
 	}
-
+	console.log(file);
 	let reader = new FileReader();
 	reader.onload = function(e) {
 		let buffer = e.target.result;
