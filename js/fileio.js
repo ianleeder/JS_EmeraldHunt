@@ -181,7 +181,7 @@ function generateImageFrom4bitPixels(pixels) {
 	return canvas.toDataURL(); // produces a PNG file
 }
 
-function openUrl(url) {
+function readObjectsUrl(url) {
 	// https://stackoverflow.com/a/41752161/5329728
 	let request = new XMLHttpRequest();
 	request.open('GET', url, true);
@@ -198,7 +198,7 @@ function openUrl(url) {
 	request.send();
 }
 
-function openFile(e) {
+function readObjectsFile(e) {
 	let file = e.target.files[0];
 	if (!file) {
 		return;
@@ -239,7 +239,7 @@ function displayContents(contents) {
 if (window.File && window.FileReader && window.FileList && window.Blob) {
 	// Great success! All the File APIs are supported.
 	document.getElementById('file-input')
-	.addEventListener('change', openFile, false);
+	.addEventListener('change', readObjectsFile, false);
 } else {
 	alert('The File APIs are not fully supported in this browser.');
 }
