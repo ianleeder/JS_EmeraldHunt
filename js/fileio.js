@@ -181,13 +181,28 @@ function generateImageFrom4bitPixels(pixels) {
 	return canvas.toDataURL(); // produces a PNG file
 }
 
-function openFile(e)
-{
+function openUrl(url) {
+	// https://stackoverflow.com/a/41752161/5329728
+	let request = new XMLHttpRequest();
+	request.open('GET', url, true);
+	request.responseType = 'blob';
+	request.onload = function() {
+		let reader = new FileReader();
+		reader.onload =  function(e){
+			let buffer = e.target.result;
+			parseDataFile(buffer)
+		
+		};
+		reader.readAsArrayBuffer(request.response);
+	};
+	request.send();
+}
+
+function openFile(e) {
 	let file = e.target.files[0];
 	if (!file) {
 		return;
 	}
-	console.log(file);
 	let reader = new FileReader();
 	reader.onload = function(e) {
 		let buffer = e.target.result;
