@@ -37,10 +37,10 @@
 	};
 
 	function changeScale(e) {
-		console.log(e.target.value);
+		var scale = e.target.value;
 		var c = document.getElementById("myCanvas");
 		var ctx = c.getContext("2d");
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
-		ctx.scale(2, 2);
+		ctx.scale(scale, scale);
 	}
 </script>
