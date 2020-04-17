@@ -3,17 +3,15 @@
 	<head>
 		<link rel="shortcut icon" type="image/x-icon" href="images/hunt.ico" />
 		<title>Emerald Hunt</title>
-		<style>
-			.tile {
-				height: 20px;
-				width: 20px;
-				position: relative;
-				border: 1px solid black;
-			}
-		</style>
 	</head>
 	<body>
 		<h1>My Emerald Hunt clone</h1>
+		<label for="scale">Choose a scale:</label>
+		<select id="scale">
+			<option value="1">100%</option>
+			<option value="1.5">150%</option>
+			<option value="2">200%</option>
+		</select><br/>
 		<canvas id="myCanvas">
 			This browser can not run this game (canvas support missing).
 		</canvas>
@@ -30,7 +28,19 @@
 <script type="text/javascript" src="js/emerald_hunt.js"></script>
 <script type="text/javascript" src="js/fileio.js"></script>
 <script type="text/javascript">
-	window.onload = function() {
+	window.onload = init;
+	
+	function init() {
+		document.getElementById('scale').addEventListener('change', changeScale, false);
+
 		readObjectsUrl('http://www.ianleeder.com/OBJECTS.DAT');
 	};
+
+	function changeScale(e) {
+		console.log(e.target.value);
+		var c = document.getElementById("myCanvas");
+		var ctx = c.getContext("2d");
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		ctx.scale(2, 2);
+	}
 </script>
