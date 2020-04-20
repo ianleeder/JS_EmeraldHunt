@@ -1,3 +1,5 @@
+"use strict"
+
 class BaseObject {
 	constructor(imgIndex) {
 		this._gravity = true;
@@ -32,7 +34,7 @@ class Gem extends BaseObject {
 
 class Dirt extends BaseObject {
 	constructor() {
-		super(1);
+		super(spriteTypes.DIRT);
 		this._gravity = false;
 		this._isUneven = false;
 	}
@@ -40,7 +42,7 @@ class Dirt extends BaseObject {
 
 class Rock extends BaseObject {
 	constructor() {
-		super(2);
+		super(spriteTypes.ROCK);
 		this._canPassThrough = false;
 		this._isPushable = true;
 	}
@@ -48,13 +50,13 @@ class Rock extends BaseObject {
 
 class Emerald extends Gem {
 	constructor() {
-		super(3);
+		super(spriteTypes.EMERALD);
 	}
 }
 
 class Brick extends BaseObject {
 	constructor() {
-		super(4);
+		super(spriteTypes.BRICK);
 		this._gravity = false;
 		this._canPassThrough = false;
 		this._canBeDestroyed = false;
@@ -64,7 +66,7 @@ class Brick extends BaseObject {
 
 class Bomb extends BaseObject {
 	constructor() {
-		super(5);
+		super(spriteTypes.BOMB);
 		this._isExplosive = true;
 		this._canPassThrough = false;
 		this._canBeCrushed = true;
@@ -72,15 +74,15 @@ class Bomb extends BaseObject {
 	}
 }
 
-class Home extends BaseObject {
+class Exit extends BaseObject {
 	constructor() {
-		super(6);
+		super(spriteTypes.EXIT);
 	}
 }
 
 class Dozer extends BaseObject {
 	constructor(x, y) {
-		super(7);
+		super(spriteTypes.DOZER);
 		this._gravity = false;
 		this._canBeCrushed = true;
 		this._isUneven = false;
@@ -94,7 +96,7 @@ class Dozer extends BaseObject {
 }
 
 class Cobblestone extends BaseObject {
-	constructor() {
+	constructor(spriteTypes.COBBLE) {
 		super(8);
 		this._gravity = false;
 		this._canPassThrough = false;
@@ -103,7 +105,7 @@ class Cobblestone extends BaseObject {
 
 class Bug extends BaseObject {
 	constructor(img) {
-		super(9);
+		super(spriteTypes.BUG);
 		this._gravity = false;
 		this._canBeCrushed = true;
 	    this._canPassThrough = false;
@@ -112,16 +114,16 @@ class Bug extends BaseObject {
 	}
 }
 
-class Sapphire extends Gem {
+class Diamond extends Gem {
 	constructor() {
-		super(10);
+		super(spriteTypes.DIAMOND);
 		this._canBeCrushed = true;
 	}
 }
 
 class Explosion extends BaseObject {
 	constructor() {
-		super(12);
+		super(spriteTypes.EXPLOSION);
 		this._canPassThrough = false;
 		this._isNewExplosion = true;
 	}
@@ -131,7 +133,7 @@ class Explosion extends BaseObject {
 
 class Grenade extends BaseObject {
 	constructor() {
-		super(13);
+		super(spriteTypes.GRENADE);
 		this._gravity = false;
 		this._isExplosive = true;
 	}
@@ -139,7 +141,7 @@ class Grenade extends BaseObject {
 
 class DroppedGrenade extends Grenade {
 	constructor() {
-		super(13);
+		super(spriteTypes.GRENADE);
 		this._canPassThrough = false;
 		this._timer = 10;
 	}
@@ -228,38 +230,147 @@ class CyclingButton extends Button {
 }
 
 class Field {
-	constructor(c) {
+	constructor(c, diff) {
 		this._ctx = c;
-		this._fieldX = 40;
-		this._fieldY = 20;
-		this._tileSize = 16;
+		this._fieldX = defaultFieldX;
+		this._fieldY = defaultFieldY;
+		this._difficulty = diff;
+
+		this.initField();
 	}
 
+	initField() {
+		console.log("initing field");
+	}
 
+	handleGameInput(e) {
+		console.log("Field received game input");
+		console.log(e);
+	}
 }
 
+// https://www.sohamkamani.com/blog/2017/08/21/enums-in-javascript/#enumerations-with-objects
+// "Since it does not make a difference as to what values we use for the enums,
+// we are using string names. This can provide a more usefull message while debugging,
+// as compared to using numbers, which are the more conventional choice when using enums"
+const gameStates = {
+	LOADING: 'loading',
+	MENU: 'menu',
+	RUNNING: 'running',
+	PAUSED: 'paused',
+	DYING: 'dying',
+	DEAD: 'dead'
+}
+
+const gameDifficulties = {
+	EASY: 'Easy',
+	MEDIUM: 'Medium',
+	HARD: 'Hard',
+	HARDER: 'Harder',
+	HARDEST: 'Hardest'
+}
+
+const spriteTypes = {
+	BLANK: 0,
+	DIRT: 1,
+	ROCK: 2,
+	EMERALD: 3,
+	BRICK: 4,
+	BOMB: 5,
+	EXIT: 6,
+	DOZER: 7,
+	COBBLE: 8,
+	BUG: 9,
+	DIAMOND: 10,
+	SLIME: 11,
+	EXPLOSION: 12,
+	GRENADE: 13,
+	NOTUSED: 14,
+	ALTDOZER: 15
+}
+
+// Types are stored in the same array order as the sprites
+let fieldDifficultyDistribution = {};
+fieldDifficultyDistribution[gameDifficulties.EASY] =	[1,2,3,4,5]
+fieldDifficultyDistribution[gameDifficulties.MEDIUM] =	[1,2,3,4,5]
+fieldDifficultyDistribution[gameDifficulties.HARD] =	[1,2,3,4,5]
+fieldDifficultyDistribution[gameDifficulties.HARDER] =	[1,2,3,4,5]
+fieldDifficultyDistribution[gameDifficulties.HARDEST] =	[1,2,3,4,5]
+
+
+const defaultFieldX = 40;
+const defaultFieldY = 20;
+const spriteSize = 16;
+
 class EmeraldHunt {
+
 	constructor(c) {
 		this._canvas = c;
 		this._ctx = this._canvas.getContext("2d");
 		this._images = null;
+		this._gameState = gameStates.LOADING;
 	}
 
 	init() {
-		console.log("Entered init");
 		// When we pass a callback it breaks the THIS reference, we need to bind it
 		// https://stackoverflow.com/questions/20279484/how-to-access-the-correct-this-inside-a-callback
 		// https://stackoverflow.com/questions/46618945/cannot-set-property-value-of-undefined-inside-es6-class
 		readObjectsUrl('http://www.ianleeder.com/OBJECTS.DAT', this.imagesLoaded.bind(this));
+		addEventListener("keydown", this.handleInput.bind(this));
+		addEventListener("keyup", function(e) {
+			if(e.keyCode==27) {
+				console.log("Received ESC");
+				if(this._gameState == gameStates.RUNNING) {
+					this._gameState = gameStates.PAUSED;
+				} else if(this._gameState == gameStates.AUSED) {
+					this._gameState = gameStates.RUNNING;
+				}
+			}
+		});
 	}
 
 	imagesLoaded(imgs) {
-		console.log("Entered callback");
 		this._images = imgs;
+		this._gameState = gameStates.MENU;
+
+		// This is just debug fluff
 		this._images.forEach(function(item, index) {
 			let img = document.createElement("img");
 			img.src = item;
 			document.getElementById("imagesDiv").appendChild(img);
 		});
+
+		// Again debug fluff
+		this.newGame();
+	}
+
+	handleInput(e) {
+		switch(this._gameState) {
+			case gameStates.RUNNING:
+				this._gameField.handleGameInput(e);
+				break;
+	
+			case gameStates.MENU:
+				handleMenuInput(e, true, menuButtons);
+				break;
+	
+			case gameStates.DEAD:
+				handleMenuInput(e, true, deathButtons);
+				break;
+	
+			case gameStates.PAUSED:
+				handleMenuInput(e, true, pauseButtons);
+				break;
+		}
+	}
+
+	handleMenuInput(e) {
+		console.log("menu input received");
+	}
+
+	newGame() {
+		this._gameScore = 0;
+		this._gameState = gameStates.RUNNING;
+		this._gameField = new Field(this._ctx, gameDifficulties.EASY);
 	}
 }

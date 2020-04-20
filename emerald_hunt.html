@@ -33,11 +33,12 @@
 
 <script type="text/javascript">
 	window.onload = init;
+	var g;
 	
 	function init() {
 		document.getElementById('scale').addEventListener('change', changeScale, false);
 
-		var g = new EmeraldHunt(document.getElementById("huntCanvas"));
+		g = new EmeraldHunt(document.getElementById("huntCanvas"));
 		g.init();
 	};
 
