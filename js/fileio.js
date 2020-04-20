@@ -52,9 +52,11 @@ function parseDataFile(buffer) {
 		return;
 	}
 
+	let imgs = [];
 	for(let i=0;i<16;i++) {
-		parseSprite(buffer.slice(i*tileSize, (i+1)*tileSize));
+		imgs.push(parseSprite(buffer.slice(i*tileSize, (i+1)*tileSize)));
 	}
+	return imgs;
 }
 
 /*
@@ -139,10 +141,7 @@ function parseSprite(buffer) {
 		}
 	}
 
-	let imgUrl = generateImageFrom4bitPixels(pixels);
-	let img = document.createElement("img");
-	img.src = imgUrl;
-	document.getElementById("imagesDiv").appendChild(img);
+	return generateImageFrom4bitPixels(pixels);
 }
 
 // Generate an image using a canvas
@@ -181,7 +180,7 @@ function generateImageFrom4bitPixels(pixels) {
 	return canvas.toDataURL(); // produces a PNG file
 }
 
-function readObjectsUrl(url) {
+function readObjectsUrl(url, callBack) {
 	// https://stackoverflow.com/a/41752161/5329728
 	let request = new XMLHttpRequest();
 	request.open('GET', url, true);
@@ -190,15 +189,14 @@ function readObjectsUrl(url) {
 		let reader = new FileReader();
 		reader.onload =  function(e){
 			let buffer = e.target.result;
-			parseDataFile(buffer)
-		
+			callBack(parseDataFile(buffer));
 		};
 		reader.readAsArrayBuffer(request.response);
 	};
 	request.send();
 }
 
-function readObjectsFile(e) {
+function readObjectsFile(e, callback) {
 	let file = e.target.files[0];
 	if (!file) {
 		return;
@@ -206,7 +204,7 @@ function readObjectsFile(e) {
 	let reader = new FileReader();
 	reader.onload = function(e) {
 		let buffer = e.target.result;
-		parseDataFile(buffer)
+		callBack(parseDataFile(buffer));
 	};
 	reader.readAsArrayBuffer(file);
 }
