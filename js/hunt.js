@@ -96,8 +96,8 @@ class Dozer extends BaseObject {
 }
 
 class Cobblestone extends BaseObject {
-	constructor(spriteTypes.COBBLE) {
-		super(8);
+	constructor() {
+		super(spriteTypes.COBBLE);
 		this._gravity = false;
 		this._canPassThrough = false;
 	}
@@ -235,12 +235,20 @@ class Field {
 		this._fieldX = defaultFieldX;
 		this._fieldY = defaultFieldY;
 		this._difficulty = diff;
-
 		this.initField();
 	}
 
 	initField() {
 		console.log("initing field");
+		this._grid = new Array(this._fieldX);
+		for(var i=0;i<this._grid.length;i++){
+			this._grid[i] = new Array(this._fieldY);
+		}
+
+		if(this._difficulty === gameStates.MENU)
+			return;
+		
+		
 	}
 
 	handleGameInput(e) {
@@ -289,14 +297,13 @@ const spriteTypes = {
 	ALTDOZER: 15
 }
 
-// Types are stored in the same array order as the sprites
+// Types are stored in the same array order as the sprites]
 let fieldDifficultyDistribution = {};
-fieldDifficultyDistribution[gameDifficulties.EASY] =	[1,2,3,4,5]
-fieldDifficultyDistribution[gameDifficulties.MEDIUM] =	[1,2,3,4,5]
-fieldDifficultyDistribution[gameDifficulties.HARD] =	[1,2,3,4,5]
-fieldDifficultyDistribution[gameDifficulties.HARDER] =	[1,2,3,4,5]
-fieldDifficultyDistribution[gameDifficulties.HARDEST] =	[1,2,3,4,5]
-
+fieldDifficultyDistribution[gameDifficulties.EASY] =	[0,100,60,150,50,0,0,0,50,0,0,0,0,20,0,0];
+fieldDifficultyDistribution[gameDifficulties.MEDIUM] =	[0,100,60,150,50,0,0,0,50,0,0,0,0,20,0,0];
+fieldDifficultyDistribution[gameDifficulties.HARD] =	[0,100,60,150,50,0,0,0,50,0,0,0,0,20,0,0];
+fieldDifficultyDistribution[gameDifficulties.HARDER] =	[0,100,60,150,50,0,0,0,50,0,0,0,0,20,0,0];
+fieldDifficultyDistribution[gameDifficulties.HARDEST] =	[0,100,60,150,50,0,0,0,50,0,0,0,0,20,0,0];
 
 const defaultFieldX = 40;
 const defaultFieldY = 20;
