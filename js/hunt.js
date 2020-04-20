@@ -1,5 +1,5 @@
 class BaseObject {
-	constructor(img) {
+	constructor(imgIndex) {
 		this._gravity = true;
 		this._canBeCrushed = false;
 	    this._canPassThrough = true;
@@ -7,7 +7,8 @@ class BaseObject {
 		this._isUneven = true;
 		this._isPushable = false;
 		this._isExplosive = false;
-		this._image = img;
+		this._canBeDestroyed = true;
+		this._imageIndex = imgIndex;
 	}
 
 	get gravity() { return this._gravity; }
@@ -17,21 +18,8 @@ class BaseObject {
 	get isUneven() { return this._isUneven;	}
 	get isPushable() { return this._isPushable; }
 	get isExplosive() { return this._isExplosive; }
-	get image() { return this._image; }
-}
-
-class Dozer extends BaseObject {
-	constructor(x, y, img) {
-		super(img);
-		this._gravity = false;
-		this.canBeCrushed = true;
-
-		this._xPos = x;
-		this._yPost = y;
-	}
-
-	get xPos() { return this._xPos; }
-	get yPos() { return this._yPos; }
+	get canBeDestroyed() { return this._canBeDestroyed; }
+	get imageIndex() { return this._image; }
 }
 
 class Gem extends BaseObject {
@@ -42,38 +30,41 @@ class Gem extends BaseObject {
 	}
 }
 
-class Emerald extends Gem {
-	constructor(img) {
-		super(img);
-	}
-}
-
-class Sapphire extends Gem {
-	constructor(img) {
-		super(img);
-		this._canBeCrushed = true;
-	}
-}
-
 class Dirt extends BaseObject {
-	constructor(img) {
-		super(img);
+	constructor() {
+		super(1);
 		this._gravity = false;
 		this._isUneven = false;
 	}
 }
 
 class Rock extends BaseObject {
-	constructor(img) {
-		super(img);
+	constructor() {
+		super(2);
 		this._canPassThrough = false;
 		this._isPushable = true;
 	}
 }
 
+class Emerald extends Gem {
+	constructor() {
+		super(3);
+	}
+}
+
+class Brick extends BaseObject {
+	constructor() {
+		super(4);
+		this._gravity = false;
+		this._canPassThrough = false;
+		this._canBeDestroyed = false;
+		this._isUneven = false;
+	}
+}
+
 class Bomb extends BaseObject {
-	constructor(img) {
-		super(img);
+	constructor() {
+		super(5);
 		this._isExplosive = true;
 		this._canPassThrough = false;
 		this._canBeCrushed = true;
@@ -81,27 +72,74 @@ class Bomb extends BaseObject {
 	}
 }
 
-class Explosion extends BaseObject {
-	constructor(img) {
-		super(img);
-		this._canPassThrough = false;
-		this._newExplosion = true;
+class Home extends BaseObject {
+	constructor() {
+		super(6);
+	}
+}
+
+class Dozer extends BaseObject {
+	constructor(x, y) {
+		super(7);
+		this._gravity = false;
+		this._canBeCrushed = true;
+		this._isUneven = false;
+
+		this._xPos = x;
+		this._yPost = y;
 	}
 
-	get newExplosion() { return this._newExplosion; }
+	get xPos() { return this._xPos; }
+	get yPos() { return this._yPos; }
+}
+
+class Cobblestone extends BaseObject {
+	constructor() {
+		super(8);
+		this._gravity = false;
+		this._canPassThrough = false;
+	}
+}
+
+class Bug extends BaseObject {
+	constructor(img) {
+		super(9);
+		this._gravity = false;
+		this._canBeCrushed = true;
+	    this._canPassThrough = false;
+		this._isExplosive = true;
+		this._canBeDestroyed = true;
+	}
+}
+
+class Sapphire extends Gem {
+	constructor() {
+		super(10);
+		this._canBeCrushed = true;
+	}
+}
+
+class Explosion extends BaseObject {
+	constructor() {
+		super(12);
+		this._canPassThrough = false;
+		this._isNewExplosion = true;
+	}
+
+	get isNewExplosion() { return this._isNewExplosion; }
 }
 
 class Grenade extends BaseObject {
-	constructor(img) {
-		super(img);
+	constructor() {
+		super(13);
 		this._gravity = false;
 		this._isExplosive = true;
 	}
 }
 
 class DroppedGrenade extends Grenade {
-	constructor(img) {
-		super(img);
+	constructor() {
+		super(13);
 		this._canPassThrough = false;
 		this._timer = 10;
 	}
@@ -189,3 +227,39 @@ class CyclingButton extends Button {
 	}
 }
 
+class Field {
+	constructor(c) {
+		this._ctx = c;
+		this._fieldX = 40;
+		this._fieldY = 20;
+		this._tileSize = 16;
+	}
+
+
+}
+
+class EmeraldHunt {
+	constructor(c) {
+		this._canvas = c;
+		this._ctx = this._canvas.getContext("2d");
+		this._images = null;
+	}
+
+	init() {
+		console.log("Entered init");
+		// When we pass a callback it breaks the THIS reference, we need to bind it
+		// https://stackoverflow.com/questions/20279484/how-to-access-the-correct-this-inside-a-callback
+		// https://stackoverflow.com/questions/46618945/cannot-set-property-value-of-undefined-inside-es6-class
+		readObjectsUrl('http://www.ianleeder.com/OBJECTS.DAT', this.imagesLoaded.bind(this));
+	}
+
+	imagesLoaded(imgs) {
+		console.log("Entered callback");
+		this._images = imgs;
+		this._images.forEach(function(item, index) {
+			let img = document.createElement("img");
+			img.src = item;
+			document.getElementById("imagesDiv").appendChild(img);
+		});
+	}
+}

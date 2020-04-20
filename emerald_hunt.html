@@ -15,6 +15,9 @@
 		<canvas id="myCanvas">
 			This browser can not run this game (canvas support missing).
 		</canvas>
+		<canvas id="huntCanvas">
+			This browser can not run this game (canvas support missing).
+		</canvas>
 		<br><br>
 		<input type="file" id="file-input" />
 		<h3>Contents of the file:</h3>
@@ -24,16 +27,18 @@
 	</body>
 </html>
 
-<!-- Placed at the end of the document so the pages load faster -->
-<script type="text/javascript" src="js/emerald_hunt.js"></script>
+<!-- <script type="text/javascript" src="js/emerald_hunt.js"></script> -->
 <script type="text/javascript" src="js/fileio.js"></script>
+<script type="text/javascript" src="js/hunt.js"></script>
+
 <script type="text/javascript">
 	window.onload = init;
 	
 	function init() {
 		document.getElementById('scale').addEventListener('change', changeScale, false);
 
-		readObjectsUrl('http://www.ianleeder.com/OBJECTS.DAT');
+		var g = new EmeraldHunt(document.getElementById("huntCanvas"));
+		g.init();
 	};
 
 	function changeScale(e) {
