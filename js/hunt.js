@@ -4,7 +4,6 @@ import {stateEnum, difficultyEnum} from "./enums.js";
 import {Emerald, Diamond, Dirt, Rock, Brick, Bomb, Exit, Dozer, Cobblestone, Bug, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray} from "./objects.js";
 import {Field} from "./field.js";
 
-
 class Button {
 	constructor(x, y, w, h, isHighlighted, text, text2, font, action) {
 		this.x = x;
