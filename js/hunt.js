@@ -50,72 +50,72 @@ class Gem extends BaseObject {
 }
 
 class Emerald extends Gem {
-	constructor(img) {
-		super({image: img[spriteEnum.EMERALD]});
+	constructor() {
+		super({image: EmeraldHunt.IMAGES[spriteEnum.EMERALD]});
 	}
 }
 
 class Diamond extends Gem {
-	constructor(img) {
-		super({canBeCrushed: true, image: img[spriteEnum.EMERALD]});
+	constructor() {
+		super({canBeCrushed: true, image: EmeraldHunt.IMAGES[spriteEnum.EMERALD]});
 	}
 }
 
 class Dirt extends BaseObject {
-	constructor(img) {
-		super({canPassThrough: true, canBeDestroyed: true, image: img[spriteEnum.DIRT]});
+	constructor() {
+		super({canPassThrough: true, canBeDestroyed: true, image: EmeraldHunt.IMAGES[spriteEnum.DIRT]});
 	}
 }
 
 class Rock extends BaseObject {
-	constructor(img) {
-		super({gravity: true, isUneven: true, isPushable: true, canBeDestroyed: true, image: img[spriteEnum.ROCK]});
+	constructor() {
+		super({gravity: true, isUneven: true, isPushable: true, canBeDestroyed: true, image: EmeraldHunt.IMAGES[spriteEnum.ROCK]});
 	}
 }
 
 class Brick extends BaseObject {
-	constructor(img) {
-		super({image: img[spriteEnum.BRICK]});
+	constructor() {
+		super({image: EmeraldHunt.IMAGES[spriteEnum.BRICK]});
 	}
 }
 
 class Bomb extends BaseObject {
-	constructor(img) {
-		super({gravity: true, isUneven: true, isPushable: true, isExplosive: true, canBeDestroyed: true, image: img[spriteEnum.BOMB]});
+	constructor() {
+		super({gravity: true, isUneven: true, isPushable: true, isExplosive: true, canBeDestroyed: true, image: EmeraldHunt.IMAGES[spriteEnum.BOMB]});
 	}
 }
 
 class Exit extends BaseObject {
-	constructor(img) {
-		super({isUneven: true, canBeDestroyed: true, image: img[spriteEnum.EXIT]});
+	constructor() {
+		super({isUneven: true, canBeDestroyed: true, image: EmeraldHunt.IMAGES[spriteEnum.EXIT]});
 	}
 }
 
 class Dozer extends BaseObject {
 	#pos = 0;
 	constructor(p, img) {
-		super({canBeCrushed: true, canBeDestroyed: true, image: img[spriteEnum.DOZER]});
+		super({canBeCrushed: true, canBeDestroyed: true, image: EmeraldHunt.IMAGES[spriteEnum.DOZER]});
 	}
 
 	get pos() { return this.#pos; }
 }
 
 class Cobblestone extends BaseObject {
-	constructor(img) {
-		super({isUneven: true, canBeDestroyed: true, image: img[spriteEnum.COBBLE]});
+	constructor() {
+		super({isUneven: true, canBeDestroyed: true, image: EmeraldHunt.IMAGES[spriteEnum.COBBLE]});
 	}
 }
 
 class Bug extends BaseObject {
-	constructor(img) {
-		super({isExplosive: true, image: img[spriteEnum.BUG]});
+	constructor() {
+		super({isExplosive: true, image: EmeraldHunt.IMAGES[spriteEnum.BUG]});
 	}
 }
 
 class Explosion extends BaseObject {
 	#isNewExplosion = true;
-	constructor(img) {
-		super({isExplosive: true, image: img[spriteEnum.EXPLOSION]});
+	constructor() {
+		super({isExplosive: true, image: EmeraldHunt.IMAGES[spriteEnum.EXPLOSION]});
 	}
 
 	get isNewExplosion() { return this.#isNewExplosion; }
@@ -123,15 +123,23 @@ class Explosion extends BaseObject {
 
 class Grenade extends BaseObject {
 	constructor(options) {
-		var img = options.image || options[spriteEnum.GRENADE]
-		super({isUneven: true, isExplosive: true, canBeDestroyed: true, image: img});
+		var o = options || {};
+		o.isExplosive = true;
+		o.canBeDestroyed = true;
+		o.image = EmeraldHunt.IMAGES[spriteEnum.GRENADE];
+
+		// Check if we are are the superclass of DroppedGrenade
+		// If so, don't override canPassThrough
+		if(!options)
+			o.canPassThrough = true;
+		super(o);
 	}
 }
 
 class DroppedGrenade extends Grenade {
 	#timer = 10;
-	constructor(img) {
-		super({canPassThrough: false, image: img});
+	constructor() {
+		super({image: EmeraldHunt.IMAGES[spriteEnum.GRENADE]});
 	}
 
 	get timer() { return this.#timer; }
@@ -219,7 +227,6 @@ class CyclingButton extends Button {
 
 class Field {
 	#ctx;
-	#images;
 	#fieldX;
 	#fieldY;
 	#difficulty;
@@ -227,9 +234,8 @@ class Field {
 	#dozer;
 	#exit;
 
-	constructor(c, i, diff) {
+	constructor(c, diff) {
 		this.#ctx = c;
-		this.#images = i;
 		this.#fieldX = defaultFieldX;
 		this.#fieldY = defaultFieldY;
 		this.#difficulty = diff;
@@ -334,7 +340,7 @@ class Field {
 				}
 
 				if(this.#grid[checkCell] && this.#grid[checkCell].canBeDestroyed) {
-					this.#grid[checkCell] = new Explosion(this.#images);
+					this.#grid[checkCell] = new Explosion();
 				}
 			}
 		}
@@ -349,7 +355,7 @@ class Field {
 		for(let i=0;i<difficultyDistribution[this.#difficulty][t];i++) {
 			let rnd = Math.floor(Math.random() * emptyCells.length);
 			let index = emptyCells.splice(rnd, 1); 
-			this.#grid[index] = new classArray[t](this.#images);
+			this.#grid[index] = new classArray[t]();
 			//console.log("Placed object " + i + " in index " + index);
 			//console.log(this.#grid[index]);
 		}
@@ -363,7 +369,7 @@ class Field {
 
 	addRandomDiamond() {
 		let rnd = Math.floor(Math.random() * this.#fieldX);
-		this.#grid[rnd] = new Diamond(this.#images);
+		this.#grid[rnd] = new Diamond();
 	}
 
 	handleGameInput(e) {
@@ -457,19 +463,23 @@ const spriteSize = 16;
 class EmeraldHunt {
 	#canvas;
 	#ctx;
-	#images;
 	#gameState;
 	#fps;
 	#gameField;
 	#gameScore;
+	static #images;
 
 	constructor(c) {
 		this.#canvas = c;
 		this.#ctx = this.#canvas.getContext("2d");
-		this.#images = null;
 		this.#gameState = stateEnum.LOADING;
 		this.#fps = 10;
 		this.scaleGame(1);
+	}
+
+	// Create a static property
+	static get IMAGES() {
+		return EmeraldHunt.#images;
 	}
 
 	init() {
@@ -503,19 +513,22 @@ class EmeraldHunt {
 
 		// https://stackoverflow.com/questions/19707969/the-invocation-context-this-of-the-foreach-function-call
 		imgs.forEach((item, index) => {
-			
+			// Create a new Image
 			images[index] = new Image();
+			// Perform checks when the image has been loaded
 			images[index].onload = () => {
 				numLoaded++;
+				// If all images have been loaded, make the call
 				if(numLoaded === imgs.length)
 					this.imageLoadComplete(images);
 			};
+			// Bind the source (and start loading)
 			images[index].src = item;
 		}, this);
 	}
 
 	imageLoadComplete(imgs) {
-		this.#images = imgs;
+		EmeraldHunt.#images = imgs;
 		this.#gameState = stateEnum.MENU;
 
 		// Start the timer ticking
@@ -565,7 +578,7 @@ class EmeraldHunt {
 	newGame() {
 		this.#gameScore = 0;
 		this.#gameState = stateEnum.RUNNING;
-		this.#gameField = new Field(this.#ctx, this.#images, difficultyEnum.EASY);
+		this.#gameField = new Field(this.#ctx, difficultyEnum.EASY);
 	}
 
 	updateLoop() {
