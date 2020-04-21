@@ -406,6 +406,7 @@ class EmeraldHunt {
 		let numLoaded = 0;
 		let images = new Array(imgs.length);
 
+		// https://stackoverflow.com/questions/19707969/the-invocation-context-this-of-the-foreach-function-call
 		imgs.forEach((item, index) => {
 			
 			images[index] = new Image();
