@@ -339,8 +339,6 @@ class Field {
 				}
 			}
 		}
-		
-		
 	}
 
 	populateFieldWithType(t) {
@@ -374,15 +372,13 @@ class Field {
 		console.log(e);
 	}
 
-	drawField() {
+	renderField() {
 		this._grid.forEach((e, i) => {
-			this._ctx.fillRect(10,10,50,50);
-			if(e === 0)
+			if(!e)
 				return;
 
-			let x = spriteSize * (Math.floor(i/this._fieldX) + 1);
-			let y = spriteSize * ((i%this._fieldX) + 1);
-			console.log("Drawing img at " + x + "," + y);
+			let x = spriteSize * (i%this._fieldX);
+			let y = spriteSize * Math.floor(i/this._fieldX);
 			this._ctx.drawImage(e.image, x, y);
 		});
 	}
@@ -463,6 +459,8 @@ class EmeraldHunt {
 
 	constructor(c) {
 		this._canvas = c;
+		this._canvas.width = defaultFieldX * spriteSize;
+		this._canvas.height = defaultFieldY * spriteSize;
 		this._ctx = this._canvas.getContext("2d");
 		this._images = null;
 		this._gameState = stateEnum.LOADING;
@@ -526,8 +524,8 @@ class EmeraldHunt {
 	}
 
 	clearCanvas() {
-		canvasContext.fillStyle = "#000000";
-		canvasContext.fillRect(0, 0, canvas.width, canvas.height);
+		this._ctx.fillStyle = "#000000";
+		this._ctx.fillRect(0, 0, this._canvas.width, this._canvas.height);
 	}
 
 	handleInput(e) {
@@ -558,7 +556,6 @@ class EmeraldHunt {
 		this._gameScore = 0;
 		this._gameState = stateEnum.RUNNING;
 		this._gameField = new Field(this._ctx, this._images, difficultyEnum.EASY);
-		this._gameField.drawField();
 	}
 
 	updateLoop() {
@@ -575,6 +572,7 @@ class EmeraldHunt {
 	}
 
 	renderLoop() {
-
+		this.clearCanvas();
+		this._gameField.renderField();
 	}
 }
