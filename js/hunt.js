@@ -459,12 +459,11 @@ class EmeraldHunt {
 
 	constructor(c) {
 		this._canvas = c;
-		this._canvas.width = defaultFieldX * spriteSize;
-		this._canvas.height = defaultFieldY * spriteSize;
 		this._ctx = this._canvas.getContext("2d");
 		this._images = null;
 		this._gameState = stateEnum.LOADING;
 		this._fps = 10;
+		this.scaleGame(1);
 	}
 
 	init() {
@@ -483,8 +482,13 @@ class EmeraldHunt {
 				}
 			}
 		});
+	}
 
-
+	scaleGame(n) {
+		this._canvas.width = defaultFieldX * spriteSize * n;
+		this._canvas.height = defaultFieldY * spriteSize * n;
+		this._ctx.setTransform(1, 0, 0, 1, 0, 0);
+		this._ctx.scale(n, n);
 	}
 
 	preloadImages(imgs) {
