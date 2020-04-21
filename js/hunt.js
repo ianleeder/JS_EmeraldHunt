@@ -1,150 +1,140 @@
 "use strict"
 
 class BaseObject {
-	constructor(img) {
-		this._gravity = true;
-		this._canBeCrushed = false;
-	    this._canPassThrough = true;
-	    this._isFalling = false;
-		this._isUneven = true;
-		this._isPushable = false;
-		this._isExplosive = false;
-		this._canBeDestroyed = true;
-		this._image = img;
+	// ES2019 allows private fields!
+	// https://www.sitepoint.com/javascript-private-class-fields/
+	#gravity = false;
+	#canBeCrushed = false;
+	#canPassThrough = false;
+	#isFalling = false;
+	#isUneven = false;
+	#isPushable = false;
+	#isExplosive = false;
+	#canBeDestroyed = false;
+	#image;
+
+	// Neato way to provide "named" parameters:
+	// https://2ality.com/2011/11/keyword-parameters.html
+	constructor(options) {
+		this.#image = options.image;
+
+		if(options.gravity) this.#gravity = options.gravity;
+		if(options.canBeCrushed) this.#canBeCrushed = options.canBeCrushed;
+		if(options.canPassThrough) this.#canPassThrough = options.canPassThrough;
+		if(options.isFalling) this.#isFalling = options.isFalling;
+		if(options.isUneven) this.#isUneven = options.isUneven;
+		if(options.isPushable) this.#isPushable = options.isPushable;
+		if(options.isExplosive) this.#isExplosive = options.isExplosive;
+		if(options.canBeDestroyed) this.#canBeDestroyed = options.canBeDestroyed;
 	}
 
-	get gravity() { return this._gravity; }
-	get canBeCrushed() { return this._canBeCrushed; }
-	get canPassThrough() { return this._canPassThrough;	}
-	get isFalling() { return this._isFalling; }
-	get isUneven() { return this._isUneven;	}
-	get isPushable() { return this._isPushable; }
-	get isExplosive() { return this._isExplosive; }
-	get canBeDestroyed() { return this._canBeDestroyed; }
-	get image() { return this._image; }
+	get gravity() { return this.#gravity; }
+	get canBeCrushed() { return this.#canBeCrushed; }
+	get canPassThrough() { return this.#canPassThrough;	}
+	get isFalling() { return this.#isFalling; }
+	get isUneven() { return this.#isUneven;	}
+	get isPushable() { return this.#isPushable; }
+	get isExplosive() { return this.#isExplosive; }
+	get canBeDestroyed() { return this.#canBeDestroyed; }
+	get image() { return this.#image; }
 }
 
 class Gem extends BaseObject {
-	constructor(img) {
-		super(img);
-		this._gravity = true;
-		this._canPassThrough = true;
-	}
-}
-
-class Dirt extends BaseObject {
-	constructor(img) {
-		super(img[spriteEnum.DIRT]);
-		this._gravity = false;
-		this._isUneven = false;
-	}
-}
-
-class Rock extends BaseObject {
-	constructor(img) {
-		super(img[spriteEnum.ROCK]);
-		this._canPassThrough = false;
-		this._isPushable = true;
+	constructor(options) {
+		options.gravity = true;
+		options.canPassThrough = true;
+		options.isUneven = true;
+		options.canBeDestroyed = true;
+		super(options);
 	}
 }
 
 class Emerald extends Gem {
 	constructor(img) {
-		super(img[spriteEnum.EMERALD]);
-	}
-}
-
-class Brick extends BaseObject {
-	constructor(img) {
-		super(img[spriteEnum.BRICK]);
-		this._gravity = false;
-		this._canPassThrough = false;
-		this._canBeDestroyed = false;
-		this._isUneven = false;
-	}
-}
-
-class Bomb extends BaseObject {
-	constructor(img) {
-		super(img[spriteEnum.BOMB]);
-		this._isExplosive = true;
-		this._canPassThrough = false;
-		this._canBeCrushed = true;
-		this._isPushable = true;
-	}
-}
-
-class Exit extends BaseObject {
-	constructor(img) {
-		super(img[spriteEnum.EXIT]);
-	}
-}
-
-class Dozer extends BaseObject {
-	constructor(p, img) {
-		super(img[spriteEnum.DOZER]);
-		this._gravity = false;
-		this._canBeCrushed = true;
-		this._isUneven = false;
-
-		this._pos = p;
-	}
-
-	get pos() { return this._pos; }
-}
-
-class Cobblestone extends BaseObject {
-	constructor(img) {
-		super(img[spriteEnum.COBBLE]);
-		this._gravity = false;
-		this._canPassThrough = false;
-	}
-}
-
-class Bug extends BaseObject {
-	constructor(img) {
-		super(img[spriteEnum.BUG]);
-		this._gravity = false;
-		this._canBeCrushed = true;
-	    this._canPassThrough = false;
-		this._isExplosive = true;
-		this._canBeDestroyed = true;
+		super({image: img[spriteEnum.EMERALD]});
 	}
 }
 
 class Diamond extends Gem {
 	constructor(img) {
-		super(img[spriteEnum.DIAMOND]);
-		this._canBeCrushed = true;
+		super({canBeCrushed: true, image: img[spriteEnum.EMERALD]});
+	}
+}
+
+class Dirt extends BaseObject {
+	constructor(img) {
+		super({canPassThrough: true, canBeDestroyed: true, image: img[spriteEnum.DIRT]});
+	}
+}
+
+class Rock extends BaseObject {
+	constructor(img) {
+		super({gravity: true, isUneven: true, isPushable: true, canBeDestroyed: true, image: img[spriteEnum.ROCK]});
+	}
+}
+
+class Brick extends BaseObject {
+	constructor(img) {
+		super({image: img[spriteEnum.BRICK]});
+	}
+}
+
+class Bomb extends BaseObject {
+	constructor(img) {
+		super({gravity: true, isUneven: true, isPushable: true, isExplosive: true, canBeDestroyed: true, image: img[spriteEnum.BOMB]});
+	}
+}
+
+class Exit extends BaseObject {
+	constructor(img) {
+		super({isUneven: true, canBeDestroyed: true, image: img[spriteEnum.EXIT]});
+	}
+}
+
+class Dozer extends BaseObject {
+	#pos = 0;
+	constructor(p, img) {
+		super({canBeCrushed: true, canBeDestroyed: true, image: img[spriteEnum.DOZER]});
+	}
+
+	get pos() { return this.#pos; }
+}
+
+class Cobblestone extends BaseObject {
+	constructor(img) {
+		super({isUneven: true, canBeDestroyed: true, image: img[spriteEnum.COBBLE]});
+	}
+}
+
+class Bug extends BaseObject {
+	constructor(img) {
+		super({isExplosive: true, image: img[spriteEnum.BUG]});
 	}
 }
 
 class Explosion extends BaseObject {
+	#isNewExplosion = true;
 	constructor(img) {
-		super(img[spriteEnum.EXPLOSION]);
-		this._canPassThrough = false;
-		this._isNewExplosion = true;
+		super({isExplosive: true, image: img[spriteEnum.EXPLOSION]});
 	}
 
-	get isNewExplosion() { return this._isNewExplosion; }
+	get isNewExplosion() { return this.#isNewExplosion; }
 }
 
 class Grenade extends BaseObject {
-	constructor(img) {
-		super(img[spriteEnum.GRENADE]);
-		this._gravity = false;
-		this._isExplosive = true;
+	constructor(options) {
+		var img = options.image || options[spriteEnum.GRENADE]
+		super({isUneven: true, isExplosive: true, canBeDestroyed: true, image: img});
 	}
 }
 
 class DroppedGrenade extends Grenade {
+	#timer = 10;
 	constructor(img) {
-		super(img[spriteEnum.GRENADE]);
-		this._canPassThrough = false;
-		this._timer = 10;
+		super({canPassThrough: false, image: img});
 	}
 
-	get timer() { return this._timer; }
+	get timer() { return this.#timer; }
 }
 
 class Button {
@@ -228,22 +218,31 @@ class CyclingButton extends Button {
 }
 
 class Field {
+	#ctx;
+	#images;
+	#fieldX;
+	#fieldY;
+	#difficulty;
+	#grid;
+	#dozer;
+	#exit;
+
 	constructor(c, i, diff) {
-		this._ctx = c;
-		this._images = i;
-		this._fieldX = defaultFieldX;
-		this._fieldY = defaultFieldY;
-		this._difficulty = diff;
+		this.#ctx = c;
+		this.#images = i;
+		this.#fieldX = defaultFieldX;
+		this.#fieldY = defaultFieldY;
+		this.#difficulty = diff;
 		this.initField();
 	}
 
 	initField() {
 		// Move to storing the field in a 1D array
-		this._grid = new Array(this._fieldX * this._fieldY).fill(spriteEnum.BLANK);
+		this.#grid = new Array(this.#fieldX * this.#fieldY).fill(spriteEnum.BLANK);
 
 		// If this field is being used for a menu background, leave it blank
 		// It will self-populate
-		if(this._difficulty === stateEnum.MENU)
+		if(this.#difficulty === stateEnum.MENU)
 			return;
 		
 		let requiredTypes = [
@@ -268,11 +267,11 @@ class Field {
 		// it will be updated twice (right and down)
 
 		// Iterate through bottom to top
-		for(let r=this._fieldY-1;r>=0;r--) {
+		for(let r=this.#fieldY-1;r>=0;r--) {
 			// Iterate through columns left to right
-			for(let c=0;c<this._fieldX;c++) {
-				let cellNum = (r*this._fieldX)+c;
-				let cellVal = this._grid[cellNum];
+			for(let c=0;c<this.#fieldX;c++) {
+				let cellNum = (r*this.#fieldX)+c;
+				let cellVal = this.#grid[cellNum];
 
 				if(cellVal === spriteEnum.BLANK)
 					continue;
@@ -282,7 +281,7 @@ class Field {
 					if(cellVal.newExplosion) {
 						cellVal.newExplosion = false;
 					} else {
-						this._grid[cell] = spriteEnum.BLANK;
+						this.#grid[cell] = spriteEnum.BLANK;
 					}
 					continue;
 				}
@@ -299,43 +298,43 @@ class Field {
 
 	createExplosion(cellNum) {
 		// Clear center square contents (eg grenade/bomb) to avoid infinite recursion.
-		this._grid[cellNum] = 0;
+		this.#grid[cellNum] = 0;
 
 		// Create a 3x3 explosion grid
 		for(let r=-1;r<=1;r++) {
 			for(let c=-1;c<=1;c++) {
 				// Check if we hit left edge
-				if((cellNum % this._fieldX) + c < 0)
+				if((cellNum % this.#fieldX) + c < 0)
 					continue;
 				
 				// Check if we hit left edge
-				if((cellNum % this._fieldX) + c >= this._fieldX)
+				if((cellNum % this.#fieldX) + c >= this.#fieldX)
 					continue;
 				
 				// Check if we hit top edge
-				if(Math.Floor(cellNum / this._fieldX) + r < 0)
+				if(Math.Floor(cellNum / this.#fieldX) + r < 0)
 					continue;
 				
 				// Check if we hit bottom edge
-				if(Math.Floor(cellNum / this._fieldX) + r >= this._fieldY)
+				if(Math.Floor(cellNum / this.#fieldX) + r >= this.#fieldY)
 					continue;
 
 				// Cell is valid, continue checks
-				let checkCell = (r * this._fieldX) + c;
+				let checkCell = (r * this.#fieldX) + c;
 				
 				// Can't check gamegrid, since if we sit on a dropped grenade we don't exist in the grid
 				// If it contains dozer, die
-				if(checkCell === this._dozer.pos)	{
+				if(checkCell === this.#dozer.pos)	{
 					// TODO Deal with death here
 				}
 
-				if(this._grid[checkCell] && this._grid[checkCell].isExplosive) {
+				if(this.#grid[checkCell] && this.#grid[checkCell].isExplosive) {
 					this.createExplosion(checkCell);
 					continue;
 				}
 
-				if(this._grid[checkCell] && this._grid[checkCell].canBeDestroyed) {
-					this._grid[checkCell] = new Explosion(this._images);
+				if(this.#grid[checkCell] && this.#grid[checkCell].canBeDestroyed) {
+					this.#grid[checkCell] = new Explosion(this.#images);
 				}
 			}
 		}
@@ -345,26 +344,26 @@ class Field {
 		let placed = 0;
 		let emptyCells = this.findAllCellsOfType(spriteEnum.BLANK);
 
-		//console.log("Populating type " + t + ", should be " + difficultyDistribution[this._difficulty][t]);
+		//console.log("Populating type " + t + ", should be " + difficultyDistribution[this.#difficulty][t]);
 
-		for(let i=0;i<difficultyDistribution[this._difficulty][t];i++) {
+		for(let i=0;i<difficultyDistribution[this.#difficulty][t];i++) {
 			let rnd = Math.floor(Math.random() * emptyCells.length);
 			let index = emptyCells.splice(rnd, 1); 
-			this._grid[index] = new classArray[t](this._images);
+			this.#grid[index] = new classArray[t](this.#images);
 			//console.log("Placed object " + i + " in index " + index);
-			//console.log(this._grid[index]);
+			//console.log(this.#grid[index]);
 		}
 	}
 
 	findAllCellsOfType(t) {
 		// https://stackoverflow.com/a/41271541/5329728
 		// e for element, i for index
-		return this._grid.map((e, i) => e === t ? i : '').filter(String);
+		return this.#grid.map((e, i) => e === t ? i : '').filter(String);
 	}
 
 	addRandomDiamond() {
-		let rnd = Math.floor(Math.random() * this._fieldX);
-		this._grid[rnd] = new Diamond(this._images);
+		let rnd = Math.floor(Math.random() * this.#fieldX);
+		this.#grid[rnd] = new Diamond(this.#images);
 	}
 
 	handleGameInput(e) {
@@ -373,13 +372,13 @@ class Field {
 	}
 
 	renderField() {
-		this._grid.forEach((e, i) => {
+		this.#grid.forEach((e, i) => {
 			if(!e)
 				return;
 
-			let x = spriteSize * (i%this._fieldX);
-			let y = spriteSize * Math.floor(i/this._fieldX);
-			this._ctx.drawImage(e.image, x, y);
+			let x = spriteSize * (i%this.#fieldX);
+			let y = spriteSize * Math.floor(i/this.#fieldX);
+			this.#ctx.drawImage(e.image, x, y);
 		});
 	}
 }
@@ -456,13 +455,20 @@ const defaultFieldY = 20;
 const spriteSize = 16;
 
 class EmeraldHunt {
+	#canvas;
+	#ctx;
+	#images;
+	#gameState;
+	#fps;
+	#gameField;
+	#gameScore;
 
 	constructor(c) {
-		this._canvas = c;
-		this._ctx = this._canvas.getContext("2d");
-		this._images = null;
-		this._gameState = stateEnum.LOADING;
-		this._fps = 10;
+		this.#canvas = c;
+		this.#ctx = this.#canvas.getContext("2d");
+		this.#images = null;
+		this.#gameState = stateEnum.LOADING;
+		this.#fps = 10;
 		this.scaleGame(1);
 	}
 
@@ -475,20 +481,20 @@ class EmeraldHunt {
 		addEventListener("keyup", e => {
 			if(e.keyCode==27) {
 				console.log("Received ESC");
-				if(this._gameState == stateEnum.RUNNING) {
-					this._gameState = stateEnum.PAUSED;
-				} else if(this._gameState == stateEnum.AUSED) {
-					this._gameState = stateEnum.RUNNING;
+				if(this.#gameState == stateEnum.RUNNING) {
+					this.#gameState = stateEnum.PAUSED;
+				} else if(this.#gameState == stateEnum.AUSED) {
+					this.#gameState = stateEnum.RUNNING;
 				}
 			}
 		});
 	}
 
 	scaleGame(n) {
-		this._canvas.width = defaultFieldX * spriteSize * n;
-		this._canvas.height = defaultFieldY * spriteSize * n;
-		this._ctx.setTransform(1, 0, 0, 1, 0, 0);
-		this._ctx.scale(n, n);
+		this.#canvas.width = defaultFieldX * spriteSize * n;
+		this.#canvas.height = defaultFieldY * spriteSize * n;
+		this.#ctx.setTransform(1, 0, 0, 1, 0, 0);
+		this.#ctx.scale(n, n);
 	}
 
 	preloadImages(imgs) {
@@ -509,14 +515,14 @@ class EmeraldHunt {
 	}
 
 	imageLoadComplete(imgs) {
-		this._images = imgs;
-		this._gameState = stateEnum.MENU;
+		this.#images = imgs;
+		this.#gameState = stateEnum.MENU;
 
 		// Start the timer ticking
 		setInterval(() => {
 			this.updateLoop();
 			this.renderLoop();
-		}, 1000/this._fps);
+		}, 1000/this.#fps);
 
 		// This is just debug fluff
 		imgs.forEach(item => {
@@ -528,14 +534,14 @@ class EmeraldHunt {
 	}
 
 	clearCanvas() {
-		this._ctx.fillStyle = "#000000";
-		this._ctx.fillRect(0, 0, this._canvas.width, this._canvas.height);
+		this.#ctx.fillStyle = "#000000";
+		this.#ctx.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
 	}
 
 	handleInput(e) {
-		switch(this._gameState) {
+		switch(this.#gameState) {
 			case stateEnum.RUNNING:
-				this._gameField.handleGameInput(e);
+				this.#gameField.handleGameInput(e);
 				break;
 	
 			case stateEnum.MENU:
@@ -557,26 +563,26 @@ class EmeraldHunt {
 	}
 
 	newGame() {
-		this._gameScore = 0;
-		this._gameState = stateEnum.RUNNING;
-		this._gameField = new Field(this._ctx, this._images, difficultyEnum.EASY);
+		this.#gameScore = 0;
+		this.#gameState = stateEnum.RUNNING;
+		this.#gameField = new Field(this.#ctx, this.#images, difficultyEnum.EASY);
 	}
 
 	updateLoop() {
-		switch(this._gameState) {
+		switch(this.#gameState) {
 			case stateEnum.MENU:
-				this._gameField.addRandomDiamond();
-				this._gameField.updateField();
+				this.#gameField.addRandomDiamond();
+				this.#gameField.updateField();
 				break;
 	
 			case stateEnum.RUNNING:
-				this._gameField.updateField();
+				this.#gameField.updateField();
 				break;
 		}
 	}
 
 	renderLoop() {
 		this.clearCanvas();
-		this._gameField.renderField();
+		this.#gameField.renderField();
 	}
 }
