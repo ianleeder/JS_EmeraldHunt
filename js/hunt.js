@@ -34,7 +34,7 @@ class Gem extends BaseObject {
 
 class Dirt extends BaseObject {
 	constructor(img) {
-		super(img);
+		super(img[spriteEnum.DIRT]);
 		this._gravity = false;
 		this._isUneven = false;
 	}
@@ -42,7 +42,7 @@ class Dirt extends BaseObject {
 
 class Rock extends BaseObject {
 	constructor(img) {
-		super(img);
+		super(img[spriteEnum.ROCK]);
 		this._canPassThrough = false;
 		this._isPushable = true;
 	}
@@ -50,13 +50,13 @@ class Rock extends BaseObject {
 
 class Emerald extends Gem {
 	constructor(img) {
-		super(img);
+		super(img[spriteEnum.EMERALD]);
 	}
 }
 
 class Brick extends BaseObject {
 	constructor(img) {
-		super(img);
+		super(img[spriteEnum.BRICK]);
 		this._gravity = false;
 		this._canPassThrough = false;
 		this._canBeDestroyed = false;
@@ -66,7 +66,7 @@ class Brick extends BaseObject {
 
 class Bomb extends BaseObject {
 	constructor(img) {
-		super(img);
+		super(img[spriteEnum.BOMB]);
 		this._isExplosive = true;
 		this._canPassThrough = false;
 		this._canBeCrushed = true;
@@ -76,28 +76,26 @@ class Bomb extends BaseObject {
 
 class Exit extends BaseObject {
 	constructor(img) {
-		super(img);
+		super(img[spriteEnum.EXIT]);
 	}
 }
 
 class Dozer extends BaseObject {
-	constructor(x, y, img) {
-		super(img);
+	constructor(p, img) {
+		super(img[spriteEnum.DOZER]);
 		this._gravity = false;
 		this._canBeCrushed = true;
 		this._isUneven = false;
 
-		this._xPos = x;
-		this._yPost = y;
+		this._pos = p;
 	}
 
-	get xPos() { return this._xPos; }
-	get yPos() { return this._yPos; }
+	get pos() { return this._pos; }
 }
 
 class Cobblestone extends BaseObject {
 	constructor(img) {
-		super(img);
+		super(img[spriteEnum.COBBLE]);
 		this._gravity = false;
 		this._canPassThrough = false;
 	}
@@ -105,7 +103,7 @@ class Cobblestone extends BaseObject {
 
 class Bug extends BaseObject {
 	constructor(img) {
-		super(img);
+		super(img[spriteEnum.BUG]);
 		this._gravity = false;
 		this._canBeCrushed = true;
 	    this._canPassThrough = false;
@@ -116,14 +114,14 @@ class Bug extends BaseObject {
 
 class Diamond extends Gem {
 	constructor(img) {
-		super(img);
+		super(img[spriteEnum.DIAMOND]);
 		this._canBeCrushed = true;
 	}
 }
 
 class Explosion extends BaseObject {
 	constructor(img) {
-		super(img);
+		super(img[spriteEnum.EXPLOSION]);
 		this._canPassThrough = false;
 		this._isNewExplosion = true;
 	}
@@ -133,7 +131,7 @@ class Explosion extends BaseObject {
 
 class Grenade extends BaseObject {
 	constructor(img) {
-		super(img);
+		super(img[spriteEnum.GRENADE]);
 		this._gravity = false;
 		this._isExplosive = true;
 	}
@@ -141,7 +139,7 @@ class Grenade extends BaseObject {
 
 class DroppedGrenade extends Grenade {
 	constructor(img) {
-		super(img);
+		super(img[spriteEnum.GRENADE]);
 		this._canPassThrough = false;
 		this._timer = 10;
 	}
@@ -240,7 +238,6 @@ class Field {
 	}
 
 	initField() {
-		console.log("initing field");
 		// Move to storing the field in a 1D array
 		this._grid = new Array(this._fieldX * this._fieldY).fill(spriteEnum.BLANK);
 
@@ -264,6 +261,88 @@ class Field {
 		requiredTypes.forEach(this.populateFieldWithType.bind(this));
 	}
 
+	updateField() {
+		// We get ordering issues when moving items around.
+		// If we do a single pass through the field, items can be updated twice (two movements in one tick of time)
+		// If an item moves to the right (in order to fall down), and we are iterating left-to-right,
+		// it will be updated twice (right and down)
+
+		// Iterate through bottom to top
+		for(let r=this._fieldY-1;r>=0;r--) {
+			// Iterate through columns left to right
+			for(let c=0;c<this._fieldX;c++) {
+				let cellNum = (r*this._fieldX)+c;
+				let cellVal = this._grid[cellNum];
+
+				if(cellVal === spriteEnum.BLANK)
+					continue;
+
+				// Check if cell is an explosion
+				if(cellVal instanceof Explosion) {
+					if(cellVal.newExplosion) {
+						cellVal.newExplosion = false;
+					} else {
+						this._grid[cell] = spriteEnum.BLANK;
+					}
+					continue;
+				}
+
+				// Check if cell is a DroppedGrenade
+				if(cellVal instanceof DroppedGrenade) {
+					if(--cellVal.timer <= 0) {
+						createExplosion(cellNum);
+					}
+				}
+			}
+		}
+	}
+
+	createExplosion(cellNum) {
+		// Clear center square contents (eg grenade/bomb) to avoid infinite recursion.
+		this._grid[cellNum] = 0;
+
+		// Create a 3x3 explosion grid
+		for(let r=-1;r<=1;r++) {
+			for(let c=-1;c<=1;c++) {
+				// Check if we hit left edge
+				if((cellNum % this._fieldX) + c < 0)
+					continue;
+				
+				// Check if we hit left edge
+				if((cellNum % this._fieldX) + c >= this._fieldX)
+					continue;
+				
+				// Check if we hit top edge
+				if(Math.Floor(cellNum / this._fieldX) + r < 0)
+					continue;
+				
+				// Check if we hit bottom edge
+				if(Math.Floor(cellNum / this._fieldX) + r >= this._fieldY)
+					continue;
+
+				// Cell is valid, continue checks
+				let checkCell = (r * this._fieldX) + c;
+				
+				// Can't check gamegrid, since if we sit on a dropped grenade we don't exist in the grid
+				// If it contains dozer, die
+				if(checkCell === this._dozer.pos)	{
+					// TODO Deal with death here
+				}
+
+				if(this._grid[checkCell] && this._grid[checkCell].isExplosive) {
+					this.createExplosion(checkCell);
+					continue;
+				}
+
+				if(this._grid[checkCell] && this._grid[checkCell].canBeDestroyed) {
+					this._grid[checkCell] = new Explosion(this._images);
+				}
+			}
+		}
+		
+		
+	}
+
 	populateFieldWithType(t) {
 		let placed = 0;
 		let emptyCells = this.findAllCellsOfType(spriteEnum.BLANK);
@@ -273,7 +352,7 @@ class Field {
 		for(let i=0;i<difficultyDistribution[this._difficulty][t];i++) {
 			let rnd = Math.floor(Math.random() * emptyCells.length);
 			let index = emptyCells.splice(rnd, 1); 
-			this._grid[index] = new classArray[t](this._images[t]);
+			this._grid[index] = new classArray[t](this._images);
 			//console.log("Placed object " + i + " in index " + index);
 			//console.log(this._grid[index]);
 		}
@@ -283,6 +362,11 @@ class Field {
 		// https://stackoverflow.com/a/41271541/5329728
 		// e for element, i for index
 		return this._grid.map((e, i) => e === t ? i : '').filter(String);
+	}
+
+	addRandomDiamond() {
+		let rnd = Math.floor(Math.random() * this._fieldX);
+		this._grid[rnd] = new Diamond(this._images);
 	}
 
 	handleGameInput(e) {
@@ -382,6 +466,7 @@ class EmeraldHunt {
 		this._ctx = this._canvas.getContext("2d");
 		this._images = null;
 		this._gameState = stateEnum.LOADING;
+		this._fps = 10;
 	}
 
 	init() {
@@ -400,6 +485,8 @@ class EmeraldHunt {
 				}
 			}
 		});
+
+
 	}
 
 	preloadImages(imgs) {
@@ -423,6 +510,12 @@ class EmeraldHunt {
 		this._images = imgs;
 		this._gameState = stateEnum.MENU;
 
+		// Start the timer ticking
+		setInterval(() => {
+			this.updateLoop();
+			this.renderLoop();
+		}, 1000/this._fps);
+
 		// This is just debug fluff
 		imgs.forEach(item => {
 			document.getElementById("imagesDiv").appendChild(item);
@@ -430,6 +523,11 @@ class EmeraldHunt {
 
 		// Again debug fluff
 		this.newGame();
+	}
+
+	clearCanvas() {
+		canvasContext.fillStyle = "#000000";
+		canvasContext.fillRect(0, 0, canvas.width, canvas.height);
 	}
 
 	handleInput(e) {
@@ -461,5 +559,22 @@ class EmeraldHunt {
 		this._gameState = stateEnum.RUNNING;
 		this._gameField = new Field(this._ctx, this._images, difficultyEnum.EASY);
 		this._gameField.drawField();
+	}
+
+	updateLoop() {
+		switch(this._gameState) {
+			case stateEnum.MENU:
+				this._gameField.addRandomDiamond();
+				this._gameField.updateField();
+				break;
+	
+			case stateEnum.RUNNING:
+				this._gameField.updateField();
+				break;
+		}
+	}
+
+	renderLoop() {
+
 	}
 }
