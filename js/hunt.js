@@ -1,7 +1,7 @@
 "use strict"
 
 class BaseObject {
-	constructor(imgIndex) {
+	constructor(img) {
 		this._gravity = true;
 		this._canBeCrushed = false;
 	    this._canPassThrough = true;
@@ -10,7 +10,7 @@ class BaseObject {
 		this._isPushable = false;
 		this._isExplosive = false;
 		this._canBeDestroyed = true;
-		this._imageIndex = imgIndex;
+		this._image = img;
 	}
 
 	get gravity() { return this._gravity; }
@@ -21,7 +21,7 @@ class BaseObject {
 	get isPushable() { return this._isPushable; }
 	get isExplosive() { return this._isExplosive; }
 	get canBeDestroyed() { return this._canBeDestroyed; }
-	get imageIndex() { return this._image; }
+	get image() { return this._image; }
 }
 
 class Gem extends BaseObject {
@@ -33,30 +33,30 @@ class Gem extends BaseObject {
 }
 
 class Dirt extends BaseObject {
-	constructor() {
-		super(spriteEnum.DIRT);
+	constructor(img) {
+		super(img);
 		this._gravity = false;
 		this._isUneven = false;
 	}
 }
 
 class Rock extends BaseObject {
-	constructor() {
-		super(spriteEnum.ROCK);
+	constructor(img) {
+		super(img);
 		this._canPassThrough = false;
 		this._isPushable = true;
 	}
 }
 
 class Emerald extends Gem {
-	constructor() {
-		super(spriteEnum.EMERALD);
+	constructor(img) {
+		super(img);
 	}
 }
 
 class Brick extends BaseObject {
-	constructor() {
-		super(spriteEnum.BRICK);
+	constructor(img) {
+		super(img);
 		this._gravity = false;
 		this._canPassThrough = false;
 		this._canBeDestroyed = false;
@@ -65,8 +65,8 @@ class Brick extends BaseObject {
 }
 
 class Bomb extends BaseObject {
-	constructor() {
-		super(spriteEnum.BOMB);
+	constructor(img) {
+		super(img);
 		this._isExplosive = true;
 		this._canPassThrough = false;
 		this._canBeCrushed = true;
@@ -75,14 +75,14 @@ class Bomb extends BaseObject {
 }
 
 class Exit extends BaseObject {
-	constructor() {
-		super(spriteEnum.EXIT);
+	constructor(img) {
+		super(img);
 	}
 }
 
 class Dozer extends BaseObject {
-	constructor(x, y) {
-		super(spriteEnum.DOZER);
+	constructor(x, y, img) {
+		super(img);
 		this._gravity = false;
 		this._canBeCrushed = true;
 		this._isUneven = false;
@@ -96,8 +96,8 @@ class Dozer extends BaseObject {
 }
 
 class Cobblestone extends BaseObject {
-	constructor() {
-		super(spriteEnum.COBBLE);
+	constructor(img) {
+		super(img);
 		this._gravity = false;
 		this._canPassThrough = false;
 	}
@@ -105,7 +105,7 @@ class Cobblestone extends BaseObject {
 
 class Bug extends BaseObject {
 	constructor(img) {
-		super(spriteEnum.BUG);
+		super(img);
 		this._gravity = false;
 		this._canBeCrushed = true;
 	    this._canPassThrough = false;
@@ -115,15 +115,15 @@ class Bug extends BaseObject {
 }
 
 class Diamond extends Gem {
-	constructor() {
-		super(spriteEnum.DIAMOND);
+	constructor(img) {
+		super(img);
 		this._canBeCrushed = true;
 	}
 }
 
 class Explosion extends BaseObject {
-	constructor() {
-		super(spriteEnum.EXPLOSION);
+	constructor(img) {
+		super(img);
 		this._canPassThrough = false;
 		this._isNewExplosion = true;
 	}
@@ -132,16 +132,16 @@ class Explosion extends BaseObject {
 }
 
 class Grenade extends BaseObject {
-	constructor() {
-		super(spriteEnum.GRENADE);
+	constructor(img) {
+		super(img);
 		this._gravity = false;
 		this._isExplosive = true;
 	}
 }
 
 class DroppedGrenade extends Grenade {
-	constructor() {
-		super(spriteEnum.GRENADE);
+	constructor(img) {
+		super(img);
 		this._canPassThrough = false;
 		this._timer = 10;
 	}
@@ -230,8 +230,9 @@ class CyclingButton extends Button {
 }
 
 class Field {
-	constructor(c, diff) {
+	constructor(c, i, diff) {
 		this._ctx = c;
+		this._images = i;
 		this._fieldX = defaultFieldX;
 		this._fieldY = defaultFieldY;
 		this._difficulty = diff;
@@ -245,7 +246,7 @@ class Field {
 
 		// If this field is being used for a menu background, leave it blank
 		// It will self-populate
-		if(this._difficulty === gameStates.MENU)
+		if(this._difficulty === stateEnum.MENU)
 			return;
 		
 		let requiredTypes = [
@@ -267,13 +268,13 @@ class Field {
 		let placed = 0;
 		let emptyCells = this.findAllCellsOfType(spriteEnum.BLANK);
 
-		console.log("Populating type " + t + ", should be " + fieldDifficultyDistribution[this._difficulty][t]);
+		//console.log("Populating type " + t + ", should be " + difficultyDistribution[this._difficulty][t]);
 
-		for(let i=0;i<fieldDifficultyDistribution[this._difficulty][t];i++) {
+		for(let i=0;i<difficultyDistribution[this._difficulty][t];i++) {
 			let rnd = Math.floor(Math.random() * emptyCells.length);
 			let index = emptyCells.splice(rnd, 1); 
-			this._grid[index] = new classArray[t];
-			console.log("Placed object " + i + " in index " + index);
+			this._grid[index] = new classArray[t](this._images[t]);
+			//console.log("Placed object " + i + " in index " + index);
 			//console.log(this._grid[index]);
 		}
 	}
@@ -288,13 +289,26 @@ class Field {
 		console.log("Field received game input");
 		console.log(e);
 	}
+
+	drawField() {
+		this._grid.forEach((e, i) => {
+			this._ctx.fillRect(10,10,50,50);
+			if(e === 0)
+				return;
+
+			let x = spriteSize * (Math.floor(i/this._fieldX) + 1);
+			let y = spriteSize * ((i%this._fieldX) + 1);
+			console.log("Drawing img at " + x + "," + y);
+			this._ctx.drawImage(e.image, x, y);
+		});
+	}
 }
 
 // https://www.sohamkamani.com/blog/2017/08/21/enums-in-javascript/#enumerations-with-objects
 // "Since it does not make a difference as to what values we use for the enums,
 // we are using string names. This can provide a more usefull message while debugging,
 // as compared to using numbers, which are the more conventional choice when using enums"
-const gameStates = {
+const stateEnum = {
 	LOADING: 'loading',
 	MENU: 'menu',
 	RUNNING: 'running',
@@ -303,7 +317,7 @@ const gameStates = {
 	DEAD: 'dead'
 }
 
-const gameDifficulties = {
+const difficultyEnum = {
 	EASY: 'Easy',
 	MEDIUM: 'Medium',
 	HARD: 'Hard',
@@ -350,12 +364,12 @@ const classArray = [
 ];
 
 // Types are stored in the same array order as the sprites]
-let fieldDifficultyDistribution = {};
-fieldDifficultyDistribution[gameDifficulties.EASY] =	[0,100,60,150,50,0,0,0,50,0,0,0,0,20,0,0];
-fieldDifficultyDistribution[gameDifficulties.MEDIUM] =	[0,100,60,150,50,0,0,0,50,0,0,0,0,20,0,0];
-fieldDifficultyDistribution[gameDifficulties.HARD] =	[0,100,60,150,50,0,0,0,50,0,0,0,0,20,0,0];
-fieldDifficultyDistribution[gameDifficulties.HARDER] =	[0,100,60,150,50,0,0,0,50,0,0,0,0,20,0,0];
-fieldDifficultyDistribution[gameDifficulties.HARDEST] =	[0,100,60,150,50,0,0,0,50,0,0,0,0,20,0,0];
+let difficultyDistribution = {};
+difficultyDistribution[difficultyEnum.EASY] =		[0,100,60,150,50,0,0,0,50,0,0,0,0,20,0,0];
+difficultyDistribution[difficultyEnum.MEDIUM] =		[0,100,60,150,50,0,0,0,50,0,0,0,0,20,0,0];
+difficultyDistribution[difficultyEnum.HARD] =		[0,100,60,150,50,0,0,0,50,0,0,0,0,20,0,0];
+difficultyDistribution[difficultyEnum.HARDER] =		[0,100,60,150,50,0,0,0,50,0,0,0,0,20,0,0];
+difficultyDistribution[difficultyEnum.HARDEST] =	[0,100,60,150,50,0,0,0,50,0,0,0,0,20,0,0];
 
 const defaultFieldX = 40;
 const defaultFieldY = 20;
@@ -367,36 +381,50 @@ class EmeraldHunt {
 		this._canvas = c;
 		this._ctx = this._canvas.getContext("2d");
 		this._images = null;
-		this._gameState = gameStates.LOADING;
+		this._gameState = stateEnum.LOADING;
 	}
 
 	init() {
 		// When we pass a callback it breaks the THIS reference, we need to bind it
 		// https://stackoverflow.com/questions/20279484/how-to-access-the-correct-this-inside-a-callback
 		// https://stackoverflow.com/questions/46618945/cannot-set-property-value-of-undefined-inside-es6-class
-		readObjectsUrl('http://www.ianleeder.com/OBJECTS.DAT', this.imagesLoaded.bind(this));
+		readObjectsUrl('http://www.ianleeder.com/OBJECTS.DAT', this.preloadImages.bind(this));
 		addEventListener("keydown", this.handleInput.bind(this));
-		addEventListener("keyup", function(e) {
+		addEventListener("keyup", e => {
 			if(e.keyCode==27) {
 				console.log("Received ESC");
-				if(this._gameState == gameStates.RUNNING) {
-					this._gameState = gameStates.PAUSED;
-				} else if(this._gameState == gameStates.AUSED) {
-					this._gameState = gameStates.RUNNING;
+				if(this._gameState == stateEnum.RUNNING) {
+					this._gameState = stateEnum.PAUSED;
+				} else if(this._gameState == stateEnum.AUSED) {
+					this._gameState = stateEnum.RUNNING;
 				}
 			}
 		});
 	}
 
-	imagesLoaded(imgs) {
+	preloadImages(imgs) {
+		let numLoaded = 0;
+		let images = new Array(imgs.length);
+
+		imgs.forEach((item, index) => {
+			
+			images[index] = new Image();
+			images[index].onload = () => {
+				numLoaded++;
+				if(numLoaded === imgs.length)
+					this.imageLoadComplete(images);
+			};
+			images[index].src = item;
+		}, this);
+	}
+
+	imageLoadComplete(imgs) {
 		this._images = imgs;
-		this._gameState = gameStates.MENU;
+		this._gameState = stateEnum.MENU;
 
 		// This is just debug fluff
-		this._images.forEach(function(item, index) {
-			let img = document.createElement("img");
-			img.src = item;
-			document.getElementById("imagesDiv").appendChild(img);
+		imgs.forEach(item => {
+			document.getElementById("imagesDiv").appendChild(item);
 		});
 
 		// Again debug fluff
@@ -405,19 +433,19 @@ class EmeraldHunt {
 
 	handleInput(e) {
 		switch(this._gameState) {
-			case gameStates.RUNNING:
+			case stateEnum.RUNNING:
 				this._gameField.handleGameInput(e);
 				break;
 	
-			case gameStates.MENU:
+			case stateEnum.MENU:
 				handleMenuInput(e, true, menuButtons);
 				break;
 	
-			case gameStates.DEAD:
+			case stateEnum.DEAD:
 				handleMenuInput(e, true, deathButtons);
 				break;
 	
-			case gameStates.PAUSED:
+			case stateEnum.PAUSED:
 				handleMenuInput(e, true, pauseButtons);
 				break;
 		}
@@ -429,7 +457,8 @@ class EmeraldHunt {
 
 	newGame() {
 		this._gameScore = 0;
-		this._gameState = gameStates.RUNNING;
-		this._gameField = new Field(this._ctx, gameDifficulties.EASY);
+		this._gameState = stateEnum.RUNNING;
+		this._gameField = new Field(this._ctx, this._images, difficultyEnum.EASY);
+		this._gameField.drawField();
 	}
 }
