@@ -32,20 +32,23 @@
 
 <!-- <script type="text/javascript" src="js/emerald_hunt.js"></script> -->
 <script type="text/javascript" src="js/fileio.js"></script>
-<script type="text/javascript" src="js/hunt.js"></script>
+<!-- <script type="module" src="js/hunt.js"></script> -->
+<script type="module" src="js/hunt.js"></script>
+<script type="module" src="js/objectclasses.js"></script>
 
-<script type="text/javascript">
+<script type="module">
+	import {EmeraldHunt} from "/js/hunt.js";
+
 	window.onload = init;
-	var g;
+	var app;
 	
 	function init() {
-		g = new EmeraldHunt(document.getElementById("huntCanvas"));
+		app = new EmeraldHunt(document.getElementById("huntCanvas"));
 		document.getElementById('scale').addEventListener('change', changeScale, false);
-		g.init();
+		app.init();
 	};
 
 	function changeScale(e) {
-		var scale = e.target.value;
-		g.scaleGame(scale);
+		app.scaleGame(e.target.value);
 	}
 </script>
