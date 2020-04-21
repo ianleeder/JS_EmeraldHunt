@@ -34,7 +34,7 @@ class Gem extends BaseObject {
 
 class Dirt extends BaseObject {
 	constructor() {
-		super(spriteTypes.DIRT);
+		super(spriteEnum.DIRT);
 		this._gravity = false;
 		this._isUneven = false;
 	}
@@ -42,7 +42,7 @@ class Dirt extends BaseObject {
 
 class Rock extends BaseObject {
 	constructor() {
-		super(spriteTypes.ROCK);
+		super(spriteEnum.ROCK);
 		this._canPassThrough = false;
 		this._isPushable = true;
 	}
@@ -50,13 +50,13 @@ class Rock extends BaseObject {
 
 class Emerald extends Gem {
 	constructor() {
-		super(spriteTypes.EMERALD);
+		super(spriteEnum.EMERALD);
 	}
 }
 
 class Brick extends BaseObject {
 	constructor() {
-		super(spriteTypes.BRICK);
+		super(spriteEnum.BRICK);
 		this._gravity = false;
 		this._canPassThrough = false;
 		this._canBeDestroyed = false;
@@ -66,7 +66,7 @@ class Brick extends BaseObject {
 
 class Bomb extends BaseObject {
 	constructor() {
-		super(spriteTypes.BOMB);
+		super(spriteEnum.BOMB);
 		this._isExplosive = true;
 		this._canPassThrough = false;
 		this._canBeCrushed = true;
@@ -76,13 +76,13 @@ class Bomb extends BaseObject {
 
 class Exit extends BaseObject {
 	constructor() {
-		super(spriteTypes.EXIT);
+		super(spriteEnum.EXIT);
 	}
 }
 
 class Dozer extends BaseObject {
 	constructor(x, y) {
-		super(spriteTypes.DOZER);
+		super(spriteEnum.DOZER);
 		this._gravity = false;
 		this._canBeCrushed = true;
 		this._isUneven = false;
@@ -97,7 +97,7 @@ class Dozer extends BaseObject {
 
 class Cobblestone extends BaseObject {
 	constructor() {
-		super(spriteTypes.COBBLE);
+		super(spriteEnum.COBBLE);
 		this._gravity = false;
 		this._canPassThrough = false;
 	}
@@ -105,7 +105,7 @@ class Cobblestone extends BaseObject {
 
 class Bug extends BaseObject {
 	constructor(img) {
-		super(spriteTypes.BUG);
+		super(spriteEnum.BUG);
 		this._gravity = false;
 		this._canBeCrushed = true;
 	    this._canPassThrough = false;
@@ -116,14 +116,14 @@ class Bug extends BaseObject {
 
 class Diamond extends Gem {
 	constructor() {
-		super(spriteTypes.DIAMOND);
+		super(spriteEnum.DIAMOND);
 		this._canBeCrushed = true;
 	}
 }
 
 class Explosion extends BaseObject {
 	constructor() {
-		super(spriteTypes.EXPLOSION);
+		super(spriteEnum.EXPLOSION);
 		this._canPassThrough = false;
 		this._isNewExplosion = true;
 	}
@@ -133,7 +133,7 @@ class Explosion extends BaseObject {
 
 class Grenade extends BaseObject {
 	constructor() {
-		super(spriteTypes.GRENADE);
+		super(spriteEnum.GRENADE);
 		this._gravity = false;
 		this._isExplosive = true;
 	}
@@ -141,7 +141,7 @@ class Grenade extends BaseObject {
 
 class DroppedGrenade extends Grenade {
 	constructor() {
-		super(spriteTypes.GRENADE);
+		super(spriteEnum.GRENADE);
 		this._canPassThrough = false;
 		this._timer = 10;
 	}
@@ -240,15 +240,48 @@ class Field {
 
 	initField() {
 		console.log("initing field");
-		this._grid = new Array(this._fieldX);
-		for(var i=0;i<this._grid.length;i++){
-			this._grid[i] = new Array(this._fieldY);
-		}
+		// Move to storing the field in a 1D array
+		this._grid = new Array(this._fieldX * this._fieldY).fill(spriteEnum.BLANK);
 
+		// If this field is being used for a menu background, leave it blank
+		// It will self-populate
 		if(this._difficulty === gameStates.MENU)
 			return;
 		
-		
+		let requiredTypes = [
+			spriteEnum.DIRT,
+			spriteEnum.ROCK,
+			spriteEnum.EMERALD,
+			spriteEnum.BRICK,
+			spriteEnum.BOMB,
+			spriteEnum.COBBLE,
+			spriteEnum.BUG,
+			spriteEnum.DIAMOND,
+			spriteEnum.GRENADE
+		];
+
+		requiredTypes.forEach(this.populateFieldWithType.bind(this));
+	}
+
+	populateFieldWithType(t) {
+		let placed = 0;
+		let emptyCells = this.findAllCellsOfType(spriteEnum.BLANK);
+
+		console.log("Populating type " + t + ", should be " + fieldDifficultyDistribution[this._difficulty][t]);
+
+		for(let i=0;i<fieldDifficultyDistribution[this._difficulty][t];i++) {
+			let rnd = Math.floor(Math.random() * emptyCells.length);
+			let index = emptyCells.splice(rnd, 1); 
+			this._grid[index] = new classArray[t];
+			console.log("Placed object " + i + " in index " + index);
+			//console.log(this._grid[index]);
+		}
+	}
+
+	findAllCellsOfType(t) {
+		// https://stackoverflow.com/a/41271541/5329728
+		// e for element, i for index
+		return this._grid.map((e, i) => e === t ? i : '').filter(String);
 	}
 
 	handleGameInput(e) {
@@ -278,7 +311,7 @@ const gameDifficulties = {
 	HARDEST: 'Hardest'
 }
 
-const spriteTypes = {
+const spriteEnum = {
 	BLANK: 0,
 	DIRT: 1,
 	ROCK: 2,
@@ -296,6 +329,25 @@ const spriteTypes = {
 	NOTUSED: 14,
 	ALTDOZER: 15
 }
+
+const classArray = [
+	0,
+	Dirt,
+	Rock,
+	Emerald,
+	Brick,
+	Bomb,
+	Exit,
+	Dozer,
+	Cobblestone,
+	Bug,
+	Diamond,
+	0,
+	Explosion,
+	Grenade,
+	0,
+	0
+];
 
 // Types are stored in the same array order as the sprites]
 let fieldDifficultyDistribution = {};
