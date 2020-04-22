@@ -91,6 +91,9 @@ class Field {
 				}
 			}
 
+			if(!obj.gravity)
+				continue;
+
 			// Deal with items on the bottom row
 			if(this.checkEdgeBottom(c)) {
 				// If item is falling and explosive
@@ -105,48 +108,45 @@ class Field {
 				continue;
 			}
 
-			// Check if cell is affected by gravity
-			if(obj.gravity) {
-				let cellBelow = c + this.#fieldX;
-				let objBelow = this.#grid[cellBelow];
-				// Check if cell below is empty, OR if item is falling and item below can be crushed
-				if(!objBelow || obj.isFalling && objBelow.canBeCrushed) {
-					// If item below is explosive, go bang!
-					if(objBelow && objBelow.isExplosive) {
-						createExplosion(cellBelow);
-						continue;
-					}
-					// If item below is dozer, die
-					else if(objBelow==this.#dozer) {
-						deathMessage = "You got crushed!";
-						gameState = DYING;
-					}
+			let cellBelow = c + this.#fieldX;
+			let objBelow = this.#grid[cellBelow];
+			// Check if cell below is empty, OR if item is falling and item below can be crushed
+			if(!objBelow || obj.isFalling && objBelow.canBeCrushed) {
+				// If item below is explosive, go bang!
+				if(objBelow && objBelow.isExplosive) {
+					createExplosion(cellBelow);
+					continue;
+				}
+				// If item below is dozer, die
+				else if(objBelow==this.#dozer) {
+					deathMessage = "You got crushed!";
+					gameState = DYING;
+				}
 
-					// Propogate item down
-					objBelow = obj;
-					obj.isFalling = true;
-					this.#grid[c] = spriteEnum.BLANK;
-				}
-				// Else check if item is falling and explosive (already ruled out empty cell below)
-				else if(obj.isFalling && obj.isExplosive) {
-					createExplosion(c);
-				}
-				// Else check if item below is uneven and it can fall left (cell left and below left are empty)
-				// If we move item to the left, decrement the counter so it doesn't get processed twice
-				else if(!this.checkEdgeLeft(c) && objBelow.isUneven && !this.#grid[c-1] && !this.#grid[c-1+this.#fieldX]) {
-					this.#grid[c-1] = obj;
-					this.#grid[c] = spriteEnum.BLANK;
-					c--;
-				}
-				// Else check if item below is uneven and it can fall right (cell right and below right are empty)
-				else if(!this.checkEdgeRight(c) && objBelow.isUneven && !this.#grid[c+1] && !this.#grid[c+1+this.#fieldX]) {
-					this.#grid[c+1] = obj;
-					this.#grid[c] = spriteEnum.BLANK;
-				}
-				// Else check if item below is solid (can't be crushed) to disable falling.
-				else if(!objBelow.canBeCrushed) {
-					obj.isFalling = false;
-				}
+				// Propogate item down
+				obj.isFalling = true;
+				this.#grid[cellBelow] = obj;
+				this.#grid[c] = spriteEnum.BLANK;
+			}
+			// Else check if item is falling and explosive (already ruled out empty cell below)
+			else if(obj.isFalling && obj.isExplosive) {
+				createExplosion(c);
+			}
+			// Else check if item below is uneven and it can fall left (cell left and below left are empty)
+			// If we move item to the left, decrement the counter so it doesn't get processed twice
+			else if(!this.checkEdgeLeft(c) && objBelow.isUneven && !this.#grid[c-1] && !this.#grid[c-1+this.#fieldX]) {
+				this.#grid[c-1] = obj;
+				this.#grid[c] = spriteEnum.BLANK;
+				c--;
+			}
+			// Else check if item below is uneven and it can fall right (cell right and below right are empty)
+			else if(!this.checkEdgeRight(c) && objBelow.isUneven && !this.#grid[c+1] && !this.#grid[c+1+this.#fieldX]) {
+				this.#grid[c+1] = obj;
+				this.#grid[c] = spriteEnum.BLANK;
+			}
+			// Else check if item below is solid (can't be crushed) to disable falling.
+			else if(!objBelow.canBeCrushed) {
+				obj.isFalling = false;
 			}
 		}
 	}
@@ -160,11 +160,11 @@ class Field {
 	}
 
 	checkEdgeTop(n) {
-		return (n / this.#fieldX) === 0;
+		return Math.floor(n / this.#fieldX) === 0;
 	}
 
 	checkEdgeBottom(n) {
-		return (n / this.#fieldX) === (this.#fieldY - 1);
+		return Math.floor(n / this.#fieldX) === (this.#fieldY - 1);
 	}
 
 	convertTupleToSingle(x,y) {
@@ -172,7 +172,7 @@ class Field {
 	}
 
 	convertSingleToTuple(n) {
-		return [n%this.#fieldX, n/this.#fieldX];
+		return [n%this.#fieldX, Math.floor(n/this.#fieldX)];
 	}
 
 	createExplosion(cellNum) {

@@ -101,7 +101,7 @@ class EmeraldHunt {
 		this.#canvas = c;
 		this.#ctx = this.#canvas.getContext("2d");
 		this.#gameState = stateEnum.LOADING;
-		this.#fps = 10;
+		this.#fps = 5;
 		this.scaleGame(1);
 	}
 
