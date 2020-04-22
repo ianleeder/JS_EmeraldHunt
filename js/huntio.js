@@ -2,7 +2,7 @@
 
 // Palette taken from wiki:
 // https://en.wikipedia.org/wiki/Color_Graphics_Adapter
-let cgaPalette = [
+const cgaPalette = [
  [0x000000],
  [0x0000AA],
  [0x00AA00],
@@ -180,33 +180,47 @@ function generateImageFrom4bitPixels(pixels) {
 	return canvas.toDataURL(); // produces a PNG file
 }
 
-function readObjectsUrl(url, callBack) {
-	// https://stackoverflow.com/a/41752161/5329728
-	let request = new XMLHttpRequest();
-	request.open('GET', url, true);
-	request.responseType = 'blob';
-	request.onload = function() {
-		let reader = new FileReader();
-		reader.onload =  function(e){
-			let buffer = e.target.result;
-			callBack(parseDataFile(buffer));
-		};
-		reader.readAsArrayBuffer(request.response);
-	};
-	request.send();
+// Uses Promises to access a file from a URL
+// Open the file use FileReader to convert to ArrayBuffer
+// Splice and dice into sprites
+// Returns array of img data URLs.
+function readObjectsUrlAsync(url) {
+	return fetch(url)
+		.then(response => {
+			if (!response.ok) {
+				throw new Error(`Failed to read ${url}`);
+			}
+			return response.blob();
+		})
+		.then(blob => {
+			return readFileStreamAsync(blob);
+		})
+		.then(arrayBuf => {
+			return parseDataFile(arrayBuf);
+		})
+		.catch(error => {
+			console.error(error);
+		});
 }
 
-function readObjectsFile(e, callback) {
-	let file = e.target.files[0];
-	if (!file) {
-		return;
-	}
-	let reader = new FileReader();
-	reader.onload = function(e) {
-		let buffer = e.target.result;
-		callBack(parseDataFile(buffer));
-	};
-	reader.readAsArrayBuffer(file);
+// Wraps FileReader in a Promise so I can use modern notation instead of callbacks.
+// Returns an ArrayBuffer
+function readFileStreamAsync(fs) {
+	// https://blog.shovonhasan.com/using-promises-with-filereader/
+	const temporaryFileReader = new FileReader();
+
+	return new Promise((resolve, reject) => {
+		temporaryFileReader.onerror = () => {
+			temporaryFileReader.abort();
+			reject(new DOMException("Problem parsing input file."));
+		};
+
+		temporaryFileReader.onload = () => {
+			resolve(temporaryFileReader.result);
+		};
+
+		temporaryFileReader.readAsArrayBuffer(fs);
+	});
 }
 
 function analyzeField(f) {
@@ -234,11 +248,4 @@ function displayContents(contents) {
 	element.innerHTML = contents;
 }
 
-if (window.File && window.FileReader && window.FileList && window.Blob) {
-	// Great success! All the File APIs are supported.
-	document.getElementById('file-input')
-	.addEventListener('change', readObjectsFile, false);
-} else {
-	alert('The File APIs are not fully supported in this browser.');
-}
-
+export {readObjectsUrlAsync};

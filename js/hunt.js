@@ -3,6 +3,7 @@
 import {stateEnum, difficultyEnum} from "./enums.js";
 import {Emerald, Diamond, Dirt, Rock, Brick, Bomb, Exit, Dozer, Cobblestone, Bug, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray} from "./objects.js";
 import {Field} from "./field.js";
+import {readObjectsUrlAsync} from "./huntio.js";
 
 class Button {
 	constructor(x, y, w, h, isHighlighted, text, text2, font, action) {
@@ -121,11 +122,7 @@ class EmeraldHunt {
 		return EmeraldHunt.#spriteSize;
 	}
 
-	init() {
-		// When we pass a callback it breaks the THIS reference, we need to bind it
-		// https://stackoverflow.com/questions/20279484/how-to-access-the-correct-this-inside-a-callback
-		// https://stackoverflow.com/questions/46618945/cannot-set-property-value-of-undefined-inside-es6-class
-		readObjectsUrl('http://www.ianleeder.com/OBJECTS.DAT', this.preloadImages.bind(this));
+	async init() {
 		addEventListener("keydown", this.handleInput.bind(this));
 		addEventListener("keyup", e => {
 			if(e.keyCode==27) {
@@ -137,6 +134,28 @@ class EmeraldHunt {
 				}
 			}
 		});
+
+		// Preload the game sprites
+		let imgDataArray = await readObjectsUrlAsync('http://www.ianleeder.com/OBJECTS.DAT');
+		let allPromises = imgDataArray.map(x => this.preloadSingleImage(x));
+		EmeraldHunt.#images = await Promise.all(allPromises);
+
+		this.#gameState = stateEnum.MENU;
+
+		// Start the timer ticking
+		setInterval(() => {
+			this.updateLoop();
+			this.renderLoop();
+		}, 1000/this.#fps);
+
+
+
+
+		// This is just debug fluff
+		EmeraldHunt.IMAGES.forEach(item => {
+			document.getElementById("imagesDiv").appendChild(item);
+		});
+		this.newGame();
 	}
 
 	scaleGame(n) {
@@ -146,43 +165,21 @@ class EmeraldHunt {
 		this.#ctx.scale(n, n);
 	}
 
-	preloadImages(imgs) {
-		let numLoaded = 0;
-		let images = new Array(imgs.length);
+	// Returns a promise
+	preloadSingleImage(imgData) {
+		const temporaryImage = new Image();
 
-		// https://stackoverflow.com/questions/19707969/the-invocation-context-this-of-the-foreach-function-call
-		imgs.forEach((item, index) => {
-			// Create a new Image
-			images[index] = new Image();
-			// Perform checks when the image has been loaded
-			images[index].onload = () => {
-				numLoaded++;
-				// If all images have been loaded, make the call
-				if(numLoaded === imgs.length)
-					this.imageLoadComplete(images);
+		return new Promise((resolve, reject) => {
+			temporaryImage.onerror = () => {
+				reject(new DOMException("Problem caching image."));
 			};
-			// Bind the source (and start loading)
-			images[index].src = item;
-		}, this);
-	}
-
-	imageLoadComplete(imgs) {
-		EmeraldHunt.#images = imgs;
-		this.#gameState = stateEnum.MENU;
-
-		// Start the timer ticking
-		setInterval(() => {
-			this.updateLoop();
-			this.renderLoop();
-		}, 1000/this.#fps);
-
-		// This is just debug fluff
-		imgs.forEach(item => {
-			document.getElementById("imagesDiv").appendChild(item);
+	
+			temporaryImage.onload = () => {
+				resolve(temporaryImage);
+			};
+	
+			temporaryImage.src = imgData;
 		});
-
-		// Again debug fluff
-		this.newGame();
 	}
 
 	clearCanvas() {
@@ -221,6 +218,9 @@ class EmeraldHunt {
 	}
 
 	updateLoop() {
+		if(!this.#gameField)
+			return;
+		
 		switch(this.#gameState) {
 			case stateEnum.MENU:
 				this.#gameField.addRandomDiamond();

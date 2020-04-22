@@ -31,8 +31,7 @@
 </html>
 
 <!-- <script type="text/javascript" src="js/emerald_hunt.js"></script> -->
-<script type="text/javascript" src="js/fileio.js"></script>
-<!-- <script type="module" src="js/hunt.js"></script> -->
+<script type="module" src="js/huntio.js"></script>
 <script type="module" src="js/enums.js"></script>
 <script type="module" src="js/objects.js"></script>
 <script type="module" src="js/field.js"></script>
@@ -44,10 +43,10 @@
 	window.onload = init;
 	var app;
 	
-	function init() {
+	async function init() {
 		app = new EmeraldHunt(document.getElementById("huntCanvas"));
 		document.getElementById('scale').addEventListener('change', changeScale, false);
-		app.init();
+		await app.init();
 	};
 
 	function changeScale(e) {
