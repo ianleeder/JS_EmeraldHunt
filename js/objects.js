@@ -39,6 +39,8 @@ class BaseObject {
 	get isExplosive() { return this.#isExplosive; }
 	get canBeDestroyed() { return this.#canBeDestroyed; }
 	get image() { return this.#image; }
+
+	set isFalling(f) { this.#isFalling = f; }
 }
 
 class Gem extends BaseObject {
@@ -83,7 +85,7 @@ class Brick extends BaseObject {
 
 class Bomb extends BaseObject {
 	constructor() {
-		super({gravity: true, isUneven: true, isPushable: true, isExplosive: true, canBeDestroyed: true, image: EmeraldHunt.IMAGES[spriteEnum.BOMB]});
+		super({gravity: true, canBeCrushed: true, isUneven: true, isPushable: true, isExplosive: true, canBeDestroyed: true, image: EmeraldHunt.IMAGES[spriteEnum.BOMB]});
 	}
 }
 
@@ -95,7 +97,7 @@ class Exit extends BaseObject {
 
 class Dozer extends BaseObject {
 	#pos = 0;
-	constructor(p, img) {
+	constructor(p) {
 		super({canBeCrushed: true, canBeDestroyed: true, image: EmeraldHunt.IMAGES[spriteEnum.DOZER]});
 	}
 

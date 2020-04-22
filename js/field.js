@@ -19,7 +19,6 @@ class Field {
 	#difficulty;
 	#grid;
 	#dozer;
-	#exit;
 
 	constructor(c, diff) {
 		this.#ctx = c;
@@ -51,6 +50,16 @@ class Field {
 		];
 
 		requiredTypes.forEach(this.populateFieldWithType.bind(this));
+		
+		// Need to move this placement after board settles
+		let emptyCells = this.findAllCellsOfType(spriteEnum.BLANK);
+		let rnd = Math.floor(Math.random() * emptyCells.length);
+		let index = emptyCells.splice(rnd, 1);
+		this.#dozer = new Dozer(index);
+
+		rnd = Math.floor(Math.random() * emptyCells.length);
+		index = emptyCells.splice(rnd, 1);
+		this.#grid[index] = new Exit();
 	}
 
 	updateField() {
@@ -59,60 +68,125 @@ class Field {
 		// If an item moves to the right (in order to fall down), and we are iterating left-to-right,
 		// it will be updated twice (right and down)
 
-		// Iterate through bottom to top
-		for(let r=this.#fieldY-1;r>=0;r--) {
-			// Iterate through columns left to right
-			for(let c=0;c<this.#fieldX;c++) {
-				let cellNum = (r*this.#fieldX)+c;
-				let cellVal = this.#grid[cellNum];
+		for(let c=this.#grid.length-1;c>=0;c--) {
+			let obj = this.#grid[c];
 
-				if(cellVal === spriteEnum.BLANK)
-					continue;
+			if(obj === spriteEnum.BLANK)
+				continue;
 
-				// Check if cell is an explosion
-				if(cellVal instanceof Explosion) {
-					if(cellVal.newExplosion) {
-						cellVal.newExplosion = false;
-					} else {
-						this.#grid[cell] = spriteEnum.BLANK;
-					}
-					continue;
+			// Check if cell is an explosion
+			if(obj instanceof Explosion) {
+				if(obj.newExplosion) {
+					obj.newExplosion = false;
+				} else {
+					this.#grid[cell] = spriteEnum.BLANK;
+				}
+				continue;
+			}
+
+			// Check if cell is a DroppedGrenade
+			if(obj instanceof DroppedGrenade) {
+				if(--obj.timer <= 0) {
+					createExplosion(c);
+				}
+			}
+
+			// Deal with items on the bottom row
+			if(this.checkEdgeBottom(c)) {
+				// If item is falling and explosive
+				if(obj.isFalling) {
+					obj.isFalling = false;
+
+					if(obj.isExplosive)
+						createExplosion(i, j);
 				}
 
-				// Check if cell is a DroppedGrenade
-				if(cellVal instanceof DroppedGrenade) {
-					if(--cellVal.timer <= 0) {
-						createExplosion(cellNum);
+				// Don't bother checking other items on bottom row
+				continue;
+			}
+
+			// Check if cell is affected by gravity
+			if(obj.gravity) {
+				let cellBelow = c + this.#fieldX;
+				let objBelow = this.#grid[cellBelow];
+				// Check if cell below is empty, OR if item is falling and item below can be crushed
+				if(!objBelow || obj.isFalling && objBelow.canBeCrushed) {
+					// If item below is explosive, go bang!
+					if(objBelow && objBelow.isExplosive) {
+						createExplosion(cellBelow);
+						continue;
 					}
+					// If item below is dozer, die
+					else if(objBelow==this.#dozer) {
+						deathMessage = "You got crushed!";
+						gameState = DYING;
+					}
+
+					// Propogate item down
+					objBelow = obj;
+					obj.isFalling = true;
+					this.#grid[c] = spriteEnum.BLANK;
+				}
+				// Else check if item is falling and explosive (already ruled out empty cell below)
+				else if(obj.isFalling && obj.isExplosive) {
+					createExplosion(c);
+				}
+				// Else check if item below is uneven and it can fall left (cell left and below left are empty)
+				// If we move item to the left, decrement the counter so it doesn't get processed twice
+				else if(!this.checkEdgeLeft(c) && objBelow.isUneven && !this.#grid[c-1] && !this.#grid[c-1+this.#fieldX]) {
+					this.#grid[c-1] = obj;
+					this.#grid[c] = spriteEnum.BLANK;
+					c--;
+				}
+				// Else check if item below is uneven and it can fall right (cell right and below right are empty)
+				else if(!this.checkEdgeRight(c) && objBelow.isUneven && !this.#grid[c+1] && !this.#grid[c+1+this.#fieldX]) {
+					this.#grid[c+1] = obj;
+					this.#grid[c] = spriteEnum.BLANK;
+				}
+				// Else check if item below is solid (can't be crushed) to disable falling.
+				else if(!objBelow.canBeCrushed) {
+					obj.isFalling = false;
 				}
 			}
 		}
+	}
+
+	checkEdgeLeft(n) {
+		return (n % this.#fieldX) === 0;
+	}
+
+	checkEdgeRight(n) {
+		return (n % this.#fieldX) === (this.#fieldX - 1);
+	}
+
+	checkEdgeTop(n) {
+		return (n / this.#fieldX) === 0;
+	}
+
+	checkEdgeBottom(n) {
+		return (n / this.#fieldX) === (this.#fieldY - 1);
+	}
+
+	convertTupleToSingle(x,y) {
+		return (y*this.#fieldX)+x;
+	}
+
+	convertSingleToTuple(n) {
+		return [n%this.#fieldX, n/this.#fieldX];
 	}
 
 	createExplosion(cellNum) {
 		// Clear center square contents (eg grenade/bomb) to avoid infinite recursion.
 		this.#grid[cellNum] = 0;
 
-		// Create a 3x3 explosion grid
-		for(let r=-1;r<=1;r++) {
-			for(let c=-1;c<=1;c++) {
-				// Check if we hit left edge
-				if((cellNum % this.#fieldX) + c < 0)
-					continue;
-				
-				// Check if we hit left edge
-				if((cellNum % this.#fieldX) + c >= this.#fieldX)
-					continue;
-				
-				// Check if we hit top edge
-				if(Math.Floor(cellNum / this.#fieldX) + r < 0)
-					continue;
-				
-				// Check if we hit bottom edge
-				if(Math.Floor(cellNum / this.#fieldX) + r >= this.#fieldY)
-					continue;
+		let rStart = this.checkEdgeTop(cellNum) ? 0 : -1;
+		let rEnd = this.checkEdgeBottom(cellNum) ? 0 : 1;
+		let cStart = this.checkEdgeLeft(cellNum) ? 0 : -1;
+		let cEnd = this.checkEdgeRight(cellNum) ? 0 : 1;
 
-				// Cell is valid, continue checks
+		// Create a 3x3 explosion grid
+		for(let r=rStart;r<=rEnd;r++) {
+			for(let c=cStart;c<=cEnd;c++) {
 				let checkCell = (r * this.#fieldX) + c;
 				
 				// Can't check gamegrid, since if we sit on a dropped grenade we don't exist in the grid
