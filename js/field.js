@@ -1,7 +1,7 @@
 'use strict';
 
 import {stateEnum, difficultyEnum} from "./enums.js";
-import {Diamond, Gem, Dirt, Rock, Brick, Bomb, Exit, Dozer, Cobblestone, Bug, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray} from "./objects.js";
+import {Diamond, Gem, Dirt, Rock, Brick, Bomb, Exit, Dozer, Cobblestone, Bug, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray, Emerald} from "./objects.js";
 import {EmeraldHunt} from "./hunt.js";
 
 // Types are stored in the same array order as the sprites]
@@ -196,7 +196,7 @@ class Field {
 	}
 
 	convertSingleToTuple(n) {
-		return [n%this.#fieldX, Math.floor(n/this.#fieldX)];
+		return {x: n%this.#fieldX, y: Math.floor(n/this.#fieldX)};
 	}
 
 	createExplosion(cellNum) {
@@ -373,8 +373,20 @@ class Field {
 			this.#grid[this.#dozer.pos] = this.#dozer;
 		}
 
+		// Explicitly clear the old dozer position 
+		// Otherwise we need to wait for the next game tick to clear the canvas
+		this.clearCell(dozerPos);
 		// Perform an additional render on each keystroke to keep the game responsive
 		this.renderField();
+	}
+
+	clearCell(n) {
+		let p = this.convertSingleToTuple(n);
+		let s = EmeraldHunt.SPRITESIZE;
+		let x = p.x * s;
+		let y = p.y * s;
+		this.#ctx.fillStyle = "#000000";
+		this.#ctx.fillRect(x, y, s, s);
 	}
 
 	renderField() {
