@@ -19,6 +19,7 @@ class Field {
 	#difficulty;
 	#grid;
 	#dozer;
+	#newGame;
 
 	constructor(c, diff) {
 		this.#ctx = c;
@@ -26,6 +27,7 @@ class Field {
 		this.#fieldY = EmeraldHunt.DEFAULTFIELDY;
 		this.#difficulty = diff;
 		this.initField();
+		this.#newGame = true;
 	}
 
 	initField() {
@@ -50,8 +52,9 @@ class Field {
 		];
 
 		requiredTypes.forEach(this.populateFieldWithType.bind(this));
-		
-		// Need to move this placement after board settles
+	}
+
+	finaliseField() {
 		let emptyCells = this.findAllCellsOfType(spriteEnum.BLANK);
 		let rnd = Math.floor(Math.random() * emptyCells.length);
 		let index = emptyCells.splice(rnd, 1);
@@ -68,6 +71,10 @@ class Field {
 		// If an item moves to the right (in order to fall down), and we are iterating left-to-right,
 		// it will be updated twice (right and down)
 
+		// Track if there are any field changes
+		// so we know when the board has settled and we can place
+		// the dozer and exit.
+		let changes = false;
 		for(let c=this.#grid.length-1;c>=0;c--) {
 			let obj = this.#grid[c];
 
@@ -189,7 +196,7 @@ class Field {
 			for(let c=cStart;c<=cEnd;c++) {
 				let checkCell = (r * this.#fieldX) + c;
 				
-				// Can't check gamegrid, since if we sit on a dropped grenade we don't exist in the grid
+				// Can't check grid, since if we sit on a dropped grenade we don't exist in the grid
 				// If it contains dozer, die
 				if(checkCell === this.#dozer.pos)	{
 					// TODO Deal with death here
@@ -234,8 +241,121 @@ class Field {
 	}
 
 	handleGameInput(e) {
-		console.log("Field received game input");
-		console.log(e);
+		let dozerPos = this.#dozer.pos;
+		let sittingOnGrenade = this.#grid[dozerPos] instanceof DroppedGrenade;
+
+		switch(e.keyCode) {
+			// Up key
+			case 38:
+				e.preventDefault();
+				// If we're on the top edge already, give up
+				if(this.checkEdgeTop(dozerPos))
+					continue;
+				
+				let objAbove = this.#grid[dozerPos-this.#fieldX];
+				// Check if cell above is either empty or can pass through
+				if(!objAbove || objAbove.canPassThrough) {
+					if(!sittingOnGrenade) {
+						this.#grid[dozerPos] = spriteEnum.BLANK;
+					}
+					this.#dozer.pos -= this.#fieldX;
+				}
+				break;
+	
+			// Down key
+			case 40:
+				e.preventDefault();
+				// If we're on the bottom edge already, give up
+				if(this.checkEdgeBottom(dozerPos))
+					continue;
+				
+				let objBelow = this.#grid[dozerPos+this.#fieldX];
+				// Check if cell is either empty or can pass through
+				if(!objBelow || objBelow.canPassThrough) {
+					if(!sittingOnGrenade) {
+						this.#grid[dozerPos] = spriteEnum.BLANK;
+					}
+					this.#dozer.pos += this.#fieldX;
+				}
+				break;
+	
+			// Left key
+			case 37:
+				e.preventDefault();
+				// If we're on the left edge already, give up
+				if(this.checkEdgeLeft(dozerPos))
+					continue;
+
+				let objLeft = this.#grid[dozerPos-1];
+				// Check if cell is either empty or can pass through
+				if(!objLeft || objLeft.canPassThrough) {
+					if(!sittingOnGrenade) {
+						this.#grid[dozerPos] = spriteEnum.BLANK;
+					}
+					this.#dozer.pos -= 1;
+				}
+				// If we are at least 2 squares from left edge (square to our left is not the edge)
+				// and item to left is pushable AND item to left of that is empty
+				else if(!this.checkEdgeLeft(dozerPos-1) && objLeft.isPushable && !this.#grid[dozerPos-2]) {
+					// Push the item left
+					this.#grid[dozerPos-2] = this.#grid[dozerPos-1];
+					if(!sittingOnGrenade) {
+						this.#grid[dozerPos] = spriteEnum.BLANK;
+					}
+					this.#dozer.pos -= 1;
+				}
+				break;
+	
+			// Right key
+			case 39:
+				e.preventDefault();
+				// If we're on the right edge already, give up
+				if(this.checkEdgeRight(dozerPos))
+					continue;
+
+				let objRight = this.#grid[dozerPos+1];
+				// Check if cell is either empty or can pass through
+				if(!objRight || objRight.canPassThrough) {
+					if(!sittingOnGrenade) {
+						this.#grid[dozerPos] = spriteEnum.BLANK;
+					}
+					this.#dozer.pos += 1;
+				}
+				// If we are at least 2 squares from right edge (square to our right is not the edge)
+				// and item to right is pushable AND item to right of that is empty
+				else if(!this.checkEdgeRight(dozerPos+1) && objRight.isPushable && !this.#grid[dozerPos+2]) {
+					// Push the item right
+					this.#grid[dozerPos+2] = this.#grid[dozerPos+1];
+					if(!sittingOnGrenade) {
+						this.#grid[dozerPos] = spriteEnum.BLANK;
+					}
+					this.#dozer.pos += 1;
+				}
+				break;
+	
+			// Space key
+			case 32:
+				e.preventDefault();
+				if(this.#dozer.hasGrenades()) {
+					this.#dozer.useGrenade();
+					this.#grid[dozerPos] = new DroppedGrenade();
+				}
+				break;
+		}
+		
+		// HANDLE PICKUPS AND SCORE
+		if(Grenade.prototype.isPrototypeOf(this.#grid[dozer.x][dozer.y]) && !DroppedGrenade.prototype.isPrototypeOf(this.#grid[dozer.x][dozer.y])) {
+			dozer.numGrenades++;
+		} else if (this.#grid[dozer.x][dozer.y].hasOwnProperty("score")) {
+			gameScore += this.#grid[dozer.x][dozer.y].score;
+		}
+		
+		// Set grid location to dozer, unless a grenade was dropped
+		if(!DroppedGrenade.prototype.isPrototypeOf(this.#grid[dozer.x][dozer.y])) {
+			this.#grid[dozer.x][dozer.y] = dozer;
+		}
+	
+		render();
 	}
 
 	renderField() {

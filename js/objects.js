@@ -97,11 +97,29 @@ class Exit extends BaseObject {
 
 class Dozer extends BaseObject {
 	#pos = 0;
+	#numGrenades;
 	constructor(p) {
 		super({canBeCrushed: true, canBeDestroyed: true, image: EmeraldHunt.IMAGES[spriteEnum.DOZER]});
+		this.#numGrenades = 1;
 	}
 
 	get pos() { return this.#pos; }
+	get numGrenades() { return this.#numGrenades; };
+
+	useGrenade() {
+		if(this.#numGrenades <= 0)
+			throw new Error("Cheating!  You don't have any more grenades");
+		
+		this.#numGrenades--;
+	}
+
+	pickupGrenade() {
+		this.#numGrenades++;
+	}
+
+	hasGrenades() {
+		return this.#numGrenades > 0;
+	}
 }
 
 class Cobblestone extends BaseObject {
