@@ -20,6 +20,7 @@ class Field {
 	#grid;
 	#dozer;
 	#newGame;
+	#gameScore;
 
 	constructor(c, diff) {
 		this.#ctx = c;
@@ -28,6 +29,7 @@ class Field {
 		this.#difficulty = diff;
 		this.initField();
 		this.#newGame = true;
+		this.#gameScore = 0;
 	}
 
 	initField() {
@@ -343,16 +345,17 @@ class Field {
 				break;
 		}
 		
-		// HANDLE PICKUPS AND SCORE
-		if(Grenade.prototype.isPrototypeOf(this.#grid[dozer.x][dozer.y]) && !DroppedGrenade.prototype.isPrototypeOf(this.#grid[dozer.x][dozer.y])) {
-			dozer.numGrenades++;
-		} else if (this.#grid[dozer.x][dozer.y].hasOwnProperty("score")) {
-			gameScore += this.#grid[dozer.x][dozer.y].score;
+		let newPosObj = this.#grid[this.#dozer.pos];
+
+		if(newPosObj instanceof Grenade) {
+			this.#dozer.pickupGrenade();
+		} else if (newPosObj instanceof Gem) {
+			this.#gameScore += newPosObj.score;
 		}
 		
 		// Set grid location to dozer, unless a grenade was dropped
-		if(!DroppedGrenade.prototype.isPrototypeOf(this.#grid[dozer.x][dozer.y])) {
-			this.#grid[dozer.x][dozer.y] = dozer;
+		if(!newPosObj instanceof DroppedGrenade) {
+			this.#grid[this.#dozer.pos] = this.#dozer;
 		}
 	
 		render();

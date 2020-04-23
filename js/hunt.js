@@ -91,7 +91,6 @@ class EmeraldHunt {
 	#gameState;
 	#fps;
 	#gameField;
-	#gameScore;
 	static #images;
 	static #defaultFieldX = 40;
 	static #defaultFieldY = 20;
@@ -213,7 +212,6 @@ class EmeraldHunt {
 	}
 
 	newGame() {
-		this.#gameScore = 0;
 		this.#gameState = stateEnum.RUNNING;
 		this.#gameField = new Field(this.#ctx, difficultyEnum.EASY);
 	}

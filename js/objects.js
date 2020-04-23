@@ -44,24 +44,30 @@ class BaseObject {
 }
 
 class Gem extends BaseObject {
-	constructor(options) {
+	#score;
+
+	constructor(options, s) {
 		options.gravity = true;
 		options.canPassThrough = true;
 		options.isUneven = true;
 		options.canBeDestroyed = true;
 		super(options);
+
+		this.#score = s;
 	}
+
+	get score() { return this.#score; }
 }
 
 class Emerald extends Gem {
 	constructor() {
-		super({image: EmeraldHunt.IMAGES[spriteEnum.EMERALD]});
+		super({image: EmeraldHunt.IMAGES[spriteEnum.EMERALD]}, 1);
 	}
 }
 
 class Diamond extends Gem {
 	constructor() {
-		super({canBeCrushed: true, image: EmeraldHunt.IMAGES[spriteEnum.EMERALD]});
+		super({canBeCrushed: true, image: EmeraldHunt.IMAGES[spriteEnum.EMERALD]}, 5);
 	}
 }
 
