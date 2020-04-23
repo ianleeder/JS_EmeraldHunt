@@ -107,6 +107,7 @@ class Dozer extends BaseObject {
 	constructor(p) {
 		super({canBeCrushed: true, canBeDestroyed: true, image: EmeraldHunt.IMAGES[spriteEnum.DOZER]});
 		this.#numGrenades = 1;
+		this.#pos = p;
 	}
 
 	get pos() { return this.#pos; }

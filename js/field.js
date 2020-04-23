@@ -61,12 +61,13 @@ class Field {
 
 		let emptyCells = this.findAllCellsOfType(spriteEnum.BLANK);
 		let rnd = Math.floor(Math.random() * emptyCells.length);
-		let index = emptyCells.splice(rnd, 1);
+		let index = emptyCells.splice(rnd, 1)[0];
+		
 		this.#dozer = new Dozer(index);
 		this.#grid[index] = this.#dozer;
 
 		rnd = Math.floor(Math.random() * emptyCells.length);
-		index = emptyCells.splice(rnd, 1);
+		index = emptyCells.splice(rnd, 1)[0];
 		this.#grid[index] = new Exit();
 	}
 
@@ -238,7 +239,7 @@ class Field {
 
 		for(let i=0;i<difficultyDistribution[this.#difficulty][t];i++) {
 			let rnd = Math.floor(Math.random() * emptyCells.length);
-			let index = emptyCells.splice(rnd, 1); 
+			let index = emptyCells.splice(rnd, 1)[0]; 
 			this.#grid[index] = new classArray[t]();
 			//console.log("Placed object " + i + " in index " + index);
 			//console.log(this.#grid[index]);
@@ -368,11 +369,12 @@ class Field {
 		}
 		
 		// Set grid location to dozer, unless a grenade was dropped
-		if(!newPosObj instanceof DroppedGrenade) {
+		if(!(newPosObj instanceof DroppedGrenade)) {
 			this.#grid[this.#dozer.pos] = this.#dozer;
 		}
-	
-		render();
+
+		// Perform an additional render on each keystroke to keep the game responsive
+		this.renderField();
 	}
 
 	renderField() {
