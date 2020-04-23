@@ -1,7 +1,7 @@
 'use strict';
 
 import {stateEnum, difficultyEnum} from "./enums.js";
-import {Emerald, Diamond, Dirt, Rock, Brick, Bomb, Exit, Dozer, Cobblestone, Bug, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray} from "./objects.js";
+import {Diamond, Gem, Dirt, Rock, Brick, Bomb, Exit, Dozer, Cobblestone, Bug, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray} from "./objects.js";
 import {EmeraldHunt} from "./hunt.js";
 
 // Types are stored in the same array order as the sprites]
@@ -57,10 +57,13 @@ class Field {
 	}
 
 	finaliseField() {
+		this.#newGame = false;
+
 		let emptyCells = this.findAllCellsOfType(spriteEnum.BLANK);
 		let rnd = Math.floor(Math.random() * emptyCells.length);
 		let index = emptyCells.splice(rnd, 1);
 		this.#dozer = new Dozer(index);
+		this.#grid[index] = this.#dozer;
 
 		rnd = Math.floor(Math.random() * emptyCells.length);
 		index = emptyCells.splice(rnd, 1);
@@ -85,6 +88,7 @@ class Field {
 
 			// Check if cell is an explosion
 			if(obj instanceof Explosion) {
+				changes = true;
 				if(obj.newExplosion) {
 					obj.newExplosion = false;
 				} else {
@@ -109,8 +113,10 @@ class Field {
 				if(obj.isFalling) {
 					obj.isFalling = false;
 
-					if(obj.isExplosive)
+					if(obj.isExplosive){
+						changes = true;
 						createExplosion(i, j);
+					}
 				}
 
 				// Don't bother checking other items on bottom row
@@ -121,6 +127,7 @@ class Field {
 			let objBelow = this.#grid[cellBelow];
 			// Check if cell below is empty, OR if item is falling and item below can be crushed
 			if(!objBelow || obj.isFalling && objBelow.canBeCrushed) {
+				changes = true;
 				// If item below is explosive, go bang!
 				if(objBelow && objBelow.isExplosive) {
 					createExplosion(cellBelow);
@@ -139,25 +146,32 @@ class Field {
 			}
 			// Else check if item is falling and explosive (already ruled out empty cell below)
 			else if(obj.isFalling && obj.isExplosive) {
+				changes = true;
 				createExplosion(c);
 			}
 			// Else check if item below is uneven and it can fall left (cell left and below left are empty)
 			// If we move item to the left, decrement the counter so it doesn't get processed twice
 			else if(!this.checkEdgeLeft(c) && objBelow.isUneven && !this.#grid[c-1] && !this.#grid[c-1+this.#fieldX]) {
+				changes = true;
 				this.#grid[c-1] = obj;
 				this.#grid[c] = spriteEnum.BLANK;
 				c--;
 			}
 			// Else check if item below is uneven and it can fall right (cell right and below right are empty)
 			else if(!this.checkEdgeRight(c) && objBelow.isUneven && !this.#grid[c+1] && !this.#grid[c+1+this.#fieldX]) {
+				changes = true;
 				this.#grid[c+1] = obj;
 				this.#grid[c] = spriteEnum.BLANK;
 			}
 			// Else check if item below is solid (can't be crushed) to disable falling.
-			else if(!objBelow.canBeCrushed) {
+			else if(obj.isFalling) {
+				changes = true;
 				obj.isFalling = false;
 			}
 		}
+
+		if(this.#newGame && !changes)
+			this.finaliseField();
 	}
 
 	checkEdgeLeft(n) {
@@ -252,7 +266,7 @@ class Field {
 				e.preventDefault();
 				// If we're on the top edge already, give up
 				if(this.checkEdgeTop(dozerPos))
-					continue;
+					return;
 				
 				let objAbove = this.#grid[dozerPos-this.#fieldX];
 				// Check if cell above is either empty or can pass through
@@ -269,7 +283,7 @@ class Field {
 				e.preventDefault();
 				// If we're on the bottom edge already, give up
 				if(this.checkEdgeBottom(dozerPos))
-					continue;
+					return;
 				
 				let objBelow = this.#grid[dozerPos+this.#fieldX];
 				// Check if cell is either empty or can pass through
@@ -286,7 +300,7 @@ class Field {
 				e.preventDefault();
 				// If we're on the left edge already, give up
 				if(this.checkEdgeLeft(dozerPos))
-					continue;
+					return;
 
 				let objLeft = this.#grid[dozerPos-1];
 				// Check if cell is either empty or can pass through
@@ -313,7 +327,7 @@ class Field {
 				e.preventDefault();
 				// If we're on the right edge already, give up
 				if(this.checkEdgeRight(dozerPos))
-					continue;
+					return;
 
 				let objRight = this.#grid[dozerPos+1];
 				// Check if cell is either empty or can pass through

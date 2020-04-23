@@ -110,6 +110,7 @@ class Dozer extends BaseObject {
 	}
 
 	get pos() { return this.#pos; }
+	set pos(p) { this.#pos = p; }
 	get numGrenades() { return this.#numGrenades; };
 
 	useGrenade() {
@@ -211,4 +212,4 @@ const classArray = [
 	0
 ];
 
-export {Emerald, Diamond, Dirt, Rock, Brick, Bomb, Exit, Dozer, Cobblestone, Bug, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray};
+export {Emerald, Diamond, Gem, Dirt, Rock, Brick, Bomb, Exit, Dozer, Cobblestone, Bug, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray};
