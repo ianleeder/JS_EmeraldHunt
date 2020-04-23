@@ -90,18 +90,18 @@ class Field {
 			// Check if cell is an explosion
 			if(obj instanceof Explosion) {
 				changes = true;
-				if(obj.newExplosion) {
-					obj.newExplosion = false;
+				if(obj.isNewExplosion) {
+					obj.isNewExplosion = false;
 				} else {
-					this.#grid[cell] = spriteEnum.BLANK;
+					this.#grid[c] = spriteEnum.BLANK;
 				}
 				continue;
 			}
 
 			// Check if cell is a DroppedGrenade
 			if(obj instanceof DroppedGrenade) {
-				if(--obj.timer <= 0) {
-					createExplosion(c);
+				if(obj.tick()) {
+					this.createExplosion(c);
 				}
 			}
 
@@ -116,7 +116,7 @@ class Field {
 
 					if(obj.isExplosive){
 						changes = true;
-						createExplosion(i, j);
+						this.createExplosion(i, j);
 					}
 				}
 
@@ -131,7 +131,7 @@ class Field {
 				changes = true;
 				// If item below is explosive, go bang!
 				if(objBelow && objBelow.isExplosive) {
-					createExplosion(cellBelow);
+					this.createExplosion(cellBelow);
 					continue;
 				}
 				// If item below is dozer, die
@@ -148,7 +148,7 @@ class Field {
 			// Else check if item is falling and explosive (already ruled out empty cell below)
 			else if(obj.isFalling && obj.isExplosive) {
 				changes = true;
-				createExplosion(c);
+				this.createExplosion(c);
 			}
 			// Else check if item below is uneven and it can fall left (cell left and below left are empty)
 			// If we move item to the left, decrement the counter so it doesn't get processed twice
@@ -211,7 +211,7 @@ class Field {
 		// Create a 3x3 explosion grid
 		for(let r=rStart;r<=rEnd;r++) {
 			for(let c=cStart;c<=cEnd;c++) {
-				let checkCell = (r * this.#fieldX) + c;
+				let checkCell = cellNum + (r * this.#fieldX) + c;
 				
 				// Can't check grid, since if we sit on a dropped grenade we don't exist in the grid
 				// If it contains dozer, die
@@ -219,12 +219,14 @@ class Field {
 					// TODO Deal with death here
 				}
 
+				// If cell contains an object and it's explosive, recurse
 				if(this.#grid[checkCell] && this.#grid[checkCell].isExplosive) {
 					this.createExplosion(checkCell);
 					continue;
 				}
 
-				if(this.#grid[checkCell] && this.#grid[checkCell].canBeDestroyed) {
+				// If cell is empty OR object can be destroyed.
+				if(!this.#grid[checkCell] || this.#grid[checkCell].canBeDestroyed) {
 					this.#grid[checkCell] = new Explosion();
 				}
 			}
@@ -362,7 +364,7 @@ class Field {
 		
 		let newPosObj = this.#grid[this.#dozer.pos];
 
-		if(newPosObj instanceof Grenade) {
+		if((newPosObj instanceof Grenade) && !(newPosObj instanceof DroppedGrenade)) {
 			this.#dozer.pickupGrenade();
 		} else if (newPosObj instanceof Gem) {
 			this.#gameScore += newPosObj.score;

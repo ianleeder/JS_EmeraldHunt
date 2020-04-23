@@ -149,6 +149,7 @@ class Explosion extends BaseObject {
 	}
 
 	get isNewExplosion() { return this.#isNewExplosion; }
+	set isNewExplosion(n) { this.#isNewExplosion = n; }
 }
 
 class Grenade extends BaseObject {
@@ -156,6 +157,7 @@ class Grenade extends BaseObject {
 		var o = options || {};
 		o.isExplosive = true;
 		o.canBeDestroyed = true;
+		o.isUneven = true;
 		o.image = EmeraldHunt.IMAGES[spriteEnum.GRENADE];
 
 		// Check if we are are the superclass of DroppedGrenade
@@ -172,7 +174,9 @@ class DroppedGrenade extends Grenade {
 		super({image: EmeraldHunt.IMAGES[spriteEnum.GRENADE]});
 	}
 
-	get timer() { return this.#timer; }
+	tick() {
+		return --this.#timer <= 0;
+	}
 }
 
 const spriteEnum = {

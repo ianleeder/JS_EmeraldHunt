@@ -10,7 +10,7 @@
 		<select id="scale">
 			<option value="1">100%</option>
 			<option value="1.1">110%</option>
-			<option value="1.2">120%</option>
+			<option value="1.2" selected="selected">120%</option>
 			<option value="1.3">130%</option>
 			<option value="1.4">140%</option>
 			<option value="1.5">150%</option>
@@ -44,8 +44,14 @@
 	var app;
 	
 	async function init() {
-		app = new EmeraldHunt(document.getElementById("huntCanvas"));
-		document.getElementById('scale').addEventListener('change', changeScale, false);
+		let canvas = document.getElementById("huntCanvas");
+		canvas.focus();
+		app = new EmeraldHunt(canvas);
+
+		let scale = document.getElementById('scale');
+		scale.addEventListener('change', changeScale, false);
+		// https://stackoverflow.com/a/23612498/5329728
+		scale.dispatchEvent(new Event('change'));
 		await app.init();
 	};
 
