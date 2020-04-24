@@ -259,7 +259,7 @@ class Field {
 		this.#grid[rnd] = new Diamond();
 	}
 
-	handleGameInput(e) {
+	handleInput(e) {
 		let dozerPos = this.#dozer.pos;
 		let sittingOnGrenade = this.#grid[dozerPos] instanceof DroppedGrenade;
 

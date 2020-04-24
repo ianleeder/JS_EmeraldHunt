@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 // Author: Ian Leeder
 // Date: 07 November 2014
 // This game is a clone/port of a game I fondly remember playing as a child.

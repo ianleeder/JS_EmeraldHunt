@@ -1,0 +1,23 @@
+{
+  "name": "emeraldhunt",
+  "version": "0.0.1",
+  "description": "",
+  "main": "hunt.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ianleeder/JS_EmeraldHunt.git"
+  },
+  "author": "Ian Leeder",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ianleeder/JS_EmeraldHunt/issues"
+  },
+  "homepage": "https://github.com/ianleeder/JS_EmeraldHunt#readme",
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-google": "^0.14.0"
+  }
+}
