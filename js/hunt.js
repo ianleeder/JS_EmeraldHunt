@@ -1,7 +1,6 @@
-'use strict';
+"use strict";
 
 import {stateEnum, difficultyEnum} from "./enums.js";
-import {Emerald, Diamond, Dirt, Rock, Brick, Bomb, Exit, Dozer, Cobblestone, Bug, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray} from "./objects.js";
 import {Field} from "./field.js";
 import {readObjectsUrlAsync} from "./huntio.js";
 import {Menu} from "./menu.js";
@@ -60,7 +59,7 @@ class EmeraldHunt {
 		});
 
 		// Download the game sprites and parse tehm
-		let imgDataArray = await readObjectsUrlAsync('http://www.ianleeder.com/OBJECTS.DAT');
+		let imgDataArray = await readObjectsUrlAsync("http://www.ianleeder.com/OBJECTS.DAT");
 		// Create Image objects from them and wait for load to complete
 		let allPromises = imgDataArray.map(x => this.preloadSingleImage(x));
 		EmeraldHunt.#images = await Promise.all(allPromises);
@@ -119,15 +118,9 @@ class EmeraldHunt {
 				break;
 	
 			case stateEnum.MENU:
-				handleMenuInput(e, true, menuButtons);
-				break;
-	
 			case stateEnum.DEAD:
-				handleMenuInput(e, true, deathButtons);
-				break;
-	
 			case stateEnum.PAUSED:
-				handleMenuInput(e, true, pauseButtons);
+				this.#menu.handleInput(e);
 				break;
 		}
 	}
@@ -136,9 +129,8 @@ class EmeraldHunt {
 		console.log("menu input received");
 	}
 
-	playerDied(message) {
+	playerDied() {
 		this.#gameState = stateEnum.DEAD;
-		this.#deadCounter = 20;
 	}
 
 	newGame() {

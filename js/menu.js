@@ -18,16 +18,16 @@ class Button {
 
 		if (this.isHighlighted) {
 			// light blue
-			gradient.addColorStop(0, '#2985E2');
+			gradient.addColorStop(0, "#2985E2");
 			// dark blue
-			gradient.addColorStop(1, '#0300F9');
+			gradient.addColorStop(1, "#0300F9");
 			ctx.strokeStyle = "#0500A7";
 		}
 		else {
 			// light green
-			gradient.addColorStop(0, '#46EE3A');
+			gradient.addColorStop(0, "#46EE3A");
 			// dark green
-			gradient.addColorStop(1, '#195508');
+			gradient.addColorStop(1, "#195508");
 			ctx.strokeStyle = "#1A5A0F";
 		}
 
@@ -71,7 +71,7 @@ class Button {
 
 class CyclingButton extends Button {
 	constructor(x, y, w, h, isHighlighted, text, text2, font, action, textArray) {
-		super(this, x, y, w, h, isHighlighted, text, text2, font, action);
+		super(x, y, w, h, isHighlighted, text, text2, font, action);
 		this.textArray = textArray;
 		this.index = 0;
 		this.text2 = this.textArray[this.index];
@@ -90,4 +90,4 @@ class Menu {
 	}
 }
 
-export { Button, CyclingButton, Menu }
+export { Button, CyclingButton, Menu };

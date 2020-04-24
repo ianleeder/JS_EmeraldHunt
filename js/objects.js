@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 import {EmeraldHunt} from "./hunt.js";
 
@@ -112,7 +112,7 @@ class Dozer extends BaseObject {
 
 	get pos() { return this.#pos; }
 	set pos(p) { this.#pos = p; }
-	get numGrenades() { return this.#numGrenades; };
+	get numGrenades() { return this.#numGrenades; }
 
 	useGrenade() {
 		if(this.#numGrenades <= 0)
@@ -196,7 +196,7 @@ const spriteEnum = {
 	GRENADE: 13,
 	NOTUSED: 14,
 	ALTDOZER: 15
-}
+};
 
 const classArray = [
 	0,

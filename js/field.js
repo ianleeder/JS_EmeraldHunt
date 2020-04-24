@@ -1,7 +1,7 @@
 "use strict";
 
 import { stateEnum, difficultyEnum } from "./enums.js";
-import { Diamond, Gem, Dirt, Rock, Brick, Bomb, Exit, Dozer, Cobblestone, Bug, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray, Emerald } from "./objects.js";
+import { Diamond, Gem, Exit, Dozer, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray } from "./objects.js";
 import { EmeraldHunt } from "./hunt.js";
 
 // Types are stored in the same array order as the sprites]
@@ -234,7 +234,6 @@ class Field {
 	}
 
 	populateFieldWithType(t) {
-		let placed = 0;
 		let emptyCells = this.findAllCellsOfType(spriteEnum.BLANK);
 
 		//console.log("Populating type " + t + ", should be " + difficultyDistribution[this.#difficulty][t]);
@@ -260,9 +259,14 @@ class Field {
 	}
 
 	handleInput(e) {
+		// If we are still initialising the field
+		// and haven't placed the dozer yet, ignore input
+		if(this.#newGame)
+			return;
+		
 		let dozerPos = this.#dozer.pos;
 		let sittingOnGrenade = this.#grid[dozerPos] instanceof DroppedGrenade;
-
+		
 		switch (e.keyCode) {
 			// Up key
 			case 38:
@@ -271,7 +275,7 @@ class Field {
 				if (this.checkEdgeTop(dozerPos))
 					return;
 
-				let objAbove = this.#grid[dozerPos - this.#fieldX];
+				var objAbove = this.#grid[dozerPos - this.#fieldX];
 				// Check if cell above is either empty or can pass through
 				if (!objAbove || objAbove.canPassThrough) {
 					if (!sittingOnGrenade) {
@@ -288,7 +292,7 @@ class Field {
 				if (this.checkEdgeBottom(dozerPos))
 					return;
 
-				let objBelow = this.#grid[dozerPos + this.#fieldX];
+				var objBelow = this.#grid[dozerPos + this.#fieldX];
 				// Check if cell is either empty or can pass through
 				if (!objBelow || objBelow.canPassThrough) {
 					if (!sittingOnGrenade) {
@@ -305,7 +309,7 @@ class Field {
 				if (this.checkEdgeLeft(dozerPos))
 					return;
 
-				let objLeft = this.#grid[dozerPos - 1];
+				var objLeft = this.#grid[dozerPos - 1];
 				// Check if cell is either empty or can pass through
 				if (!objLeft || objLeft.canPassThrough) {
 					if (!sittingOnGrenade) {
@@ -332,7 +336,7 @@ class Field {
 				if (this.checkEdgeRight(dozerPos))
 					return;
 
-				let objRight = this.#grid[dozerPos + 1];
+				var objRight = this.#grid[dozerPos + 1];
 				// Check if cell is either empty or can pass through
 				if (!objRight || objRight.canPassThrough) {
 					if (!sittingOnGrenade) {
