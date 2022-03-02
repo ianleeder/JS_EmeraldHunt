@@ -37,7 +37,7 @@ function readSaveFile(buffer) {
 	analyzeField(field);
 }
 
-function parseDataFile(buffer) {
+function parseData(buffer) {
 	/*
 	Each tile is 134 bytes.
 	4x Magic Header (00 0F 00 0F)
@@ -196,7 +196,7 @@ function readObjectsUrlAsync(url) {
 			return readFileStreamAsync(blob);
 		})
 		.then(arrayBuf => {
-			return parseDataFile(arrayBuf);
+			return parseData(arrayBuf);
 		})
 		.catch(error => {
 			console.error(error);
