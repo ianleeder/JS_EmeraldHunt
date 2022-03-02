@@ -76,10 +76,6 @@ class EmeraldHunt {
 			this.renderLoop();
 		}, 1000/this.#fps);
 
-		// This is just debug fluff
-		EmeraldHunt.IMAGES.forEach(item => {
-			document.getElementById("imagesDiv").appendChild(item);
-		});
 		this.newGame();
 	}
 
@@ -99,6 +95,13 @@ class EmeraldHunt {
 		// Create Image objects from them and wait for load to complete
 		let allPromises = imgDataArray.map(x => this.preloadSingleImage(x));
 		EmeraldHunt.#images = await Promise.all(allPromises);
+
+		// This is just debug fluff
+		let imageDiv = document.getElementById("imagesDiv");
+		imageDiv.innerHTML = '';
+		EmeraldHunt.IMAGES.forEach(item => {
+			imageDiv.appendChild(item);
+		});
 	}
 
 	async resetImageSource() {
