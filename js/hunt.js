@@ -66,7 +66,6 @@ class EmeraldHunt {
 			}
 		});
 
-		await this.useImageUrl(EmeraldHunt.#defaultImageUrl);
 
 		this.#gameState = stateEnum.MENU;
 
@@ -76,7 +75,8 @@ class EmeraldHunt {
 			this.renderLoop();
 		}, 1000/this.#fps);
 
-		this.newGame();
+		// Do this last, since it calls newGame
+		await this.useImageUrl(EmeraldHunt.#defaultImageUrl);
 	}
 
 	async useImageFile(file) {
@@ -95,6 +95,9 @@ class EmeraldHunt {
 		// Create Image objects from them and wait for load to complete
 		let allPromises = imgDataArray.map(x => this.preloadSingleImage(x));
 		EmeraldHunt.#images = await Promise.all(allPromises);
+
+		// Need to reload references to images
+		this.newGame();
 
 		// This is just debug fluff
 		let imageDiv = document.getElementById("imagesDiv");
