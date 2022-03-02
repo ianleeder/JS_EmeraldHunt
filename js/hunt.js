@@ -2,7 +2,7 @@
 
 import {stateEnum, difficultyEnum} from "./enums.js";
 import {Field} from "./field.js";
-import {readObjectsUrlAsync} from "./huntio.js";
+import {loadImagesFromUrlAsync, loadImagesFromFileAsync} from "./huntio.js";
 import {Menu} from "./menu.js";
 
 class EmeraldHunt {
@@ -16,6 +16,7 @@ class EmeraldHunt {
 	static #defaultFieldX = 40;
 	static #defaultFieldY = 20;
 	static #spriteSize = 16;
+	static #defaultImageUrl = "resources/OBJECTS.DAT";
 
 	constructor(c) {
 		this.#canvas = c;
@@ -45,6 +46,10 @@ class EmeraldHunt {
 		return EmeraldHunt.#spriteSize;
 	}
 
+	static get DEFAULTIMAGEURL() {
+		return EmeraldHunt.#defaultImageUrl;
+	}
+
 	async init() {
 		addEventListener("keydown", this.handleInput.bind(this));
 		addEventListener("keyup", e => {
@@ -61,11 +66,7 @@ class EmeraldHunt {
 			}
 		});
 
-		// Download the game sprites and parse them
-		let imgDataArray = await readObjectsUrlAsync("resources/OBJECTS.DAT");
-		// Create Image objects from them and wait for load to complete
-		let allPromises = imgDataArray.map(x => this.preloadSingleImage(x));
-		EmeraldHunt.#images = await Promise.all(allPromises);
+		await this.useImageUrl(EmeraldHunt.#defaultImageUrl);
 
 		this.#gameState = stateEnum.MENU;
 
@@ -80,6 +81,26 @@ class EmeraldHunt {
 			document.getElementById("imagesDiv").appendChild(item);
 		});
 		this.newGame();
+	}
+
+	async useImageFile(file) {
+
+	}
+
+	async useImageUrl(url) {
+		// Download the game sprites and parse them
+		let imgDataArray = await loadImagesFromUrlAsync(url);
+		await this.preloadAllImages(imgDataArray);
+	}
+
+	async preloadAllImages(imgDataArray) {
+		// Create Image objects from them and wait for load to complete
+		let allPromises = imgDataArray.map(x => this.preloadSingleImage(x));
+		EmeraldHunt.#images = await Promise.all(allPromises);
+	}
+
+	async resetImageSource() {
+		await this.useImageUrl(EmeraldHunt.DEFAULTIMAGEURL);
 	}
 
 	scaleGame(n) {

@@ -184,7 +184,7 @@ function generateImageFrom4bitPixels(pixels) {
 // Open the file use FileReader to convert to ArrayBuffer
 // Splice and dice into sprites
 // Returns array of img data URLs.
-function readObjectsUrlAsync(url) {
+function loadImagesFromUrlAsync(url) {
 	return fetch(url)
 		.then(response => {
 			if (!response.ok) {
@@ -201,6 +201,10 @@ function readObjectsUrlAsync(url) {
 		.catch(error => {
 			console.error(error);
 		});
+}
+
+function loadImagesFromFileAsync(file) {
+
 }
 
 // Wraps FileReader in a Promise so I can use modern notation instead of callbacks.
@@ -248,4 +252,4 @@ function displayContents(contents) {
 	element.innerHTML = contents;
 }
 
-export { readObjectsUrlAsync };
+export { loadImagesFromUrlAsync, loadImagesFromFileAsync };
