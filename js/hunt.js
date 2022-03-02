@@ -66,7 +66,6 @@ class EmeraldHunt {
 			}
 		});
 
-
 		this.#gameState = stateEnum.MENU;
 
 		// Start the timer ticking
