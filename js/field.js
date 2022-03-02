@@ -267,8 +267,10 @@ class Field {
 		let dozerPos = this.#dozer.pos;
 		let sittingOnGrenade = this.#grid[dozerPos] instanceof DroppedGrenade;
 		
-		switch (e.keyCode) {
+		var key = e.key || e.keyCode;
+		switch (key) {
 			// Up key
+			case 'ArrowUp':
 			case 38:
 				e.preventDefault();
 				// If we're on the top edge already, give up
@@ -286,6 +288,7 @@ class Field {
 				break;
 
 			// Down key
+			case 'ArrowDown':
 			case 40:
 				e.preventDefault();
 				// If we're on the bottom edge already, give up
@@ -303,6 +306,7 @@ class Field {
 				break;
 
 			// Left key
+			case 'ArrowLeft':
 			case 37:
 				e.preventDefault();
 				// If we're on the left edge already, give up
@@ -330,6 +334,7 @@ class Field {
 				break;
 
 			// Right key
+			case 'ArrowRight':
 			case 39:
 				e.preventDefault();
 				// If we're on the right edge already, give up
