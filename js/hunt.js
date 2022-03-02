@@ -58,8 +58,8 @@ class EmeraldHunt {
 			}
 		});
 
-		// Download the game sprites and parse tehm
-		let imgDataArray = await readObjectsUrlAsync("http://www.ianleeder.com/OBJECTS.DAT");
+		// Download the game sprites and parse them
+		let imgDataArray = await readObjectsUrlAsync("resources/OBJECTS.DAT");
 		// Create Image objects from them and wait for load to complete
 		let allPromises = imgDataArray.map(x => this.preloadSingleImage(x));
 		EmeraldHunt.#images = await Promise.all(allPromises);
@@ -71,9 +71,6 @@ class EmeraldHunt {
 			this.updateLoop();
 			this.renderLoop();
 		}, 1000/this.#fps);
-
-
-
 
 		// This is just debug fluff
 		EmeraldHunt.IMAGES.forEach(item => {
