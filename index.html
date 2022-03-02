@@ -43,7 +43,15 @@
 		// https://stackoverflow.com/a/23612498/5329728
 		scale.dispatchEvent(new Event('change'));
 		await app.init();
+
+		document.getElementById('file-input').addEventListener('change', uploadImageFile);
 	};
+
+	async function uploadImageFile(event) {
+		const file = event.target.files[0];
+		console.log(file);
+		await app.useImageFile(file);
+	}
 
 	function changeScale(e) {
 		app.scaleGame(e.target.value);

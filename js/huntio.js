@@ -203,8 +203,9 @@ function loadImagesFromUrlAsync(url) {
 		});
 }
 
-function loadImagesFromFileAsync(file) {
-
+async function loadImagesFromFileAsync(file) {
+	let arrayBuf = await readFileStreamAsync(file);
+	return parseData(arrayBuf);
 }
 
 // Wraps FileReader in a Promise so I can use modern notation instead of callbacks.

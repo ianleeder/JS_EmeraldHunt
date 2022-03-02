@@ -84,7 +84,9 @@ class EmeraldHunt {
 	}
 
 	async useImageFile(file) {
-
+		// Load the game sprites and parse them
+		let imgDataArray = await loadImagesFromFileAsync(file);
+		await this.preloadAllImages(imgDataArray);
 	}
 
 	async useImageUrl(url) {
