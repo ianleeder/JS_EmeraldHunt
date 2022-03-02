@@ -48,11 +48,14 @@ class EmeraldHunt {
 	async init() {
 		addEventListener("keydown", this.handleInput.bind(this));
 		addEventListener("keyup", e => {
-			if(e.keyCode==27) {
+			// Use graceful degradation of keyCode deprecation:
+			// https://devstephen.medium.com/keyboardevent-key-for-cross-browser-key-press-check-61dbad0a067a
+			var key = e.key || e.keyCode;
+			if (key === 'Escape' || key === 'Esc' || key === 27) {
 				console.log("Received ESC");
 				if(this.#gameState == stateEnum.RUNNING) {
 					this.#gameState = stateEnum.PAUSED;
-				} else if(this.#gameState == stateEnum.AUSED) {
+				} else if(this.#gameState == stateEnum.PAUSED) {
 					this.#gameState = stateEnum.RUNNING;
 				}
 			}
