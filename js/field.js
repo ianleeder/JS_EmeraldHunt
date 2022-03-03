@@ -362,6 +362,7 @@ class Field {
 				break;
 
 			// Space key
+			case ' ':
 			case 32:
 				e.preventDefault();
 				if (this.#dozer.hasGrenades()) {
