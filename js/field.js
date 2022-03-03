@@ -1,8 +1,8 @@
-"use strict";
+'use strict';
 
-import { stateEnum, difficultyEnum } from "./enums.js";
-import { Diamond, Gem, Exit, Dozer, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray } from "./objects.js";
-import { EmeraldHunt } from "./hunt.js";
+import { stateEnum, difficultyEnum } from './enums.js';
+import { Diamond, Gem, Exit, Dozer, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray } from './objects.js';
+import { EmeraldHunt } from './hunt.js';
 
 // Types are stored in the same array order as the sprites]
 let difficultyDistribution = {};
@@ -136,7 +136,7 @@ class Field {
 				}
 				// If item below is dozer, die
 				else if (objBelow == this.#dozer) {
-					deathMessage = "You got crushed!";
+					deathMessage = 'You got crushed!';
 					gameState = DYING;
 				}
 
@@ -250,7 +250,7 @@ class Field {
 	findAllCellsOfType(t) {
 		// https://stackoverflow.com/a/41271541/5329728
 		// e for element, i for index
-		return this.#grid.map((e, i) => e === t ? i : "").filter(String);
+		return this.#grid.map((e, i) => e === t ? i : '').filter(String);
 	}
 
 	addRandomDiamond() {
@@ -269,7 +269,7 @@ class Field {
 		
 		var key = e.key || e.keyCode;
 		switch (key) {
-			// Up key
+		// Up key
 			case 'ArrowUp':
 			case 38:
 				e.preventDefault();
@@ -324,7 +324,7 @@ class Field {
 				// If we are at least 2 squares from left edge (square to our left is not the edge)
 				// and item to left is pushable AND item to left of that is empty
 				else if (!this.checkEdgeLeft(dozerPos - 1) && objLeft.isPushable && !this.#grid[dozerPos - 2]) {
-					// Push the item left
+				// Push the item left
 					this.#grid[dozerPos - 2] = this.#grid[dozerPos - 1];
 					if (!sittingOnGrenade) {
 						this.#grid[dozerPos] = spriteEnum.BLANK;
@@ -352,7 +352,7 @@ class Field {
 				// If we are at least 2 squares from right edge (square to our right is not the edge)
 				// and item to right is pushable AND item to right of that is empty
 				else if (!this.checkEdgeRight(dozerPos + 1) && objRight.isPushable && !this.#grid[dozerPos + 2]) {
-					// Push the item right
+				// Push the item right
 					this.#grid[dozerPos + 2] = this.#grid[dozerPos + 1];
 					if (!sittingOnGrenade) {
 						this.#grid[dozerPos] = spriteEnum.BLANK;
@@ -397,7 +397,7 @@ class Field {
 		let s = EmeraldHunt.SPRITESIZE;
 		let x = p.x * s;
 		let y = p.y * s;
-		this.#ctx.fillStyle = "#000000";
+		this.#ctx.fillStyle = '#000000';
 		this.#ctx.fillRect(x, y, s, s);
 	}
 

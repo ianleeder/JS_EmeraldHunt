@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 
-import {stateEnum, difficultyEnum} from "./enums.js";
-import {Field} from "./field.js";
-import {loadImagesFromUrlAsync, loadImagesFromFileAsync} from "./huntio.js";
-import {Menu} from "./menu.js";
+import {stateEnum, difficultyEnum} from './enums.js';
+import {Field} from './field.js';
+import {loadImagesFromUrlAsync, loadImagesFromFileAsync} from './huntio.js';
+import {Menu} from './menu.js';
 
 class EmeraldHunt {
 	#canvas;
@@ -16,11 +16,11 @@ class EmeraldHunt {
 	static #defaultFieldX = 40;
 	static #defaultFieldY = 20;
 	static #spriteSize = 16;
-	static #defaultImageUrl = "resources/OBJECTS.DAT";
+	static #defaultImageUrl = 'resources/OBJECTS.DAT';
 
 	constructor(c) {
 		this.#canvas = c;
-		this.#ctx = this.#canvas.getContext("2d");
+		this.#ctx = this.#canvas.getContext('2d');
 		this.#gameState = stateEnum.LOADING;
 		this.#fps = 5;
 		this.scaleGame(1);
@@ -51,16 +51,16 @@ class EmeraldHunt {
 	}
 
 	async init() {
-		addEventListener("keydown", this.handleInput.bind(this));
-		addEventListener("keyup", e => {
+		addEventListener('keydown', this.handleInput.bind(this));
+		addEventListener('keyup', (e) => {
 			// Use graceful degradation of keyCode deprecation:
 			// https://devstephen.medium.com/keyboardevent-key-for-cross-browser-key-press-check-61dbad0a067a
-			var key = e.key || e.keyCode;
+			const key = e.key || e.keyCode;
 			if (key === 'Escape' || key === 'Esc' || key === 27) {
-				console.log("Received ESC");
-				if(this.#gameState == stateEnum.RUNNING) {
+				console.log('Received ESC');
+				if (this.#gameState == stateEnum.RUNNING) {
 					this.#gameState = stateEnum.PAUSED;
-				} else if(this.#gameState == stateEnum.PAUSED) {
+				} else if (this.#gameState == stateEnum.PAUSED) {
 					this.#gameState = stateEnum.RUNNING;
 				}
 			}
@@ -80,28 +80,28 @@ class EmeraldHunt {
 
 	async useImageFile(file) {
 		// Load the game sprites and parse them
-		let imgDataArray = await loadImagesFromFileAsync(file);
+		const imgDataArray = await loadImagesFromFileAsync(file);
 		await this.preloadAllImages(imgDataArray);
 	}
 
 	async useImageUrl(url) {
 		// Download the game sprites and parse them
-		let imgDataArray = await loadImagesFromUrlAsync(url);
+		const imgDataArray = await loadImagesFromUrlAsync(url);
 		await this.preloadAllImages(imgDataArray);
 	}
 
 	async preloadAllImages(imgDataArray) {
 		// Create Image objects from them and wait for load to complete
-		let allPromises = imgDataArray.map(x => this.preloadSingleImage(x));
+		const allPromises = imgDataArray.map((x) => this.preloadSingleImage(x));
 		EmeraldHunt.#images = await Promise.all(allPromises);
 
 		// Need to reload references to images
 		this.newGame();
 
 		// This is just debug fluff
-		let imageDiv = document.getElementById("imagesDiv");
+		const imageDiv = document.getElementById('imagesDiv');
 		imageDiv.innerHTML = '';
-		EmeraldHunt.IMAGES.forEach(item => {
+		EmeraldHunt.IMAGES.forEach((item) => {
 			imageDiv.appendChild(item);
 		});
 	}
@@ -123,38 +123,38 @@ class EmeraldHunt {
 
 		return new Promise((resolve, reject) => {
 			temporaryImage.onerror = () => {
-				reject(new DOMException("Problem caching image."));
+				reject(new DOMException('Problem caching image.'));
 			};
-	
+
 			temporaryImage.onload = () => {
 				resolve(temporaryImage);
 			};
-	
+
 			temporaryImage.src = imgData;
 		});
 	}
 
 	clearCanvas() {
-		this.#ctx.fillStyle = "#000000";
+		this.#ctx.fillStyle = '#000000';
 		this.#ctx.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
 	}
 
 	handleInput(e) {
-		switch(this.#gameState) {
-			case stateEnum.RUNNING:
-				this.#gameField.handleInput(e);
-				break;
-	
-			case stateEnum.MENU:
-			case stateEnum.DEAD:
-			case stateEnum.PAUSED:
-				this.#menu.handleInput(e);
-				break;
+		switch (this.#gameState) {
+		case stateEnum.RUNNING:
+			this.#gameField.handleInput(e);
+			break;
+
+		case stateEnum.MENU:
+		case stateEnum.DEAD:
+		case stateEnum.PAUSED:
+			this.#menu.handleInput(e);
+			break;
 		}
 	}
 
 	handleMenuInput(e) {
-		console.log("menu input received");
+		console.log('menu input received');
 	}
 
 	playerDied() {
@@ -167,18 +167,19 @@ class EmeraldHunt {
 	}
 
 	updateLoop() {
-		if(!this.#gameField)
+		if (!this.#gameField) {
 			return;
-		
-		switch(this.#gameState) {
-			case stateEnum.MENU:
-				this.#gameField.addRandomDiamond();
-				this.#gameField.updateField();
-				break;
-	
-			case stateEnum.RUNNING:
-				this.#gameField.updateField();
-				break;
+		}
+
+		switch (this.#gameState) {
+		case stateEnum.MENU:
+			this.#gameField.addRandomDiamond();
+			this.#gameField.updateField();
+			break;
+
+		case stateEnum.RUNNING:
+			this.#gameField.updateField();
+			break;
 		}
 	}
 
