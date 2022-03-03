@@ -145,7 +145,7 @@ class Bug extends BaseObject {
 class Explosion extends BaseObject {
 	#isNewExplosion = true;
 	constructor() {
-		super({isExplosive: true, image: EmeraldHunt.IMAGES[spriteEnum.EXPLOSION]});
+		super({isExplosive: false, image: EmeraldHunt.IMAGES[spriteEnum.EXPLOSION]});
 	}
 
 	get isNewExplosion() { return this.#isNewExplosion; }
