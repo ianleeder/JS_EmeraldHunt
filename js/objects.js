@@ -175,7 +175,6 @@ class DroppedGrenade extends Grenade {
 	}
 
 	tick() {
-		console.log(this.#timer);
 		return --this.#timer <= 0;
 	}
 }
