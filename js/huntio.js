@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 // Palette taken from wiki:
 // https://en.wikipedia.org/wiki/Color_Graphics_Adapter
@@ -27,7 +27,7 @@ function readSaveFile(buffer) {
 	let score = dv.getUint16(0, true);
 	let goal = dv.getUint16(2, true);
 
-	console.log("Goal = " + goal);
+	console.log('Goal = ' + goal);
 	let grenades = dv.getUint16(4, true);
 	let grenadeDelay = dv.getUint16(6, true);
 	let field = new Uint8Array(800);
@@ -48,7 +48,7 @@ function parseData(buffer) {
 
 	// There are 16 tiles (total file size 2144 bytes)
 	if (buffer.byteLength != 2144) {
-		alert("Invalid data file.");
+		alert('Invalid data file.');
 		return;
 	}
 
@@ -76,13 +76,13 @@ function parseSprite(buffer) {
 		view.getUint8(3) !== 0 ||
 		view.getUint8(132) !== 144 ||
 		view.getUint8(133) != 33) {
-		console.log("Invalid sprite, Magic numbers incorrect");
-		console.log("0 - " + view.getUint8(0));
-		console.log("1 - " + view.getUint8(1));
-		console.log("2 - " + view.getUint8(2));
-		console.log("3 - " + view.getUint8(3));
-		console.log("132 - " + view.getUint8(132));
-		console.log("133 - " + view.getUint8(133));
+		console.log('Invalid sprite, Magic numbers incorrect');
+		console.log('0 - ' + view.getUint8(0));
+		console.log('1 - ' + view.getUint8(1));
+		console.log('2 - ' + view.getUint8(2));
+		console.log('3 - ' + view.getUint8(3));
+		console.log('132 - ' + view.getUint8(132));
+		console.log('133 - ' + view.getUint8(133));
 		return;
 	}
 
@@ -163,8 +163,8 @@ function generateImageFrom4bitPixels(pixels) {
 	}
 
 	// create off-screen canvas element
-	let canvas = document.createElement("canvas"),
-		ctx = canvas.getContext("2d");
+	let canvas = document.createElement('canvas'),
+		ctx = canvas.getContext('2d');
 
 	canvas.width = width;
 	canvas.height = height;
@@ -217,7 +217,7 @@ function readFileStreamAsync(fs) {
 	return new Promise((resolve, reject) => {
 		temporaryFileReader.onerror = () => {
 			temporaryFileReader.abort();
-			reject(new DOMException("Problem parsing input file."));
+			reject(new DOMException('Problem parsing input file.'));
 		};
 
 		temporaryFileReader.onload = () => {
@@ -236,20 +236,20 @@ function analyzeField(f) {
 	for (let i = 0; i < f.length; i++) {
 		distribution[f[i]]++;
 	}
-	console.log("Length = " + f.length);
+	console.log('Length = ' + f.length);
 	let totalAvailable = distribution[3] + (5 * distribution[10]);
-	console.log("Total available = " + totalAvailable);
-	console.log("Empty space = " + distribution[0] + " (" + (distribution[0] / 8) + ")%");
-	console.log("Dirt = " + distribution[1] + " (" + (distribution[1] / 8) + ")%");
-	console.log("Boulders = " + distribution[2] + " (" + (distribution[2] / 8) + ")%");
-	console.log("Emeralds = " + distribution[3] + " (" + (distribution[3] / 8) + ")%");
-	console.log("Brick wall = " + distribution[4] + " (" + (distribution[4] / 8) + ")%");
-	console.log("Bomb = " + distribution[5] + " (" + (distribution[5] / 8) + ")%");
+	console.log('Total available = ' + totalAvailable);
+	console.log('Empty space = ' + distribution[0] + ' (' + (distribution[0] / 8) + ')%');
+	console.log('Dirt = ' + distribution[1] + ' (' + (distribution[1] / 8) + ')%');
+	console.log('Boulders = ' + distribution[2] + ' (' + (distribution[2] / 8) + ')%');
+	console.log('Emeralds = ' + distribution[3] + ' (' + (distribution[3] / 8) + ')%');
+	console.log('Brick wall = ' + distribution[4] + ' (' + (distribution[4] / 8) + ')%');
+	console.log('Bomb = ' + distribution[5] + ' (' + (distribution[5] / 8) + ')%');
 
 }
 
 function displayContents(contents) {
-	let element = document.getElementById("file-content");
+	let element = document.getElementById('file-content');
 	element.innerHTML = contents;
 }
 

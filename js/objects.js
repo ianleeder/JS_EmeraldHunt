@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-import {EmeraldHunt} from "./hunt.js";
+import {EmeraldHunt} from './hunt.js';
 
 class BaseObject {
 	// ES2019 allows private fields!
@@ -116,7 +116,7 @@ class Dozer extends BaseObject {
 
 	useGrenade() {
 		if(this.#numGrenades <= 0)
-			throw new Error("Cheating!  You don't have any more grenades");
+			throw new Error('Cheating!  You don\'t have any more grenades');
 		
 		this.#numGrenades--;
 	}

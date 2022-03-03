@@ -18,17 +18,17 @@ class Button {
 
 		if (this.isHighlighted) {
 			// light blue
-			gradient.addColorStop(0, "#2985E2");
+			gradient.addColorStop(0, '#2985E2');
 			// dark blue
-			gradient.addColorStop(1, "#0300F9");
-			ctx.strokeStyle = "#0500A7";
+			gradient.addColorStop(1, '#0300F9');
+			ctx.strokeStyle = '#0500A7';
 		}
 		else {
 			// light green
-			gradient.addColorStop(0, "#46EE3A");
+			gradient.addColorStop(0, '#46EE3A');
 			// dark green
-			gradient.addColorStop(1, "#195508");
-			ctx.strokeStyle = "#1A5A0F";
+			gradient.addColorStop(1, '#195508');
+			ctx.strokeStyle = '#1A5A0F';
 		}
 
 		// Draw shape
@@ -53,10 +53,10 @@ class Button {
 		ctx.fill();
 
 		// Write text
-		ctx.fillStyle = "#FFFFFF";
+		ctx.fillStyle = '#FFFFFF';
 		ctx.font = this.font;
-		ctx.textAlign = "center";
-		ctx.textBaseline = "middle";
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
 		if (this.text2) {
 			ctx.fillText(this.text, this.x + (this.w / 2), this.y + (this.h / 2) - 10);
 			ctx.fillText(this.text2, this.x + (this.w / 2), this.y + (this.h / 2) + 10);

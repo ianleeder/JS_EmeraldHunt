@@ -141,20 +141,21 @@ class EmeraldHunt {
 
 	handleInput(e) {
 		switch (this.#gameState) {
-		case stateEnum.RUNNING:
-			this.#gameField.handleInput(e);
-			break;
+			case stateEnum.RUNNING:
+				this.#gameField.handleInput(e);
+				break;
 
-		case stateEnum.MENU:
-		case stateEnum.DEAD:
-		case stateEnum.PAUSED:
-			this.#menu.handleInput(e);
-			break;
+			case stateEnum.MENU:
+			case stateEnum.DEAD:
+			case stateEnum.PAUSED:
+				this.#menu.handleInput(e);
+				break;
 		}
 	}
 
 	handleMenuInput(e) {
 		console.log('menu input received');
+		console.log(e);
 	}
 
 	playerDied() {
@@ -172,14 +173,14 @@ class EmeraldHunt {
 		}
 
 		switch (this.#gameState) {
-		case stateEnum.MENU:
-			this.#gameField.addRandomDiamond();
-			this.#gameField.updateField();
-			break;
+			case stateEnum.MENU:
+				this.#gameField.addRandomDiamond();
+				this.#gameField.updateField();
+				break;
 
-		case stateEnum.RUNNING:
-			this.#gameField.updateField();
-			break;
+			case stateEnum.RUNNING:
+				this.#gameField.updateField();
+				break;
 		}
 	}
 
