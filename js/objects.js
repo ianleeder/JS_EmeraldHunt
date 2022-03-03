@@ -169,12 +169,13 @@ class Grenade extends BaseObject {
 }
 
 class DroppedGrenade extends Grenade {
-	#timer = 10;
+	#timer = 3;
 	constructor() {
 		super({image: EmeraldHunt.IMAGES[spriteEnum.GRENADE]});
 	}
 
 	tick() {
+		console.log(this.#timer);
 		return --this.#timer <= 0;
 	}
 }
