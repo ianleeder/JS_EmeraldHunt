@@ -100,7 +100,7 @@ class Field {
 		// If we do a single pass through the field, items can be updated twice (two movements in one tick of time)
 		// If an item moves to the right (in order to fall down), and we are iterating left-to-right,
 		// it will be updated twice (right and down)
-
+		
 		// Track if there are any field changes
 		// so we know when the board has settled and we can place
 		// the dozer and exit.
@@ -175,7 +175,7 @@ class Field {
 				this.createExplosion(c);
 			}
 			// Else check if item below is uneven and it can fall left (cell left and below left are empty)
-			// If we move item to the left, decrement the counter so it doesn't get processed twice
+			// If we move item to the left, skip it (decrement the counter) so it doesn't get processed twice
 			else if (!this.checkEdgeLeft(c) && objBelow.isUneven && !this.#grid[c - 1] && !this.#grid[c - 1 + this.#fieldX]) {
 				changes = true;
 				this.#grid[c - 1] = obj;
