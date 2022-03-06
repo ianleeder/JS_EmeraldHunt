@@ -6,11 +6,19 @@
 // debugging, as compared to using numbers, which are the more conventional
 // choice when using enums"
 const stateEnum = {
+	// Used while images are pre-loading
 	LOADING: 'loading',
+	// Indicates the menu is displayed
 	MENU: 'menu',
+	// The game field is initalising
+	STARTING: 'starting',
+	// The game is in progress
 	RUNNING: 'running',
+	// The game is paused
 	PAUSED: 'paused',
+	// Show the explosion/crush frame that caused death
 	DYING: 'dying',
+	// Display a death screen
 	DEAD: 'dead'
 };
 
