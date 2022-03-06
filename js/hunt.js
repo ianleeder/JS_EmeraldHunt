@@ -6,23 +6,46 @@ import {loadImagesFromUrlAsync, loadImagesFromFileAsync} from './huntio.js';
 import {Menu} from './menu.js';
 
 class EmeraldHunt {
+	// DOM Canvas element.  Required for scaling.
 	#canvas;
+	
+	// Drawing context on canvas
 	#ctx;
+
+	// Current game state enum
 	#gameState;
-	#fps;
+
+	// Target FPS
+	#fps = 5;
+
+	// Field instance for playing the game
 	#gameField;
+
+	// Menu instance
 	#menu;
+
+	// Array of preloaded images
 	static #images;
+
+	// Constants
+	// #########
+
+	// Default horizontal field size
 	static #defaultFieldX = 40;
+
+	// Default vertical field size
 	static #defaultFieldY = 20;
+
+	// Sprite pixel size (determined by objects data file)
 	static #spriteSize = 16;
+
+	// Path to default image object file
 	static #defaultImageUrl = 'resources/OBJECTS.DAT';
 
 	constructor(c) {
 		this.#canvas = c;
 		this.#ctx = this.#canvas.getContext('2d');
 		this.#gameState = stateEnum.LOADING;
-		this.#fps = 5;
 		this.scaleGame(1);
 		this.#menu = new Menu(c);
 
