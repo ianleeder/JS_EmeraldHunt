@@ -175,18 +175,13 @@ class EmeraldHunt {
 		}
 	}
 
-	handleMenuInput(e) {
-		console.log('menu input received');
-		console.log(e);
-	}
-
 	playerDied() {
 		this.#gameState = stateEnum.DEAD;
 	}
 
 	newGame() {
 		this.#gameState = stateEnum.RUNNING;
-		this.#gameField = new Field(this.#ctx, difficultyEnum.EASY);
+		this.#gameField = new Field(this.#ctx, difficultyEnum.HARD);
 	}
 
 	updateLoop() {

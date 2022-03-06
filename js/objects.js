@@ -67,7 +67,7 @@ class Emerald extends Gem {
 
 class Diamond extends Gem {
 	constructor() {
-		super({canBeCrushed: true, image: EmeraldHunt.IMAGES[spriteEnum.EMERALD]}, 5);
+		super({canBeCrushed: true, image: EmeraldHunt.IMAGES[spriteEnum.DIAMOND]}, 5);
 	}
 }
 

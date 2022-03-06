@@ -6,10 +6,10 @@ import { EmeraldHunt } from './hunt.js';
 
 // Types are stored in the same array order as the sprites]
 let difficultyDistribution = {};
-difficultyDistribution[difficultyEnum.EASY] = [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
-difficultyDistribution[difficultyEnum.MEDIUM] = [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
-difficultyDistribution[difficultyEnum.HARD] = [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
-difficultyDistribution[difficultyEnum.HARDER] = [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
+difficultyDistribution[difficultyEnum.EASY] =    [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
+difficultyDistribution[difficultyEnum.MEDIUM] =  [0, 80, 60, 150, 50, 0, 0, 0, 50, 0, 20, 0, 0, 20, 0, 0];
+difficultyDistribution[difficultyEnum.HARD] =    [0, 80, 60, 150, 50, 0, 0, 0, 50, 0, 20, 0, 0, 20, 0, 0];
+difficultyDistribution[difficultyEnum.HARDER] =  [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
 difficultyDistribution[difficultyEnum.HARDEST] = [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
 
 class Field {
@@ -100,7 +100,7 @@ class Field {
 		// If we do a single pass through the field, items can be updated twice (two movements in one tick of time)
 		// If an item moves to the right (in order to fall down), and we are iterating left-to-right,
 		// it will be updated twice (right and down)
-		
+
 		// Track if there are any field changes
 		// so we know when the board has settled and we can place
 		// the dozer and exit.
@@ -260,14 +260,10 @@ class Field {
 	populateFieldWithType(t) {
 		let emptyCells = this.findAllCellsOfType(spriteEnum.BLANK);
 
-		//console.log("Populating type " + t + ", should be " + difficultyDistribution[this.#difficulty][t]);
-
 		for (let i = 0; i < difficultyDistribution[this.#difficulty][t]; i++) {
 			let rnd = Math.floor(Math.random() * emptyCells.length);
 			let index = emptyCells.splice(rnd, 1)[0];
 			this.#grid[index] = new classArray[t]();
-			//console.log("Placed object " + i + " in index " + index);
-			//console.log(this.#grid[index]);
 		}
 	}
 
