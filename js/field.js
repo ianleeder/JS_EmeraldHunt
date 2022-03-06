@@ -5,6 +5,7 @@ import { Diamond, Gem, Exit, Dozer, Explosion, Grenade, DroppedGrenade, spriteEn
 import { EmeraldHunt } from './hunt.js';
 
 // Types are stored in the same array order as the sprites]
+// TODO: Rework these to be percentages instead of static numbers, eg 30% emeralds, 40% dirt, 10% brick, 10% stones
 let difficultyDistribution = {};
 difficultyDistribution[difficultyEnum.EASY] =    [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
 difficultyDistribution[difficultyEnum.MEDIUM] =  [0, 80, 60, 150, 50, 0, 0, 0, 50, 0, 20, 0, 0, 20, 0, 0];
