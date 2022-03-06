@@ -47,6 +47,7 @@ class Field {
 	// Multiplication factor to determine target score from total available field score
 	#targetScoreFactor = 0.8;
 
+	// TODO: Add callbacks for changing game state (dying, dead)
 	constructor(c, diff) {
 		this.#ctx = c;
 		this.#fieldX = EmeraldHunt.DEFAULTFIELDX;
