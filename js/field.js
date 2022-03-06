@@ -13,14 +13,38 @@ difficultyDistribution[difficultyEnum.HARDER] = [0, 100, 60, 150, 50, 0, 0, 0, 5
 difficultyDistribution[difficultyEnum.HARDEST] = [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
 
 class Field {
+	// Canvas context for drawing
 	#ctx;
+
+	// Horizontal field size
 	#fieldX;
+
+	// Vertical field size
 	#fieldY;
+
+	// Game difficulty enum
 	#difficulty;
+
+	// Field data array
 	#grid;
+
+	// Dozer instance
 	#dozer;
+
+	// Boolean to flag if a new game has just started
 	#newGame;
+
+	// Amount of score accumulated in this game
 	#gameScore;
+
+	// Amount of score available at the start of the game
+	#availableScore;
+
+	// Target score to unlock the exit
+	#targetScore;
+
+	// Multiplication factor to determine target score from total available field score
+	#targetScoreFactor = 0.8;
 
 	constructor(c, diff) {
 		this.#ctx = c;
