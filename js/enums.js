@@ -10,8 +10,6 @@ const stateEnum = {
 	LOADING: 'loading',
 	// Indicates the menu is displayed
 	MENU: 'menu',
-	// The game field is initalising
-	STARTING: 'starting',
 	// The game is in progress
 	RUNNING: 'running',
 	// The game is paused

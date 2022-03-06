@@ -32,7 +32,7 @@ class Field {
 	#dozer;
 
 	// Boolean to flag if a new game has just started
-	#newGame;
+	#fieldInitialising;
 
 	// Amount of score accumulated in this game
 	#gameScore;
@@ -52,7 +52,7 @@ class Field {
 		this.#fieldY = EmeraldHunt.DEFAULTFIELDY;
 		this.#difficulty = diff;
 		this.initField();
-		this.#newGame = true;
+		this.#fieldInitialising = true;
 		this.#gameScore = 0;
 	}
 
@@ -81,7 +81,7 @@ class Field {
 	}
 
 	finaliseField() {
-		this.#newGame = false;
+		this.#fieldInitialising = false;
 
 		let emptyCells = this.findAllCellsOfType(spriteEnum.BLANK);
 		let rnd = Math.floor(Math.random() * emptyCells.length);
@@ -195,7 +195,7 @@ class Field {
 			}
 		}
 
-		if (this.#newGame && !changes)
+		if (this.#fieldInitialising && !changes)
 			this.finaliseField();
 	}
 
@@ -285,7 +285,7 @@ class Field {
 	handleInput(e) {
 		// If we are still initialising the field
 		// and haven't placed the dozer yet, ignore input
-		if(this.#newGame)
+		if(this.#fieldInitialising)
 			return;
 		
 		let dozerPos = this.#dozer.pos;
