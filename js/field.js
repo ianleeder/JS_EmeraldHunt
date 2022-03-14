@@ -428,6 +428,7 @@ class Field {
 			this.#dozer.pickupGrenade();
 		} else if (newPosObj instanceof Gem) {
 			this.#gameScore += newPosObj.score;
+			console.log(`Ate a gem, new score ${this.#gameScore}`);
 		}
 
 		// Set grid location to dozer, unless a grenade was dropped
