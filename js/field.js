@@ -4,7 +4,25 @@ import { stateEnum, difficultyEnum } from './enums.js';
 import { Diamond, Gem, Exit, Dozer, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray } from './objects.js';
 import { EmeraldHunt } from './hunt.js';
 
-// Types are stored in the same array order as the sprites]
+// Types are stored in the same array order as the sprites
+/*
+	BLANK: 0,
+	DIRT: 1,
+	ROCK: 2,
+	EMERALD: 3,
+	BRICK: 4,
+	BOMB: 5,
+	EXIT: 6,
+	DOZER: 7,
+	COBBLE: 8,
+	BUG: 9,
+	DIAMOND: 10,
+	SLIME: 11,
+	EXPLOSION: 12,
+	GRENADE: 13,
+	NOTUSED: 14,
+	ALTDOZER: 15
+*/
 // TODO: Rework these to be percentages instead of static numbers, eg 30% emeralds, 40% dirt, 10% brick, 10% stones
 let difficultyDistribution = {};
 difficultyDistribution[difficultyEnum.EASY] =    [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
