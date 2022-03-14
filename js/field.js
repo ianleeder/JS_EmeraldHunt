@@ -102,18 +102,32 @@ class Field {
 	}
 
 	finaliseField() {
-		this.#fieldInitialising = false;
-
+		// Get the list of empty cells in the field
 		let emptyCells = this.findAllCellsOfType(spriteEnum.BLANK);
+		// Pick one cell at random
 		let rnd = Math.floor(Math.random() * emptyCells.length);
+		// Remove it from the array of empty cells
 		let index = emptyCells.splice(rnd, 1)[0];
 
+		// Place the player at that index
 		this.#dozer = new Dozer(index);
 		this.#grid[index] = this.#dozer;
 
+		// Pick another empty cell at random
 		rnd = Math.floor(Math.random() * emptyCells.length);
 		index = emptyCells.splice(rnd, 1)[0];
+		// Place the exit at that index
 		this.#grid[index] = new Exit();
+
+		let emeralds = this.findAllCellsOfType(spriteEnum.EMERALD).length;
+		let diamonds = this.findAllCellsOfType(spriteEnum.DIAMOND).length;
+
+		this.#availableScore = (diamonds * 5) + emeralds;
+
+		console.log(`Available score is ${this.#availableScore}`);
+
+		// Remove flag that was holding up gameplay
+		this.#fieldInitialising = false;
 	}
 
 	updateField() {
@@ -300,7 +314,15 @@ class Field {
 	findAllCellsOfType(t) {
 		// https://stackoverflow.com/a/41271541/5329728
 		// e for element, i for index
-		return this.#grid.map((e, i) => e === t ? i : '').filter(String);
+		return this.#grid.map(function(e, i){
+			if(t === spriteEnum.BLANK)
+			{
+				// Check if grid cell contains "blank" (0)
+				return e === t ? i : '';
+			}
+			// Check if grid cell is an instance of the specified class type
+			return e instanceof classArray[t] ? i : '';
+		}).filter(String);
 	}
 
 	addRandomDiamond() {
