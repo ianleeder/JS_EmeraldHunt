@@ -31,6 +31,19 @@ difficultyDistribution[difficultyEnum.HARD] =    [0, 80, 60, 150, 50, 0, 0, 0, 5
 difficultyDistribution[difficultyEnum.HARDER] =  [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
 difficultyDistribution[difficultyEnum.HARDEST] = [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
 
+difficultyDistribution[difficultyEnum.EASY] = new Map();
+difficultyDistribution[difficultyEnum.EASY].set(spriteEnum.DIRT, 0.125); // 100 dirt
+difficultyDistribution[difficultyEnum.EASY].set(spriteEnum.ROCK, 0.075); // 60 rock
+difficultyDistribution[difficultyEnum.EASY].set(spriteEnum.ROCK, 0.1875); // 150 emerald
+
+console.log('map is');
+console.log(difficultyDistribution[difficultyEnum.EASY]);
+for(const kvp of difficultyDistribution[difficultyEnum.EASY])
+{
+	console.log(`Key is ${kvp}, value is ${difficultyDistribution[difficultyEnum.EASY].get(kvp)}`);
+	console.log(kvp);
+}
+
 class Field {
 	// Canvas context for drawing
 	#ctx;
