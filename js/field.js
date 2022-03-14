@@ -23,26 +23,14 @@ import { EmeraldHunt } from './hunt.js';
 	NOTUSED: 14,
 	ALTDOZER: 15
 */
-// TODO: Rework these to be percentages instead of static numbers, eg 30% emeralds, 40% dirt, 10% brick, 10% stones
+// Numbers are for a default 40x20 field (800 tiles).
+// Actual items will be scaled for field size.
 let difficultyDistribution = {};
 difficultyDistribution[difficultyEnum.EASY] =    [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
 difficultyDistribution[difficultyEnum.MEDIUM] =  [0, 80, 60, 150, 50, 0, 0, 0, 50, 0, 20, 0, 0, 20, 0, 0];
 difficultyDistribution[difficultyEnum.HARD] =    [0, 80, 60, 150, 50, 0, 0, 0, 50, 0, 20, 0, 0, 20, 0, 0];
 difficultyDistribution[difficultyEnum.HARDER] =  [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
 difficultyDistribution[difficultyEnum.HARDEST] = [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
-
-difficultyDistribution[difficultyEnum.EASY] = new Map();
-difficultyDistribution[difficultyEnum.EASY].set(spriteEnum.DIRT, 0.125); // 100 dirt
-difficultyDistribution[difficultyEnum.EASY].set(spriteEnum.ROCK, 0.075); // 60 rock
-difficultyDistribution[difficultyEnum.EASY].set(spriteEnum.ROCK, 0.1875); // 150 emerald
-
-console.log('map is');
-console.log(difficultyDistribution[difficultyEnum.EASY]);
-for(const kvp of difficultyDistribution[difficultyEnum.EASY])
-{
-	console.log(`Key is ${kvp}, value is ${difficultyDistribution[difficultyEnum.EASY].get(kvp)}`);
-	console.log(kvp);
-}
 
 class Field {
 	// Canvas context for drawing
@@ -291,10 +279,19 @@ class Field {
 	}
 
 	populateFieldWithType(t) {
+		// Get an array of all the empty field cells
 		let emptyCells = this.findAllCellsOfType(spriteEnum.BLANK);
 
-		for (let i = 0; i < difficultyDistribution[this.#difficulty][t]; i++) {
+		// Default field size is 800
+		// Calculate a scaling factor for this field, based on size
+		let scale = (this.#fieldX * this.#fieldY) / 800;
+		let desiredQty = Math.round(difficultyDistribution[this.#difficulty][t] * scale);
+
+		for (let i = 0; i < desiredQty; i++) {
+			// Pick a random value from the array of empty cells
 			let rnd = Math.floor(Math.random() * emptyCells.length);
+			// Splice deletes 1 cell from the empty array, at position random
+			// And returns the value removed
 			let index = emptyCells.splice(rnd, 1)[0];
 			this.#grid[index] = new classArray[t]();
 		}
