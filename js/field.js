@@ -104,6 +104,68 @@ class Field {
 		requiredTypes.forEach(this.populateFieldWithType.bind(this));
 	}
 
+	/*
+	Rock fall
+	(frequency calc only)
+	7 square wave cycles in 23ms
+	T = 23/7
+	f = 1/T = 7/.023 = 304Hz
+	
+	304Hz for 25ms
+	Silence for 48ms
+	
+	(frequency calc only)
+	7 square wave cycles in 80ms
+	f = 7/0.08 = 87.5Hz
+
+	87.5Hz for 87ms
+
+	*/
+
+	stoneFall() {
+		let ctx = new (window.AudioContext || window.webkitAudioContext);
+		let osc = new OscillatorNode(ctx);
+		osc.connect(ctx.destination);
+		osc.type = 'square';
+		
+		let gainNode = ctx.createGain();
+
+		// Play first freq
+		gainNode.gain.value = 1;
+		osc.frequency.setValueAtTime(304, ctx.currentTime);
+
+		// After 25ms mute
+		gainNode.gain.setValueAtTime(0, ctx.currentTime + 0.025);
+		// After 30ms switch frequency
+		osc.frequency.setValueAtTime(87.5, ctx.currentTime + 0.03);
+		// After 25+48ms unmute
+		gainNode.gain.setValueAtTime(1, ctx.currentTime + 0.073);
+
+		this.startTone(osc);
+		// Stop after 25+48+87ms
+		setTimeout(endTone.bind(this), 160);
+
+		function endTone() {
+			this.stopTone(osc);
+		}
+	}
+
+	startTone(osc) {
+		if (osc.start) {
+			osc.start(0);
+		} else {
+			osc.noteOn(0);
+		}
+	}
+
+	stopTone(osc) {
+		if (osc.stop) {
+			osc.stop(0);
+		} else {
+			osc.noteOff(0);
+		}
+	}
+
 	// Taking audio code from here
 	// https://stackoverflow.com/a/13194241/5329728
 	beep(duration, type) {
@@ -498,7 +560,10 @@ class Field {
 			case '4':
 				this.beep(1000, 'triangle');
 				break;
-							
+			
+			case '5':
+				this.stoneFall();
+				break;
 		}
 
 		let newPosObj = this.#grid[this.#dozer.pos];
