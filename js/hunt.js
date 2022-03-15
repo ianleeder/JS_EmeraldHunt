@@ -175,13 +175,14 @@ class EmeraldHunt {
 		}
 	}
 
-	playerDied() {
-		this.#gameState = stateEnum.DEAD;
+	playerDying(deathMessage) {
+		this.#gameState = stateEnum.DYING;
+		console.log(`player died - ${deathMessage}`);
 	}
 
 	newGame() {
 		this.#gameState = stateEnum.RUNNING;
-		this.#gameField = new Field(this.#ctx, difficultyEnum.HARD);
+		this.#gameField = new Field(this.#ctx, difficultyEnum.HARD, this.playerDying.bind(this));
 	}
 
 	updateLoop() {

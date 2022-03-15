@@ -66,8 +66,10 @@ class Field {
 	// Multiplication factor to determine target score from total available field score
 	#targetScoreFactor = 0.8;
 
-	// TODO: Add callbacks for changing game state (dying, dead)
-	constructor(c, diff) {
+	// Callback to the Hunt object playerDying function
+	#playerDyingCallback;
+
+	constructor(c, diff, dyingCallback) {
 		this.#ctx = c;
 		this.#fieldX = EmeraldHunt.DEFAULTFIELDX;
 		this.#fieldY = EmeraldHunt.DEFAULTFIELDY;
@@ -75,6 +77,7 @@ class Field {
 		this.initField();
 		this.#fieldInitialising = true;
 		this.#gameScore = 0;
+		this.#playerDyingCallback = dyingCallback;
 	}
 
 	initField() {
@@ -195,8 +198,7 @@ class Field {
 				}
 				// If item below is dozer, die
 				else if (objBelow == this.#dozer) {
-					deathMessage = 'You got crushed!';
-					gameState = DYING;
+					this.#playerDyingCallback('You got crushed!');
 				}
 
 				// Propogate item down
