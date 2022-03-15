@@ -27,10 +27,10 @@ import { EmeraldHunt } from './hunt.js';
 // Actual items will be scaled for field size.
 let difficultyDistribution = {};
 difficultyDistribution[difficultyEnum.EASY] =    [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
-difficultyDistribution[difficultyEnum.MEDIUM] =  [0, 80, 60, 150, 50, 0, 0, 0, 50, 0, 20, 0, 0, 20, 0, 0];
-difficultyDistribution[difficultyEnum.HARD] =    [0, 80, 60, 150, 50, 0, 0, 0, 50, 0, 20, 0, 0, 20, 0, 0];
-difficultyDistribution[difficultyEnum.HARDER] =  [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
-difficultyDistribution[difficultyEnum.HARDEST] = [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 20, 0, 0];
+difficultyDistribution[difficultyEnum.MEDIUM] =  [0, 80, 60, 150, 50, 0, 0, 0, 50, 0, 20, 0, 0, 10, 0, 0];
+difficultyDistribution[difficultyEnum.HARD] =    [0, 90, 90, 90, 90, 20, 0, 0, 50, 0, 90, 0, 0, 10, 0, 0];
+difficultyDistribution[difficultyEnum.HARDER] =  [0, 100, 60, 0, 50, 0, 0, 0, 50, 0, 180, 0, 0, 10, 0, 0];
+difficultyDistribution[difficultyEnum.HARDEST] = [0, 100, 60, 150, 50, 0, 0, 0, 50, 0, 0, 0, 0, 10, 0, 0];
 
 class Field {
 	// Canvas context for drawing
@@ -280,7 +280,7 @@ class Field {
 
 				// Can't check grid, since if we sit on a dropped grenade we don't exist in the grid
 				// If it contains dozer, die
-				if (checkCell === this.#dozer.pos) {
+				if (!this.#fieldInitialising && checkCell === this.#dozer.pos) {
 					// TODO Deal with death here
 				}
 
