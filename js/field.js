@@ -104,6 +104,39 @@ class Field {
 		requiredTypes.forEach(this.populateFieldWithType.bind(this));
 	}
 
+	// Taking audio code from here
+	// https://stackoverflow.com/a/13194241/5329728
+	beep(duration, type) {
+		if (!(window.AudioContext || window.webkitAudioContext)) {
+			throw Error('Your browser does not support Audio Context.');
+		}
+	
+		duration = +duration;
+	
+		// Only 0-4 are valid types.
+		//type = (type % 5) || 0;
+	
+		var ctx = new (window.AudioContext || window.webkitAudioContext);
+		var osc = ctx.createOscillator();
+	
+		osc.type = type;
+	
+		osc.connect(ctx.destination);
+		if (osc.start) {
+			osc.start(0);
+		} else {
+			osc.noteOn(0);
+		}
+	
+		setTimeout(function() {
+			if (osc.stop) {
+				osc.stop(0);
+			} else {
+				osc.noteOff(0);
+			}
+		}, duration);
+	}
+
 	finaliseField() {
 		// Get the list of empty cells in the field
 		let emptyCells = this.findAllCellsOfType(spriteEnum.BLANK);
@@ -448,6 +481,24 @@ class Field {
 					this.#grid[dozerPos] = new DroppedGrenade();
 				}
 				break;
+
+			// "sine", "square", "sawtooth", "triangle"
+			case '1':
+				this.beep(1000, 'sine');
+				break;
+
+			case '2':
+				this.beep(1000, 'square');
+				break;
+
+			case '3':
+				this.beep(1000, 'sawtooth');
+				break;
+
+			case '4':
+				this.beep(1000, 'triangle');
+				break;
+							
 		}
 
 		let newPosObj = this.#grid[this.#dozer.pos];
