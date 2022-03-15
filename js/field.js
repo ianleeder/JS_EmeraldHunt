@@ -64,7 +64,7 @@ class Field {
 	#targetScore;
 
 	// Multiplication factor to determine target score from total available field score
-	#targetScoreFactor = 0.8;
+	#targetScoreFactor = 0.9;
 
 	// Callback to the Hunt object playerDying function
 	#playerDyingCallback;
@@ -122,15 +122,19 @@ class Field {
 		// Place the exit at that index
 		this.#grid[index] = new Exit();
 
-		let emeralds = this.findAllCellsOfType(spriteEnum.EMERALD).length;
-		let diamonds = this.findAllCellsOfType(spriteEnum.DIAMOND).length;
+		this.#availableScore = this.getRemainingScore();
+		this.#targetScore = Math.floor(this.#availableScore * this.#targetScoreFactor);
 
-		this.#availableScore = (diamonds * 5) + emeralds;
-
-		console.log(`Available score is ${this.#availableScore}`);
+		console.log(`Available score is ${this.#availableScore}, target score is ${this.#targetScore}`);
 
 		// Remove flag that was holding up gameplay
 		this.#fieldInitialising = false;
+	}
+
+	getRemainingScore()	{
+		let emeralds = this.findAllCellsOfType(spriteEnum.EMERALD).length;
+		let diamonds = this.findAllCellsOfType(spriteEnum.DIAMOND).length;
+		return (diamonds * 5) + emeralds;
 	}
 
 	updateField() {
@@ -452,7 +456,7 @@ class Field {
 			this.#dozer.pickupGrenade();
 		} else if (newPosObj instanceof Gem) {
 			this.#gameScore += newPosObj.score;
-			console.log(`Ate a gem, new score ${this.#gameScore}`);
+			console.log(`Ate a gem, score ${this.#gameScore}/${this.#targetScore} (${this.getRemainingScore()} remaining)`);
 		}
 
 		// Set grid location to dozer, unless a grenade was dropped
