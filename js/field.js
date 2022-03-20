@@ -86,7 +86,7 @@ class Field {
 		this.#playerDyingCallback = dyingCallback;
 		this.#audioContext = new (window.AudioContext || window.webkitAudioContext);
 		this.#audioOscillator = new OscillatorNode(this.#audioContext);
-		this.#audioOscillator.connect(this.#audioContext.destination);
+		
 	}
 
 	initField() {
@@ -113,6 +113,33 @@ class Field {
 		requiredTypes.forEach(this.populateFieldWithType.bind(this));
 	}
 
+	playDestroyDirt() {
+		/*
+			First tone
+				30ms, 3 cycles, 100Hz for 30ms
+			Second tone
+				26ms, 13 cycles, 500Hz for 26ms
+			Third tone
+				50ms, 1 cycle, 20Hz for 50ms
+			Fourth tone
+				4ms, 2 cycles, 500Hz for 4ms
+			Fifth tone
+				40ms, 2 cycles, 50Hz for 60ms
+			Total time: 170ms
+		*/
+		
+		this.#audioOscillator.connect(this.#audioContext.destination);
+		this.#audioOscillator.type = 'square';
+		this.#audioOscillator.frequency.setValueAtTime(100, this.#audioContext.currentTime);
+		this.#audioOscillator.frequency.setValueAtTime(500, this.#audioContext.currentTime + 0.030);
+		this.#audioOscillator.frequency.setValueAtTime(20, this.#audioContext.currentTime + 0.056);
+		this.#audioOscillator.frequency.setValueAtTime(500, this.#audioContext.currentTime + 0.106);
+		this.#audioOscillator.frequency.setValueAtTime(50, this.#audioContext.currentTime + 0.110);
+
+		this.startTone();
+		setTimeout(this.stopTone.bind(this), 170);
+	}
+
 	/*
 	Rock fall
 	(frequency calc only)
@@ -132,7 +159,6 @@ class Field {
 	*/
 
 	playStoneFall() {
-		this.#audioOscillator.type = 'square';
 		let gainNode = this.#audioContext.createGain();
 
 		// Play first freq
@@ -564,6 +590,10 @@ class Field {
 			
 			case '5':
 				this.playStoneFall();
+				break;
+			
+			case '6':
+				this.playDestroyDirt();
 				break;
 		}
 
