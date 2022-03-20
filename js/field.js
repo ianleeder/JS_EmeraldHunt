@@ -108,6 +108,39 @@ class Field {
 		requiredTypes.forEach(this.populateFieldWithType.bind(this));
 	}
 
+	playExplosion() {
+		/*
+			First tone, 22ms, 13 cycles: 590Hz for 23ms
+			Second tone, 53ms, 17 cycles: 320Hz for 54ms
+			Third tone, 25ms, 2 cycles: 80Hz for 33ms
+			Fourth tone, 17ms, 2 cycles: 117Hz for 25ms
+			Off for 17ms
+			Fifth tone, 17ms, 1/2 cycle: 30Hz for 33ms
+			Total time: 185ms
+		*/
+		let gainNode = this.#audioContext.createGain();
+		let osc = new OscillatorNode(this.#audioContext);
+		osc.connect(this.#audioContext.destination);
+		osc.type = 'square';
+		gainNode.gain.value = 1;
+
+		osc.frequency.setValueAtTime(590, this.#audioContext.currentTime);
+		osc.frequency.setValueAtTime(320, this.#audioContext.currentTime + 0.023);
+		osc.frequency.setValueAtTime(80, this.#audioContext.currentTime + 0.077);
+		osc.frequency.setValueAtTime(117, this.#audioContext.currentTime + 0.110);
+		gainNode.gain.setValueAtTime(0, this.#audioContext.currentTime + 0.135);
+
+		osc.frequency.setValueAtTime(30, this.#audioContext.currentTime + 0.140);
+		gainNode.gain.setValueAtTime(1, this.#audioContext.currentTime + 0.152);
+		
+		this.startTone(osc);
+		setTimeout(disconnectOscillator.bind(this), 185);
+
+		function disconnectOscillator() {
+			osc.disconnect(this.#audioContext.destination);
+		}
+	}
+
 	playDiamondCrushed() {
 		/*
 			First tone, 2ms, 1 cycle, 500Hz for 2ms
@@ -651,6 +684,10 @@ class Field {
 			
 			case '8':
 				this.playDiamondCrushed();
+				break;
+			
+			case '9':
+				this.playExplosion();
 				break;
 		}
 
