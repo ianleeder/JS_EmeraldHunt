@@ -395,7 +395,12 @@ class Field {
 				}
 				// If item below is dozer, die
 				else if (objBelow == this.#dozer) {
+					this.playPlayerDie();
 					this.#playerDyingCallback('You got crushed!');
+				}
+
+				if (objBelow instanceof Diamond) {
+					this.playDiamondCrushed();
 				}
 
 				// Propogate item down
@@ -412,19 +417,39 @@ class Field {
 			// Else check if item below is uneven and it can fall left (cell left and below left are empty)
 			// If we move item to the left, skip it (decrement the counter) so it doesn't get processed twice
 			else if (!this.checkEdgeLeft(c) && objBelow.isUneven && !this.#grid[c - 1] && !this.#grid[c - 1 + this.#fieldX]) {
+				if (obj.isFalling && obj instanceof Gem) {
+					this.playGemFall();
+				}
+				if (obj.isFalling && obj instanceof Rock) {
+					this.playRockFall();
+				}
 				changes = true;
+				obj.isFalling = true;
 				this.#grid[c - 1] = obj;
 				this.#grid[c] = spriteEnum.BLANK;
 				c--;
 			}
 			// Else check if item below is uneven and it can fall right (cell right and below right are empty)
 			else if (!this.checkEdgeRight(c) && objBelow.isUneven && !this.#grid[c + 1] && !this.#grid[c + 1 + this.#fieldX]) {
+				if (obj.isFalling && obj instanceof Gem) {
+					this.playGemFall();
+				}
+				if (obj.isFalling && obj instanceof Rock) {
+					this.playRockFall();
+				}
 				changes = true;
+				obj.isFalling = true;
 				this.#grid[c + 1] = obj;
 				this.#grid[c] = spriteEnum.BLANK;
 			}
 			// Else check if item below is solid (can't be crushed) to disable falling.
 			else if (obj.isFalling) {
+				if (obj instanceof Gem) {
+					this.playGemFall();
+				}
+				if (obj instanceof Rock) {
+					this.playRockFall();
+				}
 				changes = true;
 				obj.isFalling = false;
 			}
