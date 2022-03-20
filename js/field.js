@@ -131,7 +131,7 @@ class Field {
 
 	*/
 
-	stoneFall() {
+	playStoneFall() {
 		this.#audioOscillator.type = 'square';
 		let gainNode = this.#audioContext.createGain();
 
@@ -563,7 +563,7 @@ class Field {
 				break;
 			
 			case '5':
-				this.stoneFall();
+				this.playStoneFall();
 				break;
 		}
 
