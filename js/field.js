@@ -191,14 +191,6 @@ class Field {
 		}
 	}
 
-	stopTone(osc) {
-		if (osc.stop) {
-			osc.stop(0);
-		} else {
-			osc.noteOff(0);
-		}
-	}
-
 	// Taking audio code from here
 	// https://stackoverflow.com/a/13194241/5329728
 	beep(duration, type) {
