@@ -108,6 +108,32 @@ class Field {
 		requiredTypes.forEach(this.populateFieldWithType.bind(this));
 	}
 
+	playPlayerDie() {
+		/*
+			First tone, 25ms, 10 cycles: 400Hz for 25ms
+			Second tone, 27ms, 24 cycles: 889Hz for 27ms
+			Third tone, 28ms, 14 cycles:  500Hz for 28ms
+			Fourth tone, 25ms, 5 cycles, 200Hz for 30ms
+			Fifth tone, 20ms, 1 cycle, 50Hz for 50ms
+		*/
+		let osc = new OscillatorNode(this.#audioContext);
+		osc.connect(this.#audioContext.destination);
+		osc.type = 'square';
+
+		osc.frequency.setValueAtTime(400, this.#audioContext.currentTime);
+		osc.frequency.setValueAtTime(889, this.#audioContext.currentTime + 0.025);
+		osc.frequency.setValueAtTime(500, this.#audioContext.currentTime + 0.052);
+		osc.frequency.setValueAtTime(200, this.#audioContext.currentTime + 0.080);
+		osc.frequency.setValueAtTime(50, this.#audioContext.currentTime + 0.110);
+
+		this.startTone(osc);
+		setTimeout(disconnectOscillator.bind(this), 160);
+
+		function disconnectOscillator() {
+			osc.disconnect(this.#audioContext.destination);
+		}
+	}
+
 	playDestroyDirt() {
 		/*
 			First tone
@@ -592,6 +618,10 @@ class Field {
 			
 			case '6':
 				this.playDestroyDirt();
+				break;
+
+			case '7':
+				this.playPlayerDie();
 				break;
 		}
 
