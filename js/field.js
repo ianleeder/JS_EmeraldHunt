@@ -350,6 +350,7 @@ class Field {
 			if (obj instanceof DroppedGrenade) {
 				if (obj.tick()) {
 					this.createExplosion(c);
+					this.playExplosion();
 				}
 			}
 
@@ -365,6 +366,7 @@ class Field {
 					if (obj.isExplosive) {
 						changes = true;
 						this.createExplosion(c);
+						this.playExplosion();
 					}
 				}
 
