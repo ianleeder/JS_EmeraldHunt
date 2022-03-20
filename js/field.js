@@ -226,40 +226,24 @@ class Field {
 
 	playStoneFall() {
 		/*
-			Rock fall
-			(frequency calc only)
-			7 square wave cycles in 23ms
-			T = 23/7
-			f = 1/T = 7/.023 = 304Hz
-			
-			304Hz for 25ms
-			Silence for 48ms
-			
-			(frequency calc only)
-			7 square wave cycles in 80ms
-			f = 7/0.08 = 87.5Hz
-
-			87.5Hz for 87ms
+			First tone, 23ms, 7 cycles, 304Hz for 25ms
+			Off for 48ms
+			Second tone, 80ms, 7 cycles: 87Hz for 87ms
+			Total time: 160ms
 		*/
+		let gainNode = this.#audioContext.createGain();
 		let osc = new OscillatorNode(this.#audioContext);
 		osc.connect(this.#audioContext.destination);
 		osc.type = 'square';
-
-		let gainNode = this.#audioContext.createGain();
-
-		// Play first freq
 		gainNode.gain.value = 1;
+
 		osc.frequency.setValueAtTime(304, this.#audioContext.currentTime);
-
-		// After 25ms mute
 		gainNode.gain.setValueAtTime(0, this.#audioContext.currentTime + 0.025);
-		// After 30ms switch frequency
-		osc.frequency.setValueAtTime(87.5, this.#audioContext.currentTime + 0.03);
-		// After 25+48ms unmute
-		gainNode.gain.setValueAtTime(1, this.#audioContext.currentTime + 0.073);
 
+		osc.frequency.setValueAtTime(87.5, this.#audioContext.currentTime + 0.03);
+		gainNode.gain.setValueAtTime(1, this.#audioContext.currentTime + 0.073);
+		
 		this.startTone(osc);
-		// Stop after 25+48+87ms
 		setTimeout(disconnectOscillator.bind(this), 160);
 
 		function disconnectOscillator() {
