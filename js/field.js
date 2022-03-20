@@ -382,6 +382,7 @@ class Field {
 				// If item below is explosive, go bang!
 				if (objBelow && objBelow.isExplosive) {
 					this.createExplosion(cellBelow);
+					this.playExplosion();
 					continue;
 				}
 				// If item below is dozer, die
@@ -398,6 +399,7 @@ class Field {
 			else if (obj.isFalling && obj.isExplosive) {
 				changes = true;
 				this.createExplosion(c);
+				this.playExplosion();
 			}
 			// Else check if item below is uneven and it can fall left (cell left and below left are empty)
 			// If we move item to the left, skip it (decrement the counter) so it doesn't get processed twice
