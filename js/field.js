@@ -275,39 +275,6 @@ class Field {
 		}
 	}
 
-	// Taking audio code from here
-	// https://stackoverflow.com/a/13194241/5329728
-	beep(duration, type) {
-		if (!(window.AudioContext || window.webkitAudioContext)) {
-			throw Error('Your browser does not support Audio Context.');
-		}
-	
-		duration = +duration;
-	
-		// Only 0-4 are valid types.
-		//type = (type % 5) || 0;
-	
-		var ctx = new (window.AudioContext || window.webkitAudioContext);
-		var osc = ctx.createOscillator();
-	
-		osc.type = type;
-	
-		osc.connect(ctx.destination);
-		if (osc.start) {
-			osc.start(0);
-		} else {
-			osc.noteOn(0);
-		}
-	
-		setTimeout(function() {
-			if (osc.stop) {
-				osc.stop(0);
-			} else {
-				osc.noteOff(0);
-			}
-		}, duration);
-	}
-
 	finaliseField() {
 		// Get the list of empty cells in the field
 		let emptyCells = this.findAllCellsOfType(spriteEnum.BLANK);
@@ -655,38 +622,22 @@ class Field {
 
 			// "sine", "square", "sawtooth", "triangle"
 			case '1':
-				this.beep(1000, 'sine');
-				break;
-
-			case '2':
-				this.beep(1000, 'square');
-				break;
-
-			case '3':
-				this.beep(1000, 'sawtooth');
-				break;
-
-			case '4':
-				this.beep(1000, 'triangle');
-				break;
-			
-			case '5':
 				this.playStoneFall();
 				break;
 			
-			case '6':
+			case '2':
 				this.playDestroyDirt();
 				break;
 
-			case '7':
+			case '3':
 				this.playPlayerDie();
 				break;
 			
-			case '8':
+			case '4':
 				this.playDiamondCrushed();
 				break;
 			
-			case '9':
+			case '5':
 				this.playExplosion();
 				break;
 		}
