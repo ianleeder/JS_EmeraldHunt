@@ -69,6 +69,12 @@ class Field {
 	// Callback to the Hunt object playerDying function
 	#playerDyingCallback;
 
+	// Audio context
+	#audioContext;
+
+	// Oscillator for PC speaker emulation
+	#audioOscillator;
+
 	constructor(c, diff, dyingCallback) {
 		this.#ctx = c;
 		this.#fieldX = EmeraldHunt.DEFAULTFIELDX;
@@ -78,6 +84,9 @@ class Field {
 		this.#fieldInitialising = true;
 		this.#gameScore = 0;
 		this.#playerDyingCallback = dyingCallback;
+		this.#audioContext = new (window.AudioContext || window.webkitAudioContext);
+		this.#audioOscillator = new OscillatorNode(this.#audioContext);
+		this.#audioOscillator.connect(this.#audioContext.destination);
 	}
 
 	initField() {
@@ -123,46 +132,38 @@ class Field {
 	*/
 
 	stoneFall() {
-		let ctx = new (window.AudioContext || window.webkitAudioContext);
-		let osc = new OscillatorNode(ctx);
-		osc.connect(ctx.destination);
-		osc.type = 'square';
-		
-		let gainNode = ctx.createGain();
+		this.#audioOscillator.type = 'square';
+		let gainNode = this.#audioContext.createGain();
 
 		// Play first freq
 		gainNode.gain.value = 1;
-		osc.frequency.setValueAtTime(304, ctx.currentTime);
+		this.#audioOscillator.frequency.setValueAtTime(304, this.#audioContext.currentTime);
 
 		// After 25ms mute
-		gainNode.gain.setValueAtTime(0, ctx.currentTime + 0.025);
+		gainNode.gain.setValueAtTime(0, this.#audioContext.currentTime + 0.025);
 		// After 30ms switch frequency
-		osc.frequency.setValueAtTime(87.5, ctx.currentTime + 0.03);
+		this.#audioOscillator.frequency.setValueAtTime(87.5, this.#audioContext.currentTime + 0.03);
 		// After 25+48ms unmute
-		gainNode.gain.setValueAtTime(1, ctx.currentTime + 0.073);
+		gainNode.gain.setValueAtTime(1, this.#audioContext.currentTime + 0.073);
 
-		this.startTone(osc);
+		this.startTone(this.#audioOscillator);
 		// Stop after 25+48+87ms
-		setTimeout(endTone.bind(this), 160);
+		setTimeout(this.stopTone.bind(this), 160);
+	}
 
-		function endTone() {
-			this.stopTone(osc);
+	startTone() {
+		if (this.#audioOscillator.start) {
+			this.#audioOscillator.start(0);
+		} else {
+			this.#audioOscillator.noteOn(0);
 		}
 	}
 
-	startTone(osc) {
-		if (osc.start) {
-			osc.start(0);
+	stopTone() {
+		if (this.#audioOscillator.stop) {
+			this.#audioOscillator.stop(0);
 		} else {
-			osc.noteOn(0);
-		}
-	}
-
-	stopTone(osc) {
-		if (osc.stop) {
-			osc.stop(0);
-		} else {
-			osc.noteOff(0);
+			this.#audioOscillator.noteOff(0);
 		}
 	}
 
