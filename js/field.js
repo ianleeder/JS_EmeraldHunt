@@ -140,25 +140,23 @@ class Field {
 		}
 	}
 
-	/*
-	Rock fall
-	(frequency calc only)
-	7 square wave cycles in 23ms
-	T = 23/7
-	f = 1/T = 7/.023 = 304Hz
-	
-	304Hz for 25ms
-	Silence for 48ms
-	
-	(frequency calc only)
-	7 square wave cycles in 80ms
-	f = 7/0.08 = 87.5Hz
-
-	87.5Hz for 87ms
-
-	*/
-
 	playStoneFall() {
+		/*
+			Rock fall
+			(frequency calc only)
+			7 square wave cycles in 23ms
+			T = 23/7
+			f = 1/T = 7/.023 = 304Hz
+			
+			304Hz for 25ms
+			Silence for 48ms
+			
+			(frequency calc only)
+			7 square wave cycles in 80ms
+			f = 7/0.08 = 87.5Hz
+
+			87.5Hz for 87ms
+		*/
 		let osc = new OscillatorNode(this.#audioContext);
 		osc.connect(this.#audioContext.destination);
 		osc.type = 'square';
@@ -178,7 +176,11 @@ class Field {
 
 		this.startTone(osc);
 		// Stop after 25+48+87ms
-		setTimeout(this.stopTone.bind(this), 160);
+		setTimeout(disconnectOscillator.bind(this), 160);
+
+		function disconnectOscillator() {
+			osc.disconnect(this.#audioContext.destination);
+		}
 	}
 
 	startTone(osc) {
