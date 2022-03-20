@@ -1,7 +1,7 @@
 'use strict';
 
 import { stateEnum, difficultyEnum } from './enums.js';
-import { Diamond, Gem, Exit, Dozer, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray } from './objects.js';
+import { Diamond, Gem, Rock, Exit, Dozer, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray } from './objects.js';
 import { EmeraldHunt } from './hunt.js';
 
 // Types are stored in the same array order as the sprites
@@ -251,7 +251,7 @@ class Field {
 		}
 	}
 
-	playStoneFall() {
+	playRockFall() {
 		/*
 			First tone, 23ms, 7 cycles, 304Hz for 25ms
 			Off for 48ms
@@ -362,6 +362,14 @@ class Field {
 				// If item is falling and explosive
 				if (obj.isFalling) {
 					obj.isFalling = false;
+
+					if (obj instanceof Gem) {
+						this.playGemFall();
+					}
+
+					if (obj instanceof Rock) {
+						this.playRockFall();
+					}
 
 					if (obj.isExplosive) {
 						changes = true;
@@ -637,7 +645,7 @@ class Field {
 
 			// "sine", "square", "sawtooth", "triangle"
 			case '1':
-				this.playStoneFall();
+				this.playRockFall();
 				break;
 			
 			case '2':
