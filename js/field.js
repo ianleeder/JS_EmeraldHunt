@@ -1,7 +1,7 @@
 'use strict';
 
 import { stateEnum, difficultyEnum } from './enums.js';
-import { Diamond, Gem, Rock, Exit, Dozer, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray } from './objects.js';
+import { Dirt, Diamond, Gem, Rock, Exit, Dozer, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray } from './objects.js';
 import { EmeraldHunt } from './hunt.js';
 
 // Types are stored in the same array order as the sprites
@@ -701,6 +701,10 @@ class Field {
 		} else if (newPosObj instanceof Gem) {
 			this.#gameScore += newPosObj.score;
 			console.log(`Ate a gem, score ${this.#gameScore}/${this.#targetScore} (${this.getRemainingScore()} remaining)`);
+		}
+
+		if (newPosObj instanceof Dirt) {
+			this.playDestroyDirt();
 		}
 
 		// Set grid location to dozer, unless a grenade was dropped
