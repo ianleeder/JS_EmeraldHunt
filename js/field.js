@@ -72,9 +72,6 @@ class Field {
 	// Audio context
 	#audioContext;
 
-	// Oscillator for PC speaker emulation
-	#audioOscillator;
-
 	constructor(c, diff, dyingCallback) {
 		this.#ctx = c;
 		this.#fieldX = EmeraldHunt.DEFAULTFIELDX;
@@ -85,8 +82,6 @@ class Field {
 		this.#gameScore = 0;
 		this.#playerDyingCallback = dyingCallback;
 		this.#audioContext = new (window.AudioContext || window.webkitAudioContext);
-		this.#audioOscillator = new OscillatorNode(this.#audioContext);
-		
 	}
 
 	initField() {
@@ -127,17 +122,22 @@ class Field {
 				40ms, 2 cycles, 50Hz for 60ms
 			Total time: 170ms
 		*/
-		
-		this.#audioOscillator.connect(this.#audioContext.destination);
-		this.#audioOscillator.type = 'square';
-		this.#audioOscillator.frequency.setValueAtTime(100, this.#audioContext.currentTime);
-		this.#audioOscillator.frequency.setValueAtTime(500, this.#audioContext.currentTime + 0.030);
-		this.#audioOscillator.frequency.setValueAtTime(20, this.#audioContext.currentTime + 0.056);
-		this.#audioOscillator.frequency.setValueAtTime(500, this.#audioContext.currentTime + 0.106);
-		this.#audioOscillator.frequency.setValueAtTime(50, this.#audioContext.currentTime + 0.110);
+		let osc = new OscillatorNode(this.#audioContext);
+		osc.connect(this.#audioContext.destination);
+		osc.type = 'square';
 
-		this.startTone();
-		setTimeout(this.stopTone.bind(this), 170);
+		osc.frequency.setValueAtTime(100, this.#audioContext.currentTime);
+		osc.frequency.setValueAtTime(500, this.#audioContext.currentTime + 0.030);
+		osc.frequency.setValueAtTime(20, this.#audioContext.currentTime + 0.056);
+		osc.frequency.setValueAtTime(500, this.#audioContext.currentTime + 0.106);
+		osc.frequency.setValueAtTime(50, this.#audioContext.currentTime + 0.110);
+
+		this.startTone(osc);
+		setTimeout(disconnectOscillator.bind(this), 170);
+
+		function disconnectOscillator() {
+			osc.disconnect(this.#audioContext.destination);
+		}
 	}
 
 	/*
@@ -159,37 +159,41 @@ class Field {
 	*/
 
 	playStoneFall() {
+		let osc = new OscillatorNode(this.#audioContext);
+		osc.connect(this.#audioContext.destination);
+		osc.type = 'square';
+
 		let gainNode = this.#audioContext.createGain();
 
 		// Play first freq
 		gainNode.gain.value = 1;
-		this.#audioOscillator.frequency.setValueAtTime(304, this.#audioContext.currentTime);
+		osc.frequency.setValueAtTime(304, this.#audioContext.currentTime);
 
 		// After 25ms mute
 		gainNode.gain.setValueAtTime(0, this.#audioContext.currentTime + 0.025);
 		// After 30ms switch frequency
-		this.#audioOscillator.frequency.setValueAtTime(87.5, this.#audioContext.currentTime + 0.03);
+		osc.frequency.setValueAtTime(87.5, this.#audioContext.currentTime + 0.03);
 		// After 25+48ms unmute
 		gainNode.gain.setValueAtTime(1, this.#audioContext.currentTime + 0.073);
 
-		this.startTone(this.#audioOscillator);
+		this.startTone(osc);
 		// Stop after 25+48+87ms
 		setTimeout(this.stopTone.bind(this), 160);
 	}
 
-	startTone() {
-		if (this.#audioOscillator.start) {
-			this.#audioOscillator.start(0);
+	startTone(osc) {
+		if (osc.start) {
+			osc.start(0);
 		} else {
-			this.#audioOscillator.noteOn(0);
+			osc.noteOn(0);
 		}
 	}
 
-	stopTone() {
-		if (this.#audioOscillator.stop) {
-			this.#audioOscillator.stop(0);
+	stopTone(osc) {
+		if (osc.stop) {
+			osc.stop(0);
 		} else {
-			this.#audioOscillator.noteOff(0);
+			osc.noteOff(0);
 		}
 	}
 
