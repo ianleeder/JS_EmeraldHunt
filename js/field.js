@@ -108,13 +108,43 @@ class Field {
 		requiredTypes.forEach(this.populateFieldWithType.bind(this));
 	}
 
+	playDiamondCrushed() {
+		/*
+			First tone, 2ms, 1 cycle, 500Hz for 2ms
+			Second tone, 26ms, 63 cycles: 2,400Hz for 26ms
+			Third tone, 27ms, 22 cycles:  815Hz for 27ms
+			Fourth tone, 27ms, 41 cycles: 1,500Hz for 28ms
+			Fifth tone, 26ms, 21 cycles: 800Hz for 27ms
+			Sixth tone, 53ms, 64 cycles: 1,200Hz for 54ms
+			Total time: 164ms
+		*/
+		let osc = new OscillatorNode(this.#audioContext);
+		osc.connect(this.#audioContext.destination);
+		osc.type = 'square';
+
+		osc.frequency.setValueAtTime(500, this.#audioContext.currentTime);
+		osc.frequency.setValueAtTime(2400, this.#audioContext.currentTime + 0.002);
+		osc.frequency.setValueAtTime(815, this.#audioContext.currentTime + 0.028);
+		osc.frequency.setValueAtTime(1500, this.#audioContext.currentTime + 0.055);
+		osc.frequency.setValueAtTime(800, this.#audioContext.currentTime + 0.083);
+		osc.frequency.setValueAtTime(1200, this.#audioContext.currentTime + 0.110);
+
+		this.startTone(osc);
+		setTimeout(disconnectOscillator.bind(this), 165);
+
+		function disconnectOscillator() {
+			osc.disconnect(this.#audioContext.destination);
+		}
+	}
+
 	playPlayerDie() {
 		/*
 			First tone, 25ms, 10 cycles: 400Hz for 25ms
 			Second tone, 27ms, 24 cycles: 889Hz for 27ms
 			Third tone, 28ms, 14 cycles:  500Hz for 28ms
-			Fourth tone, 25ms, 5 cycles, 200Hz for 30ms
-			Fifth tone, 20ms, 1 cycle, 50Hz for 50ms
+			Fourth tone, 25ms, 5 cycles: 200Hz for 30ms
+			Fifth tone, 20ms, 1 cycle: 50Hz for 50ms
+			Total time: 160ms
 		*/
 		let osc = new OscillatorNode(this.#audioContext);
 		osc.connect(this.#audioContext.destination);
@@ -136,16 +166,11 @@ class Field {
 
 	playDestroyDirt() {
 		/*
-			First tone
-				30ms, 3 cycles, 100Hz for 30ms
-			Second tone
-				26ms, 13 cycles, 500Hz for 26ms
-			Third tone
-				50ms, 1 cycle, 20Hz for 50ms
-			Fourth tone
-				4ms, 2 cycles, 500Hz for 4ms
-			Fifth tone
-				40ms, 2 cycles, 50Hz for 60ms
+			First tone, 30ms, 3 cycles: 100Hz for 30ms
+			Second tone, 26ms, 13 cycles: 500Hz for 26ms
+			Third tone, 50ms, 1 cycle: 20Hz for 50ms
+			Fourth tone, 4ms, 2 cycles: 500Hz for 4ms
+			Fifth tone, 40ms, 2 cycles: 50Hz for 60ms
 			Total time: 170ms
 		*/
 		let osc = new OscillatorNode(this.#audioContext);
@@ -622,6 +647,10 @@ class Field {
 
 			case '7':
 				this.playPlayerDie();
+				break;
+			
+			case '8':
+				this.playDiamondCrushed();
 				break;
 		}
 
