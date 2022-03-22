@@ -480,7 +480,10 @@ class Field {
 	}
 
 	convertSingleToTuple(n) {
-		return { x: n % this.#fieldX, y: Math.floor(n / this.#fieldX) };
+		return {
+			x: n % this.#fieldX,
+			y: Math.floor(n / this.#fieldX)
+		};
 	}
 
 	createExplosion(cellNum) {
