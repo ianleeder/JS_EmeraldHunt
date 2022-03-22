@@ -670,31 +670,6 @@ class Field {
 					this.#grid[dozerPos] = new DroppedGrenade();
 				}
 				break;
-
-			// "sine", "square", "sawtooth", "triangle"
-			case '1':
-				this.playRockFall();
-				break;
-			
-			case '2':
-				this.playDestroyDirt();
-				break;
-
-			case '3':
-				this.playPlayerDie();
-				break;
-			
-			case '4':
-				this.playDiamondCrushed();
-				break;
-			
-			case '5':
-				this.playExplosion();
-				break;
-			
-			case '6':
-				this.playGemFall();
-				break;
 		}
 
 		let newPosObj = this.#grid[this.#dozer.pos];
