@@ -69,10 +69,13 @@ class Field {
 	// Callback to the Hunt object playerDying function
 	#playerDyingCallback;
 
+	// Callback to the Hunt object playerWon function
+	#playerWonCallback;
+
 	// Audio context
 	#audioContext;
 
-	constructor(c, diff, dyingCallback) {
+	constructor(c, diff, dyingCallback, wonCallback) {
 		this.#ctx = c;
 		this.#fieldX = EmeraldHunt.DEFAULTFIELDX;
 		this.#fieldY = EmeraldHunt.DEFAULTFIELDY;
@@ -81,6 +84,7 @@ class Field {
 		this.#fieldInitialising = true;
 		this.#gameScore = 0;
 		this.#playerDyingCallback = dyingCallback;
+		this.#playerWonCallback = wonCallback;
 		this.#audioContext = new (window.AudioContext || window.webkitAudioContext);
 	}
 
@@ -589,7 +593,7 @@ class Field {
 					this.#grid[dozerPos] = spriteEnum.BLANK;
 					this.#dozer.pos -= this.#fieldX;
 					console.log('You win!');
-					// Callback game won
+					this.#playerWonCallback();
 				}
 				break;
 
@@ -612,7 +616,7 @@ class Field {
 					this.#grid[dozerPos] = spriteEnum.BLANK;
 					this.#dozer.pos += this.#fieldX;
 					console.log('You win!');
-					// Callback game won
+					this.#playerWonCallback();
 				}
 				break;
 
@@ -645,7 +649,7 @@ class Field {
 					this.#grid[dozerPos] = spriteEnum.BLANK;
 					this.#dozer.pos -= 1;
 					console.log('You win!');
-					// Callback game won
+					this.#playerWonCallback();
 				}
 				break;
 
@@ -678,7 +682,7 @@ class Field {
 					this.#grid[dozerPos] = spriteEnum.BLANK;
 					this.#dozer.pos += 1;
 					console.log('You win!');
-					// Callback game won
+					this.#playerWonCallback();
 				}
 				break;
 

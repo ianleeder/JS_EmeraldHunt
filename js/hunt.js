@@ -180,6 +180,11 @@ class EmeraldHunt {
 		console.log(`player died - ${deathMessage}`);
 	}
 
+	playerWon() {
+		this.#gameState = stateEnum.WON;
+		console.log('Player won callback');
+	}
+
 	newGame() {
 		this.#gameState = stateEnum.RUNNING;
 		this.#gameField = new Field(this.#ctx, difficultyEnum.HARD, this.playerDying.bind(this));

@@ -17,7 +17,9 @@ const stateEnum = {
 	// Show the explosion/crush frame that caused death
 	DYING: 'dying',
 	// Display a death screen
-	DEAD: 'dead'
+	DEAD: 'dead',
+	// Display "You Won!"
+	WON: 'won'
 };
 
 const difficultyEnum = {
