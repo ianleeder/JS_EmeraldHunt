@@ -187,7 +187,7 @@ class EmeraldHunt {
 
 	newGame() {
 		this.#gameState = stateEnum.RUNNING;
-		this.#gameField = new Field(this.#ctx, difficultyEnum.HARD, this.playerDying.bind(this));
+		this.#gameField = new Field(this.#ctx, difficultyEnum.HARD, this.playerDying.bind(this), this.playerWon.bind(this));
 	}
 
 	updateLoop() {
