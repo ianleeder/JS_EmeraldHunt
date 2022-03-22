@@ -586,6 +586,7 @@ class Field {
 					}
 					this.#dozer.pos -= this.#fieldX;
 				} else if (objAbove instanceof Exit && this.#gameScore >= this.#targetScore) {
+					this.#grid[dozerPos] = spriteEnum.BLANK;
 					this.#dozer.pos -= this.#fieldX;
 					console.log('You win!');
 					// Callback game won
@@ -608,6 +609,7 @@ class Field {
 					}
 					this.#dozer.pos += this.#fieldX;
 				} else if (objBelow instanceof Exit && this.#gameScore >= this.#targetScore) {
+					this.#grid[dozerPos] = spriteEnum.BLANK;
 					this.#dozer.pos += this.#fieldX;
 					console.log('You win!');
 					// Callback game won
@@ -640,6 +642,7 @@ class Field {
 					}
 					this.#dozer.pos -= 1;
 				} else if (objLeft instanceof Exit && this.#gameScore >= this.#targetScore) {
+					this.#grid[dozerPos] = spriteEnum.BLANK;
 					this.#dozer.pos -= 1;
 					console.log('You win!');
 					// Callback game won
@@ -672,6 +675,7 @@ class Field {
 					}
 					this.#dozer.pos += 1;
 				} else if (objRight instanceof Exit && this.#gameScore >= this.#targetScore) {
+					this.#grid[dozerPos] = spriteEnum.BLANK;
 					this.#dozer.pos += 1;
 					console.log('You win!');
 					// Callback game won
