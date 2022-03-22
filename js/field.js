@@ -503,7 +503,8 @@ class Field {
 				// Can't check grid, since if we sit on a dropped grenade we don't exist in the grid
 				// If it contains dozer, die
 				if (!this.#fieldInitialising && checkCell === this.#dozer.pos) {
-					// TODO Deal with death here
+					this.playPlayerDie();
+					this.#playerDyingCallback('You got asploded!');
 				}
 
 				// If cell contains an object and it's explosive, recurse
