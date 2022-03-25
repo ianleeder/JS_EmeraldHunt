@@ -58,6 +58,9 @@
 	};
 
 	async function uploadResourceFile(event) {
+		// Pause game field refresh
+		app.playerDying("Pause to analyse image");
+
 		const file = event.target.files[0];
 		console.log(file);
 		await app.useImageFile(file);

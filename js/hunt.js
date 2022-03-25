@@ -208,8 +208,8 @@ class EmeraldHunt {
 	}
 
 	renderLoop() {
-		this.clearCanvas();
-		this.#gameField.renderField();
+		//this.clearCanvas();
+		//this.#gameField.renderField();
 	}
 }
 
