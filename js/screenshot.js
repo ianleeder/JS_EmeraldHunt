@@ -40,6 +40,17 @@ class ScreenshotAnalyser {
         
 		console.log(imageData);
 
+		// Count 5 sprites worth of pixels (80 pixels) across
+		for(let x=0;x<(5*EmeraldHunt.SPRITESIZE);x++) {
+			var index = x * 4;
+			var red = imageData.data[index];
+			var green = imageData.data[index + 1];
+			var blue = imageData.data[index + 2];
+			var alpha = imageData.data[index + 3];
+                
+			console.log(`X:${x} RGBA: ${red},${green},${blue},${alpha}`);
+		}
+
 		let spriteOffsetX = 6;
 		let spriteOffsetY = 6;
 
@@ -60,7 +71,7 @@ class ScreenshotAnalyser {
 				var blue = imageData.data[index + 2];
 				//var alpha = imageData.data[index + 3];
                 
-				console.log(`Y:${y} X:${x} RGB: ${red},${green},${blue}`);
+				console.log(`Sprite X/Y: ${x}/${y}, pixel X/Y: ${pixelX}/${pixelY}, RGB: ${red},${green},${blue}`);
 			}
 		}
 		
