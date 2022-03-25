@@ -19,19 +19,25 @@
 			This browser can not run this game (canvas support missing).
 		</canvas>
 		<br><br>
+		<hr>
 		<h3>Resource (image) file</h3>
 		<span>Upload file: </span>
-		<input type="file" id="file-input" />
+		<input type="file" id="resource-file-input" />
 		<div id="imagesDiv"></div>
+		<hr>
 		<h3>Save game analysis</h3>
 		<pre id="file-content"></pre>
+		<hr>
 		<h3>Screenshot analysis</h3>
+		<span>Upload screenshot: </span>
+		<input type="file" id="screenshot-file-input" />
 		<pre id="screenshot-content"></pre>
 	</body>
 </html>
 
 <script type="module">
 	import {EmeraldHunt} from "./js/hunt.js";
+	import {ScreenshotAnalyser} from "./js/screenshot.js";
 
 	window.onload = init;
 	var app;
@@ -47,13 +53,19 @@
 		scale.dispatchEvent(new Event('change'));
 		await app.init();
 
-		document.getElementById('file-input').addEventListener('change', uploadImageFile);
+		document.getElementById('resource-file-input').addEventListener('change', uploadResourceFile);
+		document.getElementById('screenshot-file-input').addEventListener('change', uploadScreenshot);
 	};
 
-	async function uploadImageFile(event) {
+	async function uploadResourceFile(event) {
 		const file = event.target.files[0];
 		console.log(file);
 		await app.useImageFile(file);
+	}
+
+	async function uploadScreenshot(event) {
+		const file = event.target.files[0];
+		console.log(file);
 	}
 
 	function changeScale(e) {
