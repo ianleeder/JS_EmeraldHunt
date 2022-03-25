@@ -64,8 +64,12 @@
 	}
 
 	async function uploadScreenshot(event) {
+		let canvas = document.getElementById("huntCanvas");
+		let analyser = new ScreenshotAnalyser(canvas);
+
 		const file = event.target.files[0];
 		console.log(file);
+		analyser.loadImage(file);
 	}
 
 	function changeScale(e) {
