@@ -32,7 +32,8 @@ difficultyDistribution[difficultyEnum.MEDIUM] =  [  0, 153, 105, 191, 101,  18, 
 //                                               [  0, 197, 101, 173,  83,  30,   0,   0,   0,   0,   0,   0,   0,  52,   0,   0];
 difficultyDistribution[difficultyEnum.HARD] =    [  0, 199, 120, 140,  84,  25,   0,   0,   0,   0,  49,   0,   0,  77,   0,   0];
 //                                               [  0, 173, 103, 133,  95,  40,   0,   0,   0,   0,  53,   0,   0,  85,   0,   0];
-difficultyDistribution[difficultyEnum.HARDER] =  [  0, 100,  60,   0,  50,   0,   0,   0,  50,   0, 180,   0,   0,  10,   0,   0];
+difficultyDistribution[difficultyEnum.HARDER] =  [  0, 128, 115,   0,  68,  31,   0,   0,   0,   0, 201,   0,   0, 148,   0,   0];
+//                                               [  0, 134, 123,   0,  60,  33,   0,   0,   0,   0, 208,   0,   0, 121,   0,   0];
 difficultyDistribution[difficultyEnum.HARDEST] = [  0, 100,  60, 150,  50,   0,   0,   0,  50,   0,   0,   0,   0,  10,   0,   0];
 
 class Field {
