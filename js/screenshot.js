@@ -47,7 +47,7 @@ class ScreenshotAnalyser {
 		let spriteOffsetX = 6;
 		let spriteOffsetY = 6;
 
-		let freeSpace=0, dirt=0, brick=0, rock=0, emerald=0, grenade=0, unknown=0;
+		let freeSpace=0, dirt=0, brick=0, rock=0, emerald=0, grenade=0, unknown=0, bomb=0, cobble=0, bug=0, diamond=0;
 
 		// Count by sprites
 		for(var y=0;y<EmeraldHunt.DEFAULTFIELDY;y++) {
@@ -98,14 +98,27 @@ class ScreenshotAnalyser {
 		let results = '';
 		results += `Empty   ${freeSpace}<br>`;
 		results += `Dirt    ${dirt}<br>`;
-		results += `Brick   ${brick}<br>`;
 		results += `Rock    ${rock}<br>`;
 		results += `Emerald ${emerald}<br>`;
+		results += `Brick   ${brick}<br>`;
+		results += `Bomb    ${0}<br>`;
+		results += `Exit    ${0}<br>`;
+		results += `Dozer   ${0}<br>`;
+		results += `Cobble  ${0}<br>`;
+		results += `Bug     ${0}<br>`;
+		results += `Diamond ${0}<br>`;
+		results += `Slime   ${0}<br>`;
+		results += `Explosion ${0}<br>`;
 		results += `Grenade ${grenade}<br>`;
 		results += `Unknown ${unknown}<br>`;
 
+		results += '<br>';
+
+		let array = [0, dirt, rock, emerald, brick, bomb, 0, 0, cobble, bug, diamond, 0, 0, grenade, 0, 0];
+		array.forEach(n => results += `${n.toString().padStart(4,' ')},`);
+
 		this.#output.innerHTML = results;
-    	}
+	}
 }
 
 export {ScreenshotAnalyser};
