@@ -74,13 +74,13 @@ class ScreenshotAnalyser {
 				} else if (red === 170 && green === 85 && blue === 0) {
 					type = 'Dirt';
 					dirt++;
-				} else if (red === 170 && green === 21 && blue === 0) {
+				} else if (red === 170 && (green === 21 || green == 0) && blue === 0) {
 					type = 'Brick';
 					brick++;
 				} else if (red === 170 && green === 170 && blue === 170) {
 					type = 'Rock';
 					rock++;
-				} else if (red === 86 && green === 250 && blue === 85) {
+				} else if ((red === 86 && green === 250 && blue === 85) || (red === 85 && green === 255 && blue === 85)) {
 					type = 'Emerald';
 					emerald++;
 				} else if (red === 85 && green === 85 && blue === 85) {
@@ -96,21 +96,21 @@ class ScreenshotAnalyser {
 		}
 		
 		let results = '';
-		results += `Empty   ${freeSpace}<br>`;
-		results += `Dirt    ${dirt}<br>`;
-		results += `Rock    ${rock}<br>`;
-		results += `Emerald ${emerald}<br>`;
-		results += `Brick   ${brick}<br>`;
-		results += `Bomb    ${0}<br>`;
-		results += `Exit    ${0}<br>`;
-		results += `Dozer   ${0}<br>`;
-		results += `Cobble  ${0}<br>`;
-		results += `Bug     ${0}<br>`;
-		results += `Diamond ${0}<br>`;
-		results += `Slime   ${0}<br>`;
+		results += `Empty     ${freeSpace}<br>`;
+		results += `Dirt      ${dirt}<br>`;
+		results += `Rock      ${rock}<br>`;
+		results += `Emerald   ${emerald}<br>`;
+		results += `Brick     ${brick}<br>`;
+		results += `Bomb      ${0}<br>`;
+		results += `Exit      ${0}<br>`;
+		results += `Dozer     ${0}<br>`;
+		results += `Cobble    ${0}<br>`;
+		results += `Bug       ${0}<br>`;
+		results += `Diamond   ${0}<br>`;
+		results += `Slime     ${0}<br>`;
 		results += `Explosion ${0}<br>`;
-		results += `Grenade ${grenade}<br>`;
-		results += `Unknown ${unknown}<br>`;
+		results += `Grenade   ${grenade}<br>`;
+		results += `Unknown   ${unknown}<br>`;
 
 		results += '<br>';
 
