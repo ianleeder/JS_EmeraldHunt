@@ -86,6 +86,9 @@ class ScreenshotAnalyser {
 				} else if (red === 85 && green === 85 && blue === 85) {
 					type = 'Grenade';
 					grenade++;
+				} else if (red === 255 && green === 85 && blue === 85) {
+					type = 'Bomb';
+					bomb++;
 				} else {
 					unknown++;
 					//console.log(`Sprite X/Y: ${x}/${y}, pixel X/Y: ${pixelX}/${pixelY}, RGB: ${red},${green},${blue}, type = unknown`);
