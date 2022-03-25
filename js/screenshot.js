@@ -40,26 +40,30 @@ class ScreenshotAnalyser {
         
 		console.log(imageData);
 
-		let spriteOffsetX = 8;
-		let spriteOffsetY = 8;
+		let spriteOffsetX = 6;
+		let spriteOffsetY = 6;
 
-		for(var y=spriteOffsetY;y<EmeraldHunt.DEFAULTFIELDY;y++) {
-			for(var x=spriteOffsetX;x<EmeraldHunt.DEFAULTFIELDX;x++) {
+		// Count by sprites
+		for(var y=0;y<EmeraldHunt.DEFAULTFIELDY;y++) {
+			for(var x=0;x<EmeraldHunt.DEFAULTFIELDX;x++) {
+				// Multiply by sprite size and add offset to get actual pixel positions
 				let pixelX = (x * EmeraldHunt.SPRITESIZE) + spriteOffsetX;
 				let pixelY = (y * EmeraldHunt.SPRITESIZE) + spriteOffsetY;
+
+				// Now you can access pixel data from imageData.data.
+				// It's a one-dimensional array of RGBA values.
+				// Here's an example of how to get a pixel's color at (x,y)
+				var index = (pixelY*imageData.width + pixelX) * 4;
+
+				var red = imageData.data[index];
+				var green = imageData.data[index + 1];
+				var blue = imageData.data[index + 2];
+				//var alpha = imageData.data[index + 3];
                 
-				console.log(`${pixelX},${pixelY}`);
+				console.log(`Y:${y} X:${x} RGB: ${red},${green},${blue}`);
 			}
 		}
-		EmeraldHunt.SPRITESIZE;
-		// Now you can access pixel data from imageData.data.
-		// It's a one-dimensional array of RGBA values.
-		// Here's an example of how to get a pixel's color at (x,y)
-		var index = (y*imageData.width + x) * 4;
-		var red = imageData.data[index];
-		var green = imageData.data[index + 1];
-		var blue = imageData.data[index + 2];
-		var alpha = imageData.data[index + 3];
+		
 	}
 }
 
