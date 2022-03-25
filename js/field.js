@@ -34,7 +34,8 @@ difficultyDistribution[difficultyEnum.HARD] =    [  0, 199, 120, 140,  84,  25, 
 //                                               [  0, 173, 103, 133,  95,  40,   0,   0,   0,   0,  53,   0,   0,  85,   0,   0];
 difficultyDistribution[difficultyEnum.HARDER] =  [  0, 128, 115,   0,  68,  31,   0,   0,   0,   0, 201,   0,   0, 148,   0,   0];
 //                                               [  0, 134, 123,   0,  60,  33,   0,   0,   0,   0, 208,   0,   0, 121,   0,   0];
-difficultyDistribution[difficultyEnum.HARDEST] = [  0, 100,  60, 150,  50,   0,   0,   0,  50,   0,   0,   0,   0,  10,   0,   0];
+difficultyDistribution[difficultyEnum.HARDEST] = [  0,  98, 122,  55,  95,  27,   0,   0,   0,  24, 111,   0,   0, 112,   0,   0];
+//                                               [  0, 101, 120,  54,  87,  32,   0,   0,   0,  24, 104,   0,   0, 124,   0,   0];
 
 class Field {
 	// Canvas context for drawing

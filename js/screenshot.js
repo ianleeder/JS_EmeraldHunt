@@ -92,6 +92,9 @@ class ScreenshotAnalyser {
 				} else if (red === 85 && green === 85 && blue === 255) {
 					type = 'Diamond';
 					diamond++;
+				} else if (red === 170 && green === 0 && blue === 170) {
+					type = 'Bug';
+					bug++;
 				} else {
 					unknown++;
 					//console.log(`Sprite X/Y: ${x}/${y}, pixel X/Y: ${pixelX}/${pixelY}, RGB: ${red},${green},${blue}, type = unknown`);
