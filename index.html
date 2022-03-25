@@ -65,7 +65,7 @@
 
 	async function uploadScreenshot(event) {
 		let canvas = document.getElementById("huntCanvas");
-		let analyser = new ScreenshotAnalyser(canvas);
+		let analyser = new ScreenshotAnalyser(canvas, document.getElementById('screenshot-content'));
 
 		const file = event.target.files[0];
 		console.log(file);

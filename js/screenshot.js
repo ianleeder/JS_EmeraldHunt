@@ -8,9 +8,13 @@ class ScreenshotAnalyser {
 
 	// Store the image globally
 	#img;
+
+	// DOM element to render results to
+	#output;
 	
-	constructor(c) {
+	constructor(c, out) {
 		this.#canvas = c;
+		this.#output = out;
 	}
 
 	loadImage(file) {
@@ -40,19 +44,10 @@ class ScreenshotAnalyser {
         
 		console.log(imageData);
 
-		// Count 5 sprites worth of pixels (80 pixels) across
-		for(let x=0;x<(5*EmeraldHunt.SPRITESIZE);x++) {
-			var index = x * 4;
-			var red = imageData.data[index];
-			var green = imageData.data[index + 1];
-			var blue = imageData.data[index + 2];
-			var alpha = imageData.data[index + 3];
-                
-			console.log(`X:${x} RGBA: ${red},${green},${blue},${alpha}`);
-		}
-
 		let spriteOffsetX = 6;
 		let spriteOffsetY = 6;
+
+		let freeSpace=0, dirt=0, brick=0, rock=0, emerald=0, grenade=0, unknown=0;
 
 		// Count by sprites
 		for(var y=0;y<EmeraldHunt.DEFAULTFIELDY;y++) {
@@ -70,12 +65,47 @@ class ScreenshotAnalyser {
 				var green = imageData.data[index + 1];
 				var blue = imageData.data[index + 2];
 				//var alpha = imageData.data[index + 3];
+
+				let type;
+
+				if (red === 0 && green === 0 && blue === 0) {
+					type = 'Free space';
+					freeSpace++;
+				} else if (red === 170 && green === 85 && blue === 0) {
+					type = 'Dirt';
+					dirt++;
+				} else if (red === 170 && green === 21 && blue === 0) {
+					type = 'Brick';
+					brick++;
+				} else if (red === 170 && green === 170 && blue === 170) {
+					type = 'Rock';
+					rock++;
+				} else if (red === 86 && green === 250 && blue === 85) {
+					type = 'Emerald';
+					emerald++;
+				} else if (red === 85 && green === 85 && blue === 85) {
+					type = 'Grenade';
+					grenade++;
+				} else {
+					unknown++;
+					//console.log(`Sprite X/Y: ${x}/${y}, pixel X/Y: ${pixelX}/${pixelY}, RGB: ${red},${green},${blue}, type = unknown`);
+				}
                 
-				console.log(`Sprite X/Y: ${x}/${y}, pixel X/Y: ${pixelX}/${pixelY}, RGB: ${red},${green},${blue}`);
+				console.log(`Sprite X/Y: ${x}/${y}, pixel X/Y: ${pixelX}/${pixelY}, RGB: ${red},${green},${blue}, type = ${type}`);
 			}
 		}
 		
-	}
+		let results = '';
+		results += `Empty   ${freeSpace}<br>`;
+		results += `Dirt    ${dirt}<br>`;
+		results += `Brick   ${brick}<br>`;
+		results += `Rock    ${rock}<br>`;
+		results += `Emerald ${emerald}<br>`;
+		results += `Grenade ${grenade}<br>`;
+		results += `Unknown ${unknown}<br>`;
+
+		this.#output.innerHTML = results;
+    	}
 }
 
 export {ScreenshotAnalyser};
