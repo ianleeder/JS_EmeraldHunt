@@ -1,5 +1,7 @@
 'use strict';
 
+import { EmeraldHunt } from './hunt.js';
+
 class ScreenshotAnalyser {
 	// DOM Canvas element.  Required for scaling.
 	#canvas;
@@ -8,7 +10,7 @@ class ScreenshotAnalyser {
 		this.#canvas = c;
 	}
 
-	async loadImage(file) {
+	loadImage(file) {
 		let input = file.target;
 		let img = new Image();
 
@@ -29,7 +31,15 @@ class ScreenshotAnalyser {
 			context.drawImage(img, 0, 0);
         
 			var imageData = context.getImageData(0, 0, this.#canvas.width, this.#canvas.height);
-        
+            
+			console.log(imageData);
+
+			for(var y=0;y<EmeraldHunt.DEFAULTFIELDY;y++) {
+				for(var x=0;x<EmeraldHunt.DEFAULTFIELDX;x++) {
+					console.log(`${x},${y}`);
+				}
+			}
+			EmeraldHunt.SPRITESIZE;
 			// Now you can access pixel data from imageData.data.
 			// It's a one-dimensional array of RGBA values.
 			// Here's an example of how to get a pixel's color at (x,y)
