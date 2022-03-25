@@ -30,7 +30,8 @@ difficultyDistribution[difficultyEnum.EASY] =    [  0, 170, 111, 247,  73,   0, 
 //                                               [  0, 185, 126, 215,  78,   0,   0,   0,   0,   0,   0,   0,   0,  20,   0,   0];
 difficultyDistribution[difficultyEnum.MEDIUM] =  [  0, 153, 105, 191, 101,  18,   0,   0,   0,   0,   0,   0,   0,  66,   0,   0];
 //                                               [  0, 197, 101, 173,  83,  30,   0,   0,   0,   0,   0,   0,   0,  52,   0,   0];
-difficultyDistribution[difficultyEnum.HARD] =    [  0,  90,  90,  90,  90,  20,   0,   0,  50,   0,  90,   0,   0,  10,   0,   0];
+difficultyDistribution[difficultyEnum.HARD] =    [  0, 199, 120, 140,  84,  25,   0,   0,   0,   0,  49,   0,   0,  77,   0,   0];
+//                                               [  0, 173, 103, 133,  95,  40,   0,   0,   0,   0,  53,   0,   0,  85,   0,   0];
 difficultyDistribution[difficultyEnum.HARDER] =  [  0, 100,  60,   0,  50,   0,   0,   0,  50,   0, 180,   0,   0,  10,   0,   0];
 difficultyDistribution[difficultyEnum.HARDEST] = [  0, 100,  60, 150,  50,   0,   0,   0,  50,   0,   0,   0,   0,  10,   0,   0];
 
