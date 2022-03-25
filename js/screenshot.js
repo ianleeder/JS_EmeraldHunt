@@ -126,6 +126,9 @@ class ScreenshotAnalyser {
 		let array = [0, dirt, rock, emerald, brick, bomb, 0, 0, cobble, bug, diamond, 0, 0, grenade, 0, 0];
 		array.forEach(n => results += `${n.toString().padStart(4,' ')},`);
 
+		// Remove the last comma
+		results = results.slice(0, -1);
+
 		this.#output.innerHTML = results;
 	}
 }
