@@ -26,7 +26,7 @@ import { EmeraldHunt } from './hunt.js';
 // Numbers are for a default 40x20 field (800 tiles).
 // Actual items will be scaled for field size.
 let difficultyDistribution = {};
-difficultyDistribution[difficultyEnum.EASY] =    [  0, 170, 111, 247,  73,   0,   0,   0,   0,   0,   0,   0,   0,  15,   0,   0];
+difficultyDistribution[difficultyEnum.EASY] =    [  0, 173, 125, 219,  80,   0,   0,   0,   0,   0,   0,   0,   0,  26,   0,   0];
 //                                               [  0, 185, 126, 215,  78,   0,   0,   0,   0,   0,   0,   0,   0,  20,   0,   0];
 difficultyDistribution[difficultyEnum.MEDIUM] =  [  0, 153, 105, 191, 101,  18,   0,   0,  42,   0,   0,   0,   0,  24,   0,   0];
 //                                               [  0, 197, 101, 173,  83,  30,   0,   0,  34,   0,   0,   0,   0,  18,   0,   0];
