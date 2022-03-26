@@ -45,7 +45,7 @@ class ScreenshotAnalyser {
 		console.log(imageData);
 
 		let spriteOffsetX = 6;
-		let spriteOffsetY = 6;
+		let spriteOffsetY = 5;
 
 		let freeSpace=0, dirt=0, brick=0, rock=0, emerald=0, grenade=0, unknown=0, bomb=0, cobble=0, bug=0, diamond=0;
 
@@ -74,16 +74,16 @@ class ScreenshotAnalyser {
 				} else if (red === 170 && green === 85 && blue === 0) {
 					type = 'Dirt';
 					dirt++;
-				} else if (red === 170 && (green === 21 || green == 0) && blue === 0) {
+				} else if (red === 170 && green == 0 && blue === 0) {
 					type = 'Brick';
 					brick++;
 				} else if (red === 170 && green === 170 && blue === 170) {
 					type = 'Rock';
 					rock++;
-				} else if ((red === 86 && green === 250 && blue === 85) || (red === 85 && green === 255 && blue === 85)) {
+				} else if (red === 85 && green === 255 && blue === 85) {
 					type = 'Emerald';
 					emerald++;
-				} else if (red === 85 && green === 85 && blue === 85) {
+				} else if (red === 255 && green === 255 && blue === 255) {
 					type = 'Grenade';
 					grenade++;
 				} else if (red === 255 && green === 85 && blue === 85) {
@@ -95,6 +95,9 @@ class ScreenshotAnalyser {
 				} else if (red === 170 && green === 0 && blue === 170) {
 					type = 'Bug';
 					bug++;
+				} else if (red === 85 && green === 85 && blue === 85) {
+					type = 'Cobble';
+					cobble++;
 				} else {
 					unknown++;
 					//console.log(`Sprite X/Y: ${x}/${y}, pixel X/Y: ${pixelX}/${pixelY}, RGB: ${red},${green},${blue}, type = unknown`);
@@ -110,19 +113,19 @@ class ScreenshotAnalyser {
 		results += `Rock      ${rock}<br>`;
 		results += `Emerald   ${emerald}<br>`;
 		results += `Brick     ${brick}<br>`;
-		results += `Bomb      ${0}<br>`;
+		results += `Bomb      ${bomb}<br>`;
 		results += `Exit      ${0}<br>`;
 		results += `Dozer     ${0}<br>`;
-		results += `Cobble    ${0}<br>`;
-		results += `Bug       ${0}<br>`;
-		results += `Diamond   ${0}<br>`;
+		results += `Cobble    ${cobble}<br>`;
+		results += `Bug       ${bug}<br>`;
+		results += `Diamond   ${diamond}<br>`;
 		results += `Slime     ${0}<br>`;
 		results += `Explosion ${0}<br>`;
 		results += `Grenade   ${grenade}<br>`;
 		results += `Unknown   ${unknown}<br>`;
 
 		results += '<br>';
-
+        
 		let array = [0, dirt, rock, emerald, brick, bomb, 0, 0, cobble, bug, diamond, 0, 0, grenade, 0, 0];
 		array.forEach(n => results += `${n.toString().padStart(4,' ')},`);
 
