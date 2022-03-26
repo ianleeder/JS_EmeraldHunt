@@ -123,6 +123,7 @@ class ScreenshotAnalyser {
 		results += `Explosion ${0}<br>`;
 		results += `Grenade   ${grenade}<br>`;
 		results += `Unknown   ${unknown}<br>`;
+		results += `Available score:  ${5*diamond + emerald}<br>`;
 
 		results += '<br>';
         
