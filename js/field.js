@@ -4,46 +4,6 @@ import { stateEnum, difficultyEnum } from './enums.js';
 import { Dirt, Diamond, Gem, Rock, Exit, Dozer, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray } from './objects.js';
 import { EmeraldHunt } from './hunt.js';
 
-// Types are stored in the same array order as the sprites
-/*
-	BLANK: 0,
-	DIRT: 1,
-	ROCK: 2,
-	EMERALD: 3,
-	BRICK: 4,
-	BOMB: 5,
-	EXIT: 6,
-	DOZER: 7,
-	COBBLE: 8,
-	BUG: 9,
-	DIAMOND: 10,
-	SLIME: 11,
-	EXPLOSION: 12,
-	GRENADE: 13,
-	NOTUSED: 14,
-	ALTDOZER: 15
-*/
-// Numbers are for a default 40x20 field (800 tiles).
-// Actual items will be scaled for field size.
-let difficultyDistribution = {};
-difficultyDistribution[difficultyEnum.EASY] =    [  0, 173, 125, 219,  80,   0,   0,   0,   0,   0,   0,   0,   0,  26,   0,   0];
-//                                               [  0, 185, 126, 215,  78,   0,   0,   0,   0,   0,   0,   0,   0,  20,   0,   0];
-difficultyDistribution[difficultyEnum.MEDIUM] =  [  0, 153, 105, 191, 101,  18,   0,   0,  42,   0,   0,   0,   0,  24,   0,   0];
-//                                               [  0, 197, 101, 173,  83,  30,   0,   0,  34,   0,   0,   0,   0,  18,   0,   0];
-difficultyDistribution[difficultyEnum.HARD] =    [  0, 199, 120, 140,  84,  25,   0,   0,  65,   0,  49,   0,   0,  12,   0,   0];
-//                                               [  0, 173, 103, 133,  95,  40,   0,   0,  67,   0,  53,   0,   0,  18,   0,   0];
-difficultyDistribution[difficultyEnum.HARDER] =  [  0, 128, 115,   0,  68,  31,   0,   0, 128,   0, 201,   0,   0,  20,   0,   0];
-//                                               [  0, 134, 123,   0,  60,  33,   0,   0, 100,   0, 208,   0,   0,  21,   0,   0];
-difficultyDistribution[difficultyEnum.HARDEST] = [  0,  98, 122,  55,  95,  27,   0,   0,  93,  24, 111,   0,   0,  19,   0,   0];
-//                                               [  0, 101, 120,  54,  87,  32,   0,   0, 107,  24, 104,   0,   0,  17,   0,   0];
-
-let difficultyScoreFactor = {};
-difficultyScoreFactor[difficultyEnum.EASY] =    0.90;
-difficultyScoreFactor[difficultyEnum.MEDIUM] =  0.915;
-difficultyScoreFactor[difficultyEnum.HARD] =    0.945;
-difficultyScoreFactor[difficultyEnum.HARDER] =  0.96;
-difficultyScoreFactor[difficultyEnum.HARDEST] = 0.96;
-
 class Field {
 	// Canvas context for drawing
 	#ctx;
@@ -75,9 +35,6 @@ class Field {
 	// Target score to unlock the exit
 	#targetScore;
 
-	// Multiplication factor to determine target score from total available field score
-	#targetScoreFactor = 0.9;
-
 	// Callback to the Hunt object playerDying function
 	#playerDyingCallback;
 
@@ -87,17 +44,63 @@ class Field {
 	// Audio context
 	#audioContext;
 
+	// Multidimensional array containing distribution of objects, indexed by difficulty enum
+	#difficultyDistribution = {};
+	
+	// Array of score multiplication factors (to determine target score from total available field score) indexed by difficulty enum
+	#difficultyScoreFactor = {};
+
 	constructor(c, diff, dyingCallback, wonCallback) {
 		this.#ctx = c;
 		this.#fieldX = EmeraldHunt.DEFAULTFIELDX;
 		this.#fieldY = EmeraldHunt.DEFAULTFIELDY;
 		this.#difficulty = diff;
-		this.initField();
-		this.#fieldInitialising = true;
 		this.#gameScore = 0;
 		this.#playerDyingCallback = dyingCallback;
 		this.#playerWonCallback = wonCallback;
 		this.#audioContext = new (window.AudioContext || window.webkitAudioContext);
+
+		// Types are stored in the same array order as the sprites
+		/*
+			BLANK: 0,
+			DIRT: 1,
+			ROCK: 2,
+			EMERALD: 3,
+			BRICK: 4,
+			BOMB: 5,
+			EXIT: 6,
+			DOZER: 7,
+			COBBLE: 8,
+			BUG: 9,
+			DIAMOND: 10,
+			SLIME: 11,
+			EXPLOSION: 12,
+			GRENADE: 13,
+			NOTUSED: 14,
+			ALTDOZER: 15
+		*/
+		// Numbers are for a default 40x20 field (800 tiles).
+		// Actual items will be scaled for field size.
+		// Set difficulty values
+		this.#difficultyDistribution[difficultyEnum.EASY] =    [  0, 173, 125, 219,  80,   0,   0,   0,   0,   0,   0,   0,   0,  26,   0,   0];
+		//                                                     [  0, 185, 126, 215,  78,   0,   0,   0,   0,   0,   0,   0,   0,  20,   0,   0];
+		this.#difficultyDistribution[difficultyEnum.MEDIUM] =  [  0, 153, 105, 191, 101,  18,   0,   0,  42,   0,   0,   0,   0,  24,   0,   0];
+		//                                                     [  0, 197, 101, 173,  83,  30,   0,   0,  34,   0,   0,   0,   0,  18,   0,   0];
+		this.#difficultyDistribution[difficultyEnum.HARD] =    [  0, 199, 120, 140,  84,  25,   0,   0,  65,   0,  49,   0,   0,  12,   0,   0];
+		//                                                     [  0, 173, 103, 133,  95,  40,   0,   0,  67,   0,  53,   0,   0,  18,   0,   0];
+		this.#difficultyDistribution[difficultyEnum.HARDER] =  [  0, 128, 115,   0,  68,  31,   0,   0, 128,   0, 201,   0,   0,  20,   0,   0];
+		//                                                     [  0, 134, 123,   0,  60,  33,   0,   0, 100,   0, 208,   0,   0,  21,   0,   0];
+		this.#difficultyDistribution[difficultyEnum.HARDEST] = [  0,  98, 122,  55,  95,  27,   0,   0,  93,  24, 111,   0,   0,  19,   0,   0];
+		//                                                     [  0, 101, 120,  54,  87,  32,   0,   0, 107,  24, 104,   0,   0,  17,   0,   0];
+
+		this.#difficultyScoreFactor[difficultyEnum.EASY] =    0.90;
+		this.#difficultyScoreFactor[difficultyEnum.MEDIUM] =  0.915;
+		this.#difficultyScoreFactor[difficultyEnum.HARD] =    0.945;
+		this.#difficultyScoreFactor[difficultyEnum.HARDER] =  0.96;
+		this.#difficultyScoreFactor[difficultyEnum.HARDEST] = 0.96;
+
+		this.initField();
+		this.#fieldInitialising = true;
 	}
 
 	initField() {
@@ -321,7 +324,7 @@ class Field {
 		this.#grid[index] = new Exit();
 
 		this.#availableScore = this.getRemainingScore();
-		this.#targetScore = Math.floor(this.#availableScore * this.#targetScoreFactor);
+		this.#targetScore = Math.floor(this.#availableScore * this.#difficultyScoreFactor[this.#difficulty]);
 
 		console.log(`Available score is ${this.#availableScore}, target score is ${this.#targetScore}`);
 
@@ -544,7 +547,7 @@ class Field {
 		// Default field size is 800
 		// Calculate a scaling factor for this field, based on size
 		let scale = (this.#fieldX * this.#fieldY) / 800;
-		let desiredQty = Math.round(difficultyDistribution[this.#difficulty][t] * scale);
+		let desiredQty = Math.round(this.#difficultyDistribution[this.#difficulty][t] * scale);
 
 		for (let i = 0; i < desiredQty; i++) {
 			// Pick a random value from the array of empty cells
