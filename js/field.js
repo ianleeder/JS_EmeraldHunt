@@ -37,6 +37,13 @@ difficultyDistribution[difficultyEnum.HARDER] =  [  0, 128, 115,   0,  68,  31, 
 difficultyDistribution[difficultyEnum.HARDEST] = [  0,  98, 122,  55,  95,  27,   0,   0,  93,  24, 111,   0,   0,  19,   0,   0];
 //                                               [  0, 101, 120,  54,  87,  32,   0,   0, 107,  24, 104,   0,   0,  17,   0,   0];
 
+let difficultyScoreFactor = {};
+difficultyScoreFactor[difficultyEnum.EASY] =    0.90;
+difficultyScoreFactor[difficultyEnum.MEDIUM] =  0.915;
+difficultyScoreFactor[difficultyEnum.HARD] =    0.945;
+difficultyScoreFactor[difficultyEnum.HARDER] =  0.96;
+difficultyScoreFactor[difficultyEnum.HARDEST] = 0.96;
+
 class Field {
 	// Canvas context for drawing
 	#ctx;
