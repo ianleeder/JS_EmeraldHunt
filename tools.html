@@ -23,17 +23,11 @@
 
 	window.onload = init;
 	
-	async function init() {
+	function init() {
 		document.getElementById('screenshot-file-input').addEventListener('change', uploadScreenshot);
 	};
 
-	async function uploadResourceFile(event) {
-		const file = event.target.files[0];
-		console.log(file);
-		await app.useImageFile(file);
-	}
-
-	async function uploadScreenshot(event) {
+	function uploadScreenshot(event) {
 		let canvas = document.getElementById("analysisCanvas");
 		let analyser = new ScreenshotAnalyser(canvas, document.getElementById('screenshot-content'));
 
