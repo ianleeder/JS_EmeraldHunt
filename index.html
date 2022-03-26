@@ -24,14 +24,6 @@
 		<span>Upload file: </span>
 		<input type="file" id="resource-file-input" />
 		<div id="imagesDiv"></div>
-		<hr>
-		<h3>Save game analysis</h3>
-		<pre id="file-content"></pre>
-		<hr>
-		<h3>Screenshot analysis</h3>
-		<span>Upload screenshot: </span>
-		<input type="file" id="screenshot-file-input" />
-		<pre id="screenshot-content"></pre>
 	</body>
 </html>
 
@@ -54,22 +46,12 @@
 		await app.init();
 
 		document.getElementById('resource-file-input').addEventListener('change', uploadResourceFile);
-		document.getElementById('screenshot-file-input').addEventListener('change', uploadScreenshot);
 	};
 
 	async function uploadResourceFile(event) {
 		const file = event.target.files[0];
 		console.log(file);
 		await app.useImageFile(file);
-	}
-
-	async function uploadScreenshot(event) {
-		let canvas = document.getElementById("huntCanvas");
-		let analyser = new ScreenshotAnalyser(canvas, document.getElementById('screenshot-content'));
-
-		const file = event.target.files[0];
-		console.log(file);
-		analyser.loadImage(file);
 	}
 
 	function changeScale(e) {

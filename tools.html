@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="shortcut icon" type="image/x-icon" href="images/hunt.ico" />
+		<title>Emerald Hunt</title>
+	</head>
+	<body>
+		<h1>Emerald Hunt Tools</h1>
+        <h2>Screenshot Analysis</h2>
+		<canvas id="analysisCanvas">
+			This browser can not run this game (canvas support missing).
+		</canvas>
+		<br>
+		<hr>		
+		<span>Upload screenshot: </span>
+		<input type="file" id="screenshot-file-input" />
+		<pre id="screenshot-content"></pre>
+	</body>
+</html>
+
+<script type="module">
+	import {ScreenshotAnalyser} from "./js/screenshot.js";
+
+	window.onload = init;
+	
+	async function init() {
+		document.getElementById('screenshot-file-input').addEventListener('change', uploadScreenshot);
+	};
+
+	async function uploadResourceFile(event) {
+		const file = event.target.files[0];
+		console.log(file);
+		await app.useImageFile(file);
+	}
+
+	async function uploadScreenshot(event) {
+		let canvas = document.getElementById("analysisCanvas");
+		let analyser = new ScreenshotAnalyser(canvas, document.getElementById('screenshot-content'));
+
+		const file = event.target.files[0];
+		console.log(file);
+		analyser.loadImage(file);
+	}
+</script>
