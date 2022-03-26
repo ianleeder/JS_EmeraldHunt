@@ -92,7 +92,7 @@ class ScreenshotAnalyser {
 				} else if (red === 85 && green === 85 && blue === 255) {
 					type = 'Diamond';
 					diamond++;
-				} else if (red === 170 && green === 0 && blue === 170) {
+				} else if (red === 255 && green === 85 && blue === 255) {
 					type = 'Bug';
 					bug++;
 				} else if (red === 85 && green === 85 && blue === 85) {
