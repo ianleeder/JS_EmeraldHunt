@@ -90,4 +90,16 @@ class Menu {
 	}
 }
 
-export { Button, CyclingButton, Menu };
+class AsciiMenu {
+	#ctx;
+
+	constructor(c) {
+		this.#ctx = c;
+	}
+
+	handleInput() {
+
+	}
+}
+
+export { Button, CyclingButton, Menu, AsciiMenu };

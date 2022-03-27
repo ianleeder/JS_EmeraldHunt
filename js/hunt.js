@@ -3,7 +3,7 @@
 import {stateEnum, difficultyEnum} from './enums.js';
 import {Field} from './field.js';
 import {loadImagesFromUrlAsync, loadImagesFromFileAsync} from './huntio.js';
-import {Menu} from './menu.js';
+import {AsciiMenu} from './menu.js';
 
 class EmeraldHunt {
 	// DOM Canvas element.  Required for scaling.
@@ -45,11 +45,10 @@ class EmeraldHunt {
 	constructor(c) {
 		this.#canvas = c;
 		this.#ctx = this.#canvas.getContext('2d');
-		this.#gameState = stateEnum.LOADING;
 		this.scaleGame(1);
-		this.#menu = new Menu(c);
+		this.#menu = new AsciiMenu(c);
 
-		this.#gameState = stateEnum.RUNNING;
+		this.#gameState = stateEnum.MENU;
 	}
 
 	// Create a static property
@@ -88,7 +87,7 @@ class EmeraldHunt {
 			}
 		});
 
-		this.#gameState = stateEnum.MENU;
+		this.#gameField = new Field(this.#ctx, stateEnum.MENU, this.playerDying.bind(this), this.playerWon.bind(this));
 
 		// Start the timer ticking
 		setInterval(() => {
@@ -118,7 +117,7 @@ class EmeraldHunt {
 		EmeraldHunt.#images = await Promise.all(allPromises);
 
 		// Need to reload references to images
-		this.newGame();
+		//this.newGame();
 
 		// This is just debug fluff
 		const imageDiv = document.getElementById('imagesDiv');
