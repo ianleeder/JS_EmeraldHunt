@@ -44,11 +44,17 @@ class Field {
 	// Audio context
 	#audioContext;
 
+	// Audio gain (volume)
+	#gainNode;
+
 	// Multidimensional array containing distribution of objects, indexed by difficulty enum
 	#difficultyDistribution = {};
 	
 	// Array of score multiplication factors (to determine target score from total available field score) indexed by difficulty enum
 	#difficultyScoreFactor = {};
+
+	// Maximum gain to set audio to
+	#audioLevel = 1;
 
 	constructor(c, diff, dyingCallback, wonCallback) {
 		this.#ctx = c;
@@ -58,7 +64,11 @@ class Field {
 		this.#gameScore = 0;
 		this.#playerDyingCallback = dyingCallback;
 		this.#playerWonCallback = wonCallback;
+
 		this.#audioContext = new (window.AudioContext || window.webkitAudioContext);
+		this.#gainNode = this.#audioContext.createGain();
+		this.#gainNode.gain.value = this.#audioLevel;
+		this.#gainNode.connect(this.#audioContext.destination);
 
 		// Types are stored in the same array order as the sprites
 		/*
@@ -103,6 +113,11 @@ class Field {
 		this.#fieldInitialising = true;
 	}
 
+	setVolume(n) {
+		this.#audioLevel = n;
+		this.#gainNode.gain.value = this.#audioLevel;
+	}
+
 	initField() {
 		// Move to storing the field in a 1D array
 		this.#grid = new Array(this.#fieldX * this.#fieldY).fill(spriteEnum.BLANK);
@@ -137,7 +152,7 @@ class Field {
 			Total time: 163ms
 		*/
 		let osc = new OscillatorNode(this.#audioContext);
-		osc.connect(this.#audioContext.destination);
+		osc.connect(this.#gainNode);
 		osc.type = 'square';
 
 		osc.frequency.setValueAtTime(1083, this.#audioContext.currentTime);
@@ -150,7 +165,7 @@ class Field {
 		setTimeout(disconnectOscillator.bind(this), 163);
 
 		function disconnectOscillator() {
-			osc.disconnect(this.#audioContext.destination);
+			osc.disconnect(this.#gainNode);
 		}
 	}
 
@@ -164,26 +179,24 @@ class Field {
 			Fifth tone, 17ms, 1/2 cycle: 30Hz for 33ms
 			Total time: 185ms
 		*/
-		let gainNode = this.#audioContext.createGain();
 		let osc = new OscillatorNode(this.#audioContext);
-		osc.connect(this.#audioContext.destination);
+		osc.connect(this.#gainNode);
 		osc.type = 'square';
-		gainNode.gain.value = 1;
 
 		osc.frequency.setValueAtTime(590, this.#audioContext.currentTime);
 		osc.frequency.setValueAtTime(320, this.#audioContext.currentTime + 0.023);
 		osc.frequency.setValueAtTime(80, this.#audioContext.currentTime + 0.077);
 		osc.frequency.setValueAtTime(117, this.#audioContext.currentTime + 0.110);
-		gainNode.gain.setValueAtTime(0, this.#audioContext.currentTime + 0.135);
+		this.#gainNode.gain.setValueAtTime(0, this.#audioContext.currentTime + 0.135);
 
 		osc.frequency.setValueAtTime(30, this.#audioContext.currentTime + 0.140);
-		gainNode.gain.setValueAtTime(1, this.#audioContext.currentTime + 0.152);
+		this.#gainNode.gain.setValueAtTime(this.#audioLevel, this.#audioContext.currentTime + 0.152);
 		
 		this.startTone(osc);
 		setTimeout(disconnectOscillator.bind(this), 185);
 
 		function disconnectOscillator() {
-			osc.disconnect(this.#audioContext.destination);
+			osc.disconnect(this.#gainNode);
 		}
 	}
 
@@ -198,7 +211,7 @@ class Field {
 			Total time: 164ms
 		*/
 		let osc = new OscillatorNode(this.#audioContext);
-		osc.connect(this.#audioContext.destination);
+		osc.connect(this.#gainNode);
 		osc.type = 'square';
 
 		osc.frequency.setValueAtTime(500, this.#audioContext.currentTime);
@@ -212,7 +225,7 @@ class Field {
 		setTimeout(disconnectOscillator.bind(this), 165);
 
 		function disconnectOscillator() {
-			osc.disconnect(this.#audioContext.destination);
+			osc.disconnect(this.#gainNode);
 		}
 	}
 
@@ -226,7 +239,7 @@ class Field {
 			Total time: 160ms
 		*/
 		let osc = new OscillatorNode(this.#audioContext);
-		osc.connect(this.#audioContext.destination);
+		osc.connect(this.#gainNode);
 		osc.type = 'square';
 
 		osc.frequency.setValueAtTime(400, this.#audioContext.currentTime);
@@ -239,7 +252,7 @@ class Field {
 		setTimeout(disconnectOscillator.bind(this), 160);
 
 		function disconnectOscillator() {
-			osc.disconnect(this.#audioContext.destination);
+			osc.disconnect(this.#gainNode);
 		}
 	}
 
@@ -253,7 +266,7 @@ class Field {
 			Total time: 170ms
 		*/
 		let osc = new OscillatorNode(this.#audioContext);
-		osc.connect(this.#audioContext.destination);
+		osc.connect(this.#gainNode);
 		osc.type = 'square';
 
 		osc.frequency.setValueAtTime(100, this.#audioContext.currentTime);
@@ -266,7 +279,7 @@ class Field {
 		setTimeout(disconnectOscillator.bind(this), 170);
 
 		function disconnectOscillator() {
-			osc.disconnect(this.#audioContext.destination);
+			osc.disconnect(this.#gainNode);
 		}
 	}
 
@@ -278,22 +291,23 @@ class Field {
 			Total time: 160ms
 		*/
 		let gainNode = this.#audioContext.createGain();
+		gainNode.gain.value = this.#audioLevel;
+
 		let osc = new OscillatorNode(this.#audioContext);
-		osc.connect(this.#audioContext.destination);
+		osc.connect(this.#gainNode);
 		osc.type = 'square';
-		gainNode.gain.value = 1;
 
 		osc.frequency.setValueAtTime(304, this.#audioContext.currentTime);
 		gainNode.gain.setValueAtTime(0, this.#audioContext.currentTime + 0.025);
 
 		osc.frequency.setValueAtTime(87.5, this.#audioContext.currentTime + 0.03);
-		gainNode.gain.setValueAtTime(1, this.#audioContext.currentTime + 0.073);
+		gainNode.gain.setValueAtTime(this.#audioLevel, this.#audioContext.currentTime + 0.073);
 		
 		this.startTone(osc);
 		setTimeout(disconnectOscillator.bind(this), 160);
 
 		function disconnectOscillator() {
-			osc.disconnect(this.#audioContext.destination);
+			osc.disconnect(this.#gainNode);
 		}
 	}
 
