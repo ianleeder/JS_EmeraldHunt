@@ -103,10 +103,10 @@ class AsciiMenu {
 
 	renderMenu() {
 		this.#ctx.fillStyle = '#AAAAAA';
-		this.#ctx.fillRect(100, 100, 50, 50);
-		this.#ctx.font = 'bold 20px terminal';
+		this.#ctx.fillRect(100, 100, 200, 100);
+		this.#ctx.font = '20px courier new';
 		this.#ctx.fillStyle = '#000000';
-		this.#ctx.fillText('test', 110, 120);
+		this.#ctx.fillText('MAIN MENU', 110, 120);
 
 	}
 }
