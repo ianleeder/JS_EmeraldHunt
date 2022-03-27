@@ -88,6 +88,7 @@ class EmeraldHunt {
 		});
 
 		this.#gameField = new Field(this.#ctx, stateEnum.MENU, this.playerDying.bind(this), this.playerWon.bind(this));
+		this.#gameField.setVolume(0);
 
 		// Start the timer ticking
 		setInterval(() => {
