@@ -94,10 +94,19 @@ class AsciiMenu {
 	#ctx;
 
 	constructor(c) {
-		this.#ctx = c;
+		this.#ctx = c.getContext('2d');
 	}
 
 	handleInput() {
+
+	}
+
+	renderMenu() {
+		this.#ctx.fillStyle = '#AAAAAA';
+		this.#ctx.fillRect(100, 100, 50, 50);
+		this.#ctx.font = 'bold 20px terminal';
+		this.#ctx.fillStyle = '#000000';
+		this.#ctx.fillText('test', 110, 120);
 
 	}
 }

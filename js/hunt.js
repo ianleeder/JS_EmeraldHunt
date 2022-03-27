@@ -210,6 +210,10 @@ class EmeraldHunt {
 	renderLoop() {
 		this.clearCanvas();
 		this.#gameField.renderField();
+
+		if (this.#gameState === stateEnum.MENU) {
+			this.#menu.renderMenu();
+		}
 	}
 }
 
