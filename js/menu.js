@@ -111,7 +111,9 @@ class MenuController {
 		this.#topMenu = new Menu(this.#ctx, 200, 100, 200, 100, menuColor, menuTitle);
 
 		let y = 135;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 60, 10, 'NEW GAME', menuColor, selectedColor));
+		var mi = new MenuItem(this.#ctx, 240, y, 75, 10, 'NEW GAME', menuColor, selectedColor);
+		mi.selected = true;
+		this.#topMenu.addMenuItem(mi);
 		y+= MenuController.#menuTextHeight;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 60, 10, 'SAVED GAME', menuColor, selectedColor));
 		y+= MenuController.#menuTextHeight;
@@ -126,15 +128,17 @@ class MenuController {
 		this.#difficultyMenu = new Menu(this.#ctx, 320, 125, 120, 130, difficultyMenuColor, difficultyMenuTitle);
 
 		y = 175;
-		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'EASY', difficultyMenuColor, difficultyMenuTitle));
+		mi = new MenuItem(this.#ctx, 350, y, 60, 10, 'EASY', difficultyMenuColor, difficultySelectedColor);
+		mi.selected = true;
+		this.#difficultyMenu.addMenuItem(mi);
 		y+= MenuController.#menuTextHeight;
-		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'MEDIUM', difficultyMenuColor, difficultyMenuTitle));
+		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'MEDIUM', difficultyMenuColor, difficultySelectedColor));
 		y+= MenuController.#menuTextHeight;
-		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARD', difficultyMenuColor, difficultyMenuTitle));
+		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARD', difficultyMenuColor, difficultySelectedColor));
 		y+= MenuController.#menuTextHeight;
-		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARDER', difficultyMenuColor, difficultyMenuTitle));
+		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARDER', difficultyMenuColor, difficultySelectedColor));
 		y+= MenuController.#menuTextHeight;
-		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARDEST', difficultyMenuColor, difficultyMenuTitle));
+		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARDEST', difficultyMenuColor, difficultySelectedColor));
 	}
 
 	handleInput() {
@@ -255,7 +259,7 @@ class MenuItem {
 		if (this.#selected) {
 			// Paint the background 
 			this.#ctx.fillStyle = color.background;
-			this.#ctx.fillRect(this.#x, this.#y, this.#w, this.#h);
+			this.#ctx.fillRect(this.#x, this.#y-this.#h+1, this.#w, this.#h+4);
 		}
 
 		// Write the text
