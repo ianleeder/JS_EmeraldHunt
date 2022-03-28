@@ -1,3 +1,4 @@
+import { colorEnum } from './enums.js';
 class Button {
 	#lineWidth = 5;
 	#radius = 8;
@@ -85,8 +86,8 @@ class MenuController {
 	// Top level menu to render
 	#topMenu;
 
-	static #menuTextFont = '20px courier new';
-	static #menuTextHeight = 10;
+	static #menuTextFont = '10px courier new bold';
+	static #menuTextHeight = 14;
 
 	constructor(c) {
 		this.#ctx = c.getContext('2d');
@@ -102,8 +103,18 @@ class MenuController {
 	}
 
 	init() {
-		this.#topMenu = new Menu(this.#ctx);
-		
+		let menuColor = new MenuColor(colorEnum.LIGHT_GRAY, colorEnum.BLACK);
+		let selectedColor = new MenuColor(colorEnum.BLACK, colorEnum.WHITE);
+		this.#topMenu = new Menu(this.#ctx, 200, 100, 200, 100, menuColor);
+
+		let y = 135;
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 60, 10, 'NEW GAME', menuColor, selectedColor));
+		y+= MenuController.#menuTextHeight;
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 60, 10, 'SAVED GAME', menuColor, selectedColor));
+		y+= MenuController.#menuTextHeight;
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 60, 10, 'SOUND (ON)', menuColor, selectedColor));
+		y+= MenuController.#menuTextHeight;
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 60, 10, 'EXIT', menuColor, selectedColor));
 	}
 
 	handleInput() {
@@ -212,7 +223,7 @@ class MenuItem {
 	}
 
 	renderMenu() {
-		let color = this.#selected ? this.#color : this.#selectedColor;
+		let color = this.#selected ? this.#selectedColor : this.#color;
 
 		if (this.#selected) {
 			// Paint the background 
@@ -227,7 +238,7 @@ class MenuItem {
 	}
 }
 
-class MenuItemColor {
+class MenuColor {
 	// Background color
 	#background;
 

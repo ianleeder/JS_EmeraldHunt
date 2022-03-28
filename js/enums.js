@@ -49,4 +49,4 @@ const colorEnum = {
 	WHITE:			'#FFFFFF'
 };
 
-export {stateEnum, difficultyEnum};
+export {stateEnum, difficultyEnum, colorEnum};
