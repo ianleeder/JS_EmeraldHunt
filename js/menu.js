@@ -86,8 +86,10 @@ class MenuController {
 	// Top level menu to render
 	#topMenu;
 
+	#difficultyMenu;
+
 	static #menuTextFont = '10px courier new bold';
-	static #menuTextHeight = 14;
+	static #menuTextHeight = 13;
 
 	constructor(c) {
 		this.#ctx = c.getContext('2d');
@@ -116,6 +118,23 @@ class MenuController {
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 60, 10, 'SOUND (ON)', menuColor, selectedColor));
 		y+= MenuController.#menuTextHeight;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 60, 10, 'EXIT', menuColor, selectedColor));
+
+		let difficultyMenuColor = new MenuColor(colorEnum.GREEN, colorEnum.YELLOW);
+		let difficultySelectedColor = new MenuColor(colorEnum.CYAN, colorEnum.BLACK);
+
+		let difficultyMenuTitle = new MenuItem(this.#ctx, 350, 150, 60, 10, 'SKILL LEVEL', difficultyMenuColor, difficultySelectedColor);
+		this.#difficultyMenu = new Menu(this.#ctx, 320, 125, 120, 130, difficultyMenuColor, difficultyMenuTitle);
+
+		y = 175;
+		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'EASY', difficultyMenuColor, difficultyMenuTitle));
+		y+= MenuController.#menuTextHeight;
+		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'MEDIUM', difficultyMenuColor, difficultyMenuTitle));
+		y+= MenuController.#menuTextHeight;
+		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARD', difficultyMenuColor, difficultyMenuTitle));
+		y+= MenuController.#menuTextHeight;
+		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARDER', difficultyMenuColor, difficultyMenuTitle));
+		y+= MenuController.#menuTextHeight;
+		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARDEST', difficultyMenuColor, difficultyMenuTitle));
 	}
 
 	handleInput() {
@@ -124,6 +143,7 @@ class MenuController {
 
 	renderMenu() {
 		this.#topMenu.renderMenu();
+		this.#difficultyMenu.renderMenu();
 	}
 }
 
