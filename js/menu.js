@@ -79,13 +79,18 @@ class CyclingButton extends Button {
 }
 
 class MenuController {
+	// Drawing context
 	#ctx;
+
+	// Top level menu to render
+	#topMenu;
 
 	static #menuTextFont = '20px courier new';
 	static #menuTextHeight = 10;
 
 	constructor(c) {
 		this.#ctx = c.getContext('2d');
+		this.init();
 	}
 
 	static get MenuTextFont() {
@@ -96,25 +101,53 @@ class MenuController {
 		return MenuController.#menuTextHeight;
 	}
 
+	init() {
+		this.#topMenu = new Menu(this.#ctx);
+		
+	}
+
 	handleInput() {
 
 	}
 
 	renderMenu() {
-		this.#ctx.fillStyle = '#AAAAAA';
-		this.#ctx.fillRect(100, 100, 200, 100);
-		this.#ctx.font = '20px courier new';
-		this.#ctx.fillStyle = '#000000';
-		this.#ctx.fillText('MAIN MENU', 110, 120);
-
+		this.#topMenu.renderMenu();
 	}
 }
 
 class Menu {
+	// Drawing context
 	#ctx;
 
-	constructor(c) {
-		this.#ctx = c.getContext('2d');
+	// MenuItem array
+	#items = [];
+
+	// X Position of menu
+	#x;
+
+	// Y Position of menu
+	#y;
+
+	// Width
+	#w;
+
+	// Height
+	#h;
+
+	// MenuItemColor object for normal color
+	#color;
+
+	constructor(ctx, x, y, w, h, c) {
+		this.#ctx = ctx;
+		this.#x = x;
+		this.#y = y;
+		this.#w = w;
+		this.#h = h;
+		this.#color = c;
+	}
+
+	addMenuItem(item) {
+		this.#items.push(item);
 	}
 
 	handleInput() {
@@ -122,12 +155,15 @@ class Menu {
 	}
 
 	renderMenu() {
-		this.#ctx.fillStyle = '#AAAAAA';
-		this.#ctx.fillRect(100, 100, 200, 100);
-		this.#ctx.font = '20px courier new';
-		this.#ctx.fillStyle = '#000000';
-		this.#ctx.fillText('MAIN MENU', 110, 120);
+		// Paint the background 
+		this.#ctx.fillStyle = this.#color.background;
+		this.#ctx.fillRect(this.#x, this.#y, this.#w, this.#h);
 
+		// Draw border
+		this.#ctx.strokeStyle = this.#color.foreground;
+		this.#ctx.strokeRect(this.#x+3, this.#y+3, this.#w-6, this.#h-6);
+
+		this.#items.forEach(item => item.renderMenu());
 	}
 }
 
@@ -141,6 +177,12 @@ class MenuItem {
 	// Y Position of item
 	#y;
 
+	// Width
+	#w;
+
+	// Height
+	#h;
+
 	// Text to display
 	#text;
 
@@ -150,21 +192,38 @@ class MenuItem {
 	// MenuItemColor object when selected
 	#selectedColor;
 
-	constructor(ctx, x, y, text, c, sc) {
+	// Boolean flag whether this item is selected
+	#selected;
+
+	constructor(ctx, x, y, w, h, text, c, sc) {
 		this.#ctx = ctx;
 		this.#x = x;
 		this.#y = y;
+		this.#w = w;
+		this.#h = h;
 		this.#text = text;
 		this.#color = c;
 		this.#selectedColor = sc;
+		this.#selected = false;
+	}
+
+	set selected(value) {
+		this.#selected = value;
 	}
 
 	renderMenu() {
-		this.#ctx.fillStyle = '#AAAAAA';
-		this.#ctx.fillRect(100, 100, 200, 100);
-		this.#ctx.font = '20px courier new';
-		this.#ctx.fillStyle = '#000000';
-		this.#ctx.fillText('MAIN MENU', 110, 120);
+		let color = this.#selected ? this.#color : this.#selectedColor;
+
+		if (this.#selected) {
+			// Paint the background 
+			this.#ctx.fillStyle = color.background;
+			this.#ctx.fillRect(this.#x, this.#y, this.#w, this.#h);
+		}
+
+		// Write the text
+		this.#ctx.fillStyle = color.foreground;
+		this.#ctx.font = MenuController.MenuTextFont;
+		this.#ctx.fillText(this.#text, this.#x+2, this.#y+2);
 	}
 }
 
