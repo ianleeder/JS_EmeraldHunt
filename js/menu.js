@@ -132,19 +132,61 @@ class Menu {
 }
 
 class MenuItem {
+	// Drawing context
+	#ctx;
+
 	// X Position of item
-	#xPos;
+	#x;
 
 	// Y Position of item
-	#yPos;
+	#y;
 
 	// Text to display
 	#text;
 
-	#backgroundColour;
+	// MenuItemColor object for normal color
+	#color;
 
-	#foregroundColour;
+	// MenuItemColor object when selected
+	#selectedColor;
 
-} 
+	constructor(ctx, x, y, text, c, sc) {
+		this.#ctx = ctx;
+		this.#x = x;
+		this.#y = y;
+		this.#text = text;
+		this.#color = c;
+		this.#selectedColor = sc;
+	}
+
+	renderMenu() {
+		this.#ctx.fillStyle = '#AAAAAA';
+		this.#ctx.fillRect(100, 100, 200, 100);
+		this.#ctx.font = '20px courier new';
+		this.#ctx.fillStyle = '#000000';
+		this.#ctx.fillText('MAIN MENU', 110, 120);
+	}
+}
+
+class MenuItemColor {
+	// Background color
+	#background;
+
+	// Foreground color
+	#foreground;
+
+	constructor(bg, fg) {
+		this.#background = bg;
+		this.#foreground = fg;
+	}
+
+	get background() {
+		return this.#background;
+	}
+
+	get foreground() {
+		return this.#foreground;
+	}
+}
 
 export { Button, CyclingButton, Menu, MenuController };
