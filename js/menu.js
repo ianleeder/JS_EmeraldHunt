@@ -78,19 +78,39 @@ class CyclingButton extends Button {
 	}
 }
 
-class Menu {
+class MenuController {
 	#ctx;
 
+	static #menuTextFont = '20px courier new';
+	static #menuTextHeight = 10;
+
 	constructor(c) {
-		this.#ctx = c;
+		this.#ctx = c.getContext('2d');
+	}
+
+	static get MenuTextFont() {
+		return MenuController.#menuTextFont;
+	}
+
+	static get MenuTextHeight() {
+		return MenuController.#menuTextHeight;
 	}
 
 	handleInput() {
 
 	}
+
+	renderMenu() {
+		this.#ctx.fillStyle = '#AAAAAA';
+		this.#ctx.fillRect(100, 100, 200, 100);
+		this.#ctx.font = '20px courier new';
+		this.#ctx.fillStyle = '#000000';
+		this.#ctx.fillText('MAIN MENU', 110, 120);
+
+	}
 }
 
-class AsciiMenu {
+class Menu {
 	#ctx;
 
 	constructor(c) {
@@ -111,4 +131,20 @@ class AsciiMenu {
 	}
 }
 
-export { Button, CyclingButton, Menu, AsciiMenu };
+class MenuItem {
+	// X Position of item
+	#xPos;
+
+	// Y Position of item
+	#yPos;
+
+	// Text to display
+	#text;
+
+	#backgroundColour;
+
+	#foregroundColour;
+
+} 
+
+export { Button, CyclingButton, Menu, MenuController };

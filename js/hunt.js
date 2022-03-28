@@ -3,7 +3,7 @@
 import {stateEnum, difficultyEnum} from './enums.js';
 import {Field} from './field.js';
 import {loadImagesFromUrlAsync, loadImagesFromFileAsync} from './huntio.js';
-import {AsciiMenu} from './menu.js';
+import {MenuController} from './menu.js';
 
 class EmeraldHunt {
 	// DOM Canvas element.  Required for scaling.
@@ -46,7 +46,7 @@ class EmeraldHunt {
 		this.#canvas = c;
 		this.#ctx = this.#canvas.getContext('2d');
 		this.scaleGame(1);
-		this.#menu = new AsciiMenu(c);
+		this.#menu = new MenuController(c);
 
 		this.#gameState = stateEnum.MENU;
 	}
