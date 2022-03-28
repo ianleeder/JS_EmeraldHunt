@@ -105,7 +105,8 @@ class MenuController {
 	init() {
 		let menuColor = new MenuColor(colorEnum.LIGHT_GRAY, colorEnum.BLACK);
 		let selectedColor = new MenuColor(colorEnum.BLACK, colorEnum.WHITE);
-		this.#topMenu = new Menu(this.#ctx, 200, 100, 200, 100, menuColor);
+		let menuTitle = new MenuItem(this.#ctx, 240, 115, 60, 10, 'MAIN MENU', menuColor, selectedColor);
+		this.#topMenu = new Menu(this.#ctx, 200, 100, 200, 100, menuColor, menuTitle);
 
 		let y = 135;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 60, 10, 'NEW GAME', menuColor, selectedColor));
@@ -130,6 +131,9 @@ class Menu {
 	// Drawing context
 	#ctx;
 
+	// Special case MenuItem containing Title text (can't be selected)
+	#title;
+
 	// MenuItem array
 	#items = [];
 
@@ -148,13 +152,14 @@ class Menu {
 	// MenuItemColor object for normal color
 	#color;
 
-	constructor(ctx, x, y, w, h, c) {
+	constructor(ctx, x, y, w, h, c, title) {
 		this.#ctx = ctx;
 		this.#x = x;
 		this.#y = y;
 		this.#w = w;
 		this.#h = h;
 		this.#color = c;
+		this.#title = title;
 	}
 
 	addMenuItem(item) {
@@ -174,7 +179,9 @@ class Menu {
 		this.#ctx.strokeStyle = this.#color.foreground;
 		this.#ctx.strokeRect(this.#x+3, this.#y+3, this.#w-6, this.#h-6);
 
-		this.#items.forEach(item => item.renderMenu());
+		this.#title.renderItem();
+
+		this.#items.forEach(item => item.renderItem());
 	}
 }
 
@@ -222,7 +229,7 @@ class MenuItem {
 		this.#selected = value;
 	}
 
-	renderMenu() {
+	renderItem() {
 		let color = this.#selected ? this.#selectedColor : this.#color;
 
 		if (this.#selected) {
