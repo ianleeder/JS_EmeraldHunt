@@ -30,7 +30,7 @@ const difficultyEnum = {
 	HARDEST: 'Hardest'
 };
 
-const colorPalette = {
+const colorEnum = {
 	BLACK:			'#000000',
 	BLUE:			'#0000AA',
 	GREEN:			'#00AA00',
