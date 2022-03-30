@@ -49,7 +49,7 @@ class MenuController {
 		this.#topMenu = new Menu(this.#ctx, 200, 100, 200, 100, menuColor, menuTitle);
 
 		y = 135;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'NEW GAME', menuColor, selectedColor, skilllevelMenuColor));
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'NEW GAME', menuColor, selectedColor, skilllevelMenu));
 		y+= MenuController.#menuTextHeight;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'SAVED GAME', menuColor, selectedColor));
 		y+= MenuController.#menuTextHeight;
@@ -123,7 +123,6 @@ class Menu {
 				// Javascript modulo negative number is still negative
 				// https://stackoverflow.com/a/4467559/5329728
 				this.#selectedIndex = ((--this.#selectedIndex % this.#items.length) + this.#items.length) % this.#items.length;
-				console.log(this.#selectedIndex);
 				break;
 
 			// Down key
@@ -132,7 +131,15 @@ class Menu {
 				e.preventDefault();
 				// Increment selected index, and wrap by menuitem length
 				this.#selectedIndex = ++this.#selectedIndex % this.#items.length;
-				console.log(this.#selectedIndex);
+				break;
+			
+			// Enter key
+			case 'Enter':
+				e.preventDefault();
+				var mi = this.#items[this.#selectedIndex];
+				console.log(mi);
+				var action = mi.Action;
+				console.log(action);
 				break;
 		}
 	}
@@ -190,6 +197,10 @@ class MenuItem {
 		this.#color = c;
 		this.#selectedColor = sc;
 		this.#action = action;
+	}
+
+	get Action() {
+		return this.#action;
 	}
 
 	renderItem(selected) {
