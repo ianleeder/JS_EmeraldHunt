@@ -35,7 +35,7 @@ class MenuController {
 		let x = 350;
 		let y = 150;
 		let skilllevelMenuTitle = new MenuItem(this.#ctx, x, y, 60, 10, 'SKILL LEVEL', skilllevelMenuColor, skilllevelSelectedColor);
-		let skilllevelMenu = new Menu(this.#ctx, 320, 125, 120, 130, skilllevelMenuColor, skilllevelMenuTitle);
+		let skilllevelMenu = new Menu(this.#ctx, 320, 132, 120, 135, skilllevelMenuColor, skilllevelMenuTitle);
 
 		y+= 2 * MenuController.#menuTextHeight;
 		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 60, 10, 'EASY', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.EASY));
@@ -47,6 +47,8 @@ class MenuController {
 		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 60, 10, 'HARDER', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDER));
 		y+= MenuController.#menuTextHeight;
 		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 60, 10, 'HARDEST', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDEST));
+		y+= 2 * MenuController.#menuTextHeight;
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 60, 10, 'ESC = Cancel', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDEST));
 
 		// Now define the top-level menu
 		let menuColor = new MenuColor(colorEnum.LIGHT_GRAY, colorEnum.BLACK);
