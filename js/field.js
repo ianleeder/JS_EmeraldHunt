@@ -773,6 +773,10 @@ class Field {
 	}
 
 	renderScoreBar() {
+		// Wipe scorebar first to prevent flicker
+		this.#ctx.fillStyle = colorEnum.BLACK;
+		this.#ctx.fillRect(0, (EmeraldHunt.SPRITESIZE * this.#fieldY)-1, EmeraldHunt.SPRITESIZE * this.#fieldX, EmeraldHunt.SPRITESIZE * 1.5);
+
 		// Draw horizontal line
 		this.#ctx.strokeStyle = colorEnum.WHITE;
 		this.#ctx.beginPath();
