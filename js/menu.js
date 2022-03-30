@@ -28,10 +28,11 @@ class MenuController {
 		let skilllevelMenuColor = new MenuColor(colorEnum.GREEN, colorEnum.YELLOW);
 		let skilllevelSelectedColor = new MenuColor(colorEnum.CYAN, colorEnum.BLACK);
 
-		let skilllevelMenuTitle = new MenuItem(this.#ctx, 350, 150, 60, 10, 'SKILL LEVEL', skilllevelMenuColor, skilllevelSelectedColor);
+		let y = 150;
+		let skilllevelMenuTitle = new MenuItem(this.#ctx, 350, y, 60, 10, 'SKILL LEVEL', skilllevelMenuColor, skilllevelSelectedColor);
 		let skilllevelMenu = new Menu(this.#ctx, 320, 125, 120, 130, skilllevelMenuColor, skilllevelMenuTitle);
 
-		let y = 175;
+		y+= 2 * MenuController.#menuTextHeight;
 		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'EASY', skilllevelMenuColor, skilllevelSelectedColor));
 		y+= MenuController.#menuTextHeight;
 		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'MEDIUM', skilllevelMenuColor, skilllevelSelectedColor));
@@ -45,10 +46,12 @@ class MenuController {
 		// Now define the top-level menu
 		let menuColor = new MenuColor(colorEnum.LIGHT_GRAY, colorEnum.BLACK);
 		let selectedColor = new MenuColor(colorEnum.BLACK, colorEnum.WHITE);
-		let menuTitle = new MenuItem(this.#ctx, 240, 115, 60, 10, 'MAIN MENU', menuColor, selectedColor);
-		this.#topMenu = new Menu(this.#ctx, 200, 100, 200, 100, menuColor, menuTitle);
 
-		y = 135;
+		y = 115;
+		let menuTitle = new MenuItem(this.#ctx, 240, y, 60, 10, 'MAIN MENU', menuColor, selectedColor);
+		this.#topMenu = new Menu(this.#ctx, 200, 100, 200, 100, menuColor, menuTitle);
+		
+		y+= 2 * MenuController.#menuTextHeight;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'NEW GAME', menuColor, selectedColor, skilllevelMenu));
 		y+= MenuController.#menuTextHeight;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'SAVED GAME', menuColor, selectedColor));
@@ -216,6 +219,12 @@ class MenuItem {
 		this.#ctx.fillStyle = color.foreground;
 		this.#ctx.font = MenuController.MenuTextFont;
 		this.#ctx.fillText(this.#text, this.#x+2, this.#y+2);
+
+		// DEBUG
+		if(this.#action instanceof Menu) {
+			this.#action.renderMenu();
+		}
+
 	}
 }
 
