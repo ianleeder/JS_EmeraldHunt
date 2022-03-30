@@ -111,9 +111,7 @@ class MenuController {
 		this.#topMenu = new Menu(this.#ctx, 200, 100, 200, 100, menuColor, menuTitle);
 
 		let y = 135;
-		var mi = new MenuItem(this.#ctx, 240, y, 75, 10, 'NEW GAME', menuColor, selectedColor);
-		mi.selected = true;
-		this.#topMenu.addMenuItem(mi);
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'NEW GAME', menuColor, selectedColor));
 		y+= MenuController.#menuTextHeight;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 60, 10, 'SAVED GAME', menuColor, selectedColor));
 		y+= MenuController.#menuTextHeight;
@@ -128,9 +126,7 @@ class MenuController {
 		this.#difficultyMenu = new Menu(this.#ctx, 320, 125, 120, 130, difficultyMenuColor, difficultyMenuTitle);
 
 		y = 175;
-		mi = new MenuItem(this.#ctx, 350, y, 60, 10, 'EASY', difficultyMenuColor, difficultySelectedColor);
-		mi.selected = true;
-		this.#difficultyMenu.addMenuItem(mi);
+		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'EASY', difficultyMenuColor, difficultySelectedColor));
 		y+= MenuController.#menuTextHeight;
 		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'MEDIUM', difficultyMenuColor, difficultySelectedColor));
 		y+= MenuController.#menuTextHeight;
@@ -234,9 +230,6 @@ class MenuItem {
 	// MenuItemColor object when selected
 	#selectedColor;
 
-	// Boolean flag whether this item is selected
-	#selected;
-
 	constructor(ctx, x, y, w, h, text, c, sc) {
 		this.#ctx = ctx;
 		this.#x = x;
@@ -246,17 +239,12 @@ class MenuItem {
 		this.#text = text;
 		this.#color = c;
 		this.#selectedColor = sc;
-		this.#selected = false;
 	}
 
-	set selected(value) {
-		this.#selected = value;
-	}
+	renderItem(selected) {
+		let color = selected ? this.#selectedColor : this.#color;
 
-	renderItem() {
-		let color = this.#selected ? this.#selectedColor : this.#color;
-
-		if (this.#selected) {
+		if (selected) {
 			// Paint the background 
 			this.#ctx.fillStyle = color.background;
 			this.#ctx.fillRect(this.#x, this.#y-this.#h+1, this.#w, this.#h+4);
