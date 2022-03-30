@@ -1,4 +1,5 @@
 import { colorEnum, difficultyEnum } from './enums.js';
+import { EmeraldHunt } from './hunt.js';
 
 class MenuController {
 	// Drawing context
@@ -10,23 +11,12 @@ class MenuController {
 	// Callback function to trigger a new game
 	#newGame;
 
-	static #menuTextFont = '10px courier new bold';
-	static #menuTextHeight = 13;
-
 	constructor(c, newGame) {
 		this.#ctx = c.getContext('2d');
 		this.#newGame = newGame;
 		this.init();
 	}
-
-	static get MenuTextFont() {
-		return MenuController.#menuTextFont;
-	}
-
-	static get MenuTextHeight() {
-		return MenuController.#menuTextHeight;
-	}
-
+	
 	init() {
 		// Define the skill level menu first
 		let skilllevelMenuColor = new MenuColor(colorEnum.GREEN, colorEnum.YELLOW);
@@ -38,17 +28,17 @@ class MenuController {
 		let h = 10;
 		let skilllevelMenu = new Menu(this.#ctx, 320, 132, 120, 135, skilllevelMenuColor);
 		skilllevelMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'SKILL LEVEL', skilllevelMenuColor, skilllevelSelectedColor));
-		y+= 2 * MenuController.#menuTextHeight;
+		y+= 2 * EmeraldHunt.FONTHEIGHT;
 		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'EASY', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.EASY));
-		y+= MenuController.#menuTextHeight;
+		y+= EmeraldHunt.FONTHEIGHT;
 		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'MEDIUM', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.MEDIUM));
-		y+= MenuController.#menuTextHeight;
+		y+= EmeraldHunt.FONTHEIGHT;
 		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'HARD', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARD));
-		y+= MenuController.#menuTextHeight;
+		y+= EmeraldHunt.FONTHEIGHT;
 		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'HARDER', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDER));
-		y+= MenuController.#menuTextHeight;
+		y+= EmeraldHunt.FONTHEIGHT;
 		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'HARDEST', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDEST));
-		y+= 2 * MenuController.#menuTextHeight;
+		y+= 2 * EmeraldHunt.FONTHEIGHT;
 		skilllevelMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'ESC = Cancel', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDEST));
 
 		// Now define the top-level menu
@@ -60,13 +50,13 @@ class MenuController {
 		w = 75;
 		this.#topMenu = new Menu(this.#ctx, 200, 100, 200, 100, menuColor);
 		this.#topMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'MAIN MENU', menuColor, selectedColor));
-		y+= 2 * MenuController.#menuTextHeight;
+		y+= 2 * EmeraldHunt.FONTHEIGHT;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'NEW GAME', menuColor, selectedColor, skilllevelMenu));
-		y+= MenuController.#menuTextHeight;
+		y+= EmeraldHunt.FONTHEIGHT;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'SAVED GAME', menuColor, selectedColor));
-		y+= MenuController.#menuTextHeight;
+		y+= EmeraldHunt.FONTHEIGHT;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'SOUND (ON)', menuColor, selectedColor));
-		y+= MenuController.#menuTextHeight;
+		y+= EmeraldHunt.FONTHEIGHT;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'EXIT', menuColor, selectedColor));
 	}
 
@@ -263,7 +253,7 @@ class MenuItem {
 
 		// Write the text
 		this.#ctx.fillStyle = color.foreground;
-		this.#ctx.font = MenuController.MenuTextFont;
+		this.#ctx.font = EmeraldHunt.FONT;
 		this.#ctx.fillText(this.#text, this.#x+2, this.#y+2);
 	}
 }

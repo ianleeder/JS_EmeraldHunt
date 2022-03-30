@@ -42,6 +42,10 @@ class EmeraldHunt {
 	// Path to default image object file
 	static #defaultImageUrl = 'resources/OBJECTS.DAT';
 
+	// Font details
+	static #font = '10px courier new bold';
+	static #fontHeight = 13;
+
 	constructor(c) {
 		this.#canvas = c;
 		this.#ctx = this.#canvas.getContext('2d');
@@ -71,6 +75,15 @@ class EmeraldHunt {
 	static get DEFAULTIMAGEURL() {
 		return EmeraldHunt.#defaultImageUrl;
 	}
+
+	static get FONT() {
+		return EmeraldHunt.#font;
+	}
+
+	static get FONTHEIGHT() {
+		return EmeraldHunt.#fontHeight;
+	}
+
 
 	async init() {
 		addEventListener('keydown', this.handleInput.bind(this));
@@ -134,7 +147,7 @@ class EmeraldHunt {
 
 	scaleGame(n) {
 		this.#canvas.width = EmeraldHunt.DEFAULTFIELDX * EmeraldHunt.SPRITESIZE * n;
-		this.#canvas.height = EmeraldHunt.DEFAULTFIELDY * (EmeraldHunt.SPRITESIZE+2) * n;
+		this.#canvas.height = (EmeraldHunt.DEFAULTFIELDY+1.5) * EmeraldHunt.SPRITESIZE * n;
 		this.#ctx.setTransform(1, 0, 0, 1, 0, 0);
 		this.#ctx.scale(n, n);
 	}
