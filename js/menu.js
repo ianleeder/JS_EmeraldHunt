@@ -32,37 +32,39 @@ class MenuController {
 		let skilllevelMenuColor = new MenuColor(colorEnum.GREEN, colorEnum.YELLOW);
 		let skilllevelSelectedColor = new MenuColor(colorEnum.CYAN, colorEnum.BLACK);
 
+		let x = 350;
 		let y = 150;
-		let skilllevelMenuTitle = new MenuItem(this.#ctx, 350, y, 60, 10, 'SKILL LEVEL', skilllevelMenuColor, skilllevelSelectedColor);
+		let skilllevelMenuTitle = new MenuItem(this.#ctx, x, y, 60, 10, 'SKILL LEVEL', skilllevelMenuColor, skilllevelSelectedColor);
 		let skilllevelMenu = new Menu(this.#ctx, 320, 125, 120, 130, skilllevelMenuColor, skilllevelMenuTitle);
 
 		y+= 2 * MenuController.#menuTextHeight;
-		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'EASY', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.EASY));
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 60, 10, 'EASY', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.EASY));
 		y+= MenuController.#menuTextHeight;
-		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'MEDIUM', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.MEDIUM));
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 60, 10, 'MEDIUM', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.MEDIUM));
 		y+= MenuController.#menuTextHeight;
-		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARD', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARD));
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 60, 10, 'HARD', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARD));
 		y+= MenuController.#menuTextHeight;
-		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARDER', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDER));
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 60, 10, 'HARDER', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDER));
 		y+= MenuController.#menuTextHeight;
-		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARDEST', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDEST));
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 60, 10, 'HARDEST', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDEST));
 
 		// Now define the top-level menu
 		let menuColor = new MenuColor(colorEnum.LIGHT_GRAY, colorEnum.BLACK);
 		let selectedColor = new MenuColor(colorEnum.BLACK, colorEnum.WHITE);
 
+		x = 260;
 		y = 115;
-		let menuTitle = new MenuItem(this.#ctx, 240, y, 60, 10, 'MAIN MENU', menuColor, selectedColor);
+		let menuTitle = new MenuItem(this.#ctx, x, y, 60, 10, 'MAIN MENU', menuColor, selectedColor);
 		this.#topMenu = new Menu(this.#ctx, 200, 100, 200, 100, menuColor, menuTitle);
 		
 		y+= 2 * MenuController.#menuTextHeight;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'NEW GAME', menuColor, selectedColor, skilllevelMenu));
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 75, 10, 'NEW GAME', menuColor, selectedColor, skilllevelMenu));
 		y+= MenuController.#menuTextHeight;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'SAVED GAME', menuColor, selectedColor));
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 75, 10, 'SAVED GAME', menuColor, selectedColor));
 		y+= MenuController.#menuTextHeight;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'SOUND (ON)', menuColor, selectedColor));
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 75, 10, 'SOUND (ON)', menuColor, selectedColor));
 		y+= MenuController.#menuTextHeight;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'EXIT', menuColor, selectedColor));
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 75, 10, 'EXIT', menuColor, selectedColor));
 	}
 
 	handleInput(e) {
@@ -250,7 +252,7 @@ class MenuItem {
 		if (selected) {
 			// Paint the background 
 			this.#ctx.fillStyle = color.background;
-			this.#ctx.fillRect(this.#x, this.#y-this.#h+1, this.#w, this.#h+4);
+			this.#ctx.fillRect(this.#x, this.#y-this.#h+4, this.#w, this.#h+1);
 		}
 
 		// Write the text
