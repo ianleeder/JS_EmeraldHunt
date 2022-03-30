@@ -798,7 +798,7 @@ class Field {
 		// Write grenades
 		let grenades = 0;
 		if(this.#dozer) {
-			grenades = this.#dozer.grenades;
+			grenades = this.#dozer.numGrenades;
 		}
 		this.#ctx.fillStyle = colorEnum.WHITE;
 		this.#ctx.fillText('grenades :', 160, y);
