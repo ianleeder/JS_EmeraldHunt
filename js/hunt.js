@@ -3,7 +3,7 @@
 import {stateEnum, difficultyEnum} from './enums.js';
 import {Field} from './field.js';
 import {loadImagesFromUrlAsync, loadImagesFromFileAsync} from './huntio.js';
-import {Menu} from './menu.js';
+import {MenuController} from './menu.js';
 
 class EmeraldHunt {
 	// DOM Canvas element.  Required for scaling.
@@ -42,14 +42,17 @@ class EmeraldHunt {
 	// Path to default image object file
 	static #defaultImageUrl = 'resources/OBJECTS.DAT';
 
+	// Font details
+	static #font = '10px courier new bold';
+	static #fontHeight = 13;
+
 	constructor(c) {
 		this.#canvas = c;
 		this.#ctx = this.#canvas.getContext('2d');
-		this.#gameState = stateEnum.LOADING;
 		this.scaleGame(1);
-		this.#menu = new Menu(c);
+		this.#menu = new MenuController(c, this.newGame.bind(this));
 
-		this.#gameState = stateEnum.RUNNING;
+		this.#gameState = stateEnum.MENU;
 	}
 
 	// Create a static property
@@ -73,6 +76,15 @@ class EmeraldHunt {
 		return EmeraldHunt.#defaultImageUrl;
 	}
 
+	static get FONT() {
+		return EmeraldHunt.#font;
+	}
+
+	static get FONTHEIGHT() {
+		return EmeraldHunt.#fontHeight;
+	}
+
+
 	async init() {
 		addEventListener('keydown', this.handleInput.bind(this));
 		addEventListener('keyup', (e) => {
@@ -88,7 +100,8 @@ class EmeraldHunt {
 			}
 		});
 
-		this.#gameState = stateEnum.MENU;
+		this.#gameField = new Field(this.#ctx, stateEnum.MENU, this.playerDying.bind(this), this.playerWon.bind(this));
+		this.#gameField.setVolume(0);
 
 		// Start the timer ticking
 		setInterval(() => {
@@ -118,7 +131,7 @@ class EmeraldHunt {
 		EmeraldHunt.#images = await Promise.all(allPromises);
 
 		// Need to reload references to images
-		this.newGame();
+		//this.newGame();
 
 		// This is just debug fluff
 		const imageDiv = document.getElementById('imagesDiv');
@@ -134,7 +147,7 @@ class EmeraldHunt {
 
 	scaleGame(n) {
 		this.#canvas.width = EmeraldHunt.DEFAULTFIELDX * EmeraldHunt.SPRITESIZE * n;
-		this.#canvas.height = EmeraldHunt.DEFAULTFIELDY * EmeraldHunt.SPRITESIZE * n;
+		this.#canvas.height = (EmeraldHunt.DEFAULTFIELDY+1.5) * EmeraldHunt.SPRITESIZE * n;
 		this.#ctx.setTransform(1, 0, 0, 1, 0, 0);
 		this.#ctx.scale(n, n);
 	}
@@ -185,9 +198,13 @@ class EmeraldHunt {
 		console.log('Player won callback');
 	}
 
-	newGame() {
+	newGame(difficulty) {
+
+		if (!difficulty) {
+			difficulty = difficultyEnum.HARD;
+		}
 		this.#gameState = stateEnum.RUNNING;
-		this.#gameField = new Field(this.#ctx, difficultyEnum.HARD, this.playerDying.bind(this), this.playerWon.bind(this));
+		this.#gameField = new Field(this.#ctx, difficulty, this.playerDying.bind(this), this.playerWon.bind(this));
 	}
 
 	updateLoop() {
@@ -210,6 +227,10 @@ class EmeraldHunt {
 	renderLoop() {
 		this.clearCanvas();
 		this.#gameField.renderField();
+
+		if (this.#gameState === stateEnum.MENU) {
+			this.#menu.renderMenu();
+		}
 	}
 }
 
