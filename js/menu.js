@@ -121,13 +121,23 @@ class Menu {
 	}
 
 	handleInput(e) {
+		// First check if the escape key was pressed.
+		// If so, escape out of the subment
+		// NOTE: This restricts us to two levels of menu, no more.
+		const key = e.key || e.keyCode;
+		if (key === 'Escape' || key === 'Esc' || key === 27) {
+			if (this.#activeSubMenu) {
+				this.#activeSubMenu = null;
+				return;
+			}
+		}
+
 		// If the active submenu is not null
 		if (this.#activeSubMenu) {
 			this.#activeSubMenu.handleInput(e);
 			return;
 		}
 
-		var key = e.key || e.keyCode;
 		switch (key) {
 			// Up key
 			case 'ArrowUp':
