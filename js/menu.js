@@ -172,6 +172,9 @@ class Menu {
 	// MenuItemColor object for normal color
 	#color;
 
+	// Store the index of the currently selected menu item
+	#selectedIndex = 0;
+
 	constructor(ctx, x, y, w, h, c, title) {
 		this.#ctx = ctx;
 		this.#x = x;
@@ -201,7 +204,7 @@ class Menu {
 
 		this.#title.renderItem();
 
-		this.#items.forEach(item => item.renderItem());
+		this.#items.forEach((item, index) => item.renderItem(index === this.#selectedIndex));
 	}
 }
 
