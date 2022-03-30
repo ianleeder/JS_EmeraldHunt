@@ -1,6 +1,6 @@
 'use strict';
 
-import { stateEnum, difficultyEnum } from './enums.js';
+import { stateEnum, difficultyEnum, colorEnum } from './enums.js';
 import { Dirt, Diamond, Gem, Rock, Exit, Dozer, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray } from './objects.js';
 import { EmeraldHunt } from './hunt.js';
 
@@ -769,6 +769,16 @@ class Field {
 			let y = EmeraldHunt.SPRITESIZE * Math.floor(i / this.#fieldX);
 			this.#ctx.drawImage(e.image, x, y);
 		});
+		this.renderScoreBar();
+	}
+
+	renderScoreBar() {
+		// Draw horizontal line
+		this.#ctx.strokeStyle = colorEnum.WHITE;
+		this.#ctx.beginPath();
+		this.#ctx.moveTo(0, EmeraldHunt.SPRITESIZE * this.#fieldY);
+		this.#ctx.lineTo(EmeraldHunt.SPRITESIZE * this.#fieldX, EmeraldHunt.SPRITESIZE * this.#fieldY);
+		this.#ctx.stroke();
 	}
 }
 

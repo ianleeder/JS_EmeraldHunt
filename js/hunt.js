@@ -134,7 +134,7 @@ class EmeraldHunt {
 
 	scaleGame(n) {
 		this.#canvas.width = EmeraldHunt.DEFAULTFIELDX * EmeraldHunt.SPRITESIZE * n;
-		this.#canvas.height = EmeraldHunt.DEFAULTFIELDY * EmeraldHunt.SPRITESIZE * n;
+		this.#canvas.height = EmeraldHunt.DEFAULTFIELDY * (EmeraldHunt.SPRITESIZE+2) * n;
 		this.#ctx.setTransform(1, 0, 0, 1, 0, 0);
 		this.#ctx.scale(n, n);
 	}
