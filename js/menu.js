@@ -7,8 +7,6 @@ class MenuController {
 	// Top level menu to render
 	#topMenu;
 
-	#difficultyMenu;
-
 	static #menuTextFont = '10px courier new bold';
 	static #menuTextHeight = 13;
 
@@ -26,36 +24,38 @@ class MenuController {
 	}
 
 	init() {
+		// Define the skill level menu first
+		let skilllevelMenuColor = new MenuColor(colorEnum.GREEN, colorEnum.YELLOW);
+		let skilllevelSelectedColor = new MenuColor(colorEnum.CYAN, colorEnum.BLACK);
+
+		let skilllevelMenuTitle = new MenuItem(this.#ctx, 350, 150, 60, 10, 'SKILL LEVEL', skilllevelMenuColor, skilllevelSelectedColor);
+		let skilllevelMenu = new Menu(this.#ctx, 320, 125, 120, 130, skilllevelMenuColor, skilllevelMenuTitle);
+
+		let y = 175;
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'EASY', skilllevelMenuColor, skilllevelSelectedColor));
+		y+= MenuController.#menuTextHeight;
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'MEDIUM', skilllevelMenuColor, skilllevelSelectedColor));
+		y+= MenuController.#menuTextHeight;
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARD', skilllevelMenuColor, skilllevelSelectedColor));
+		y+= MenuController.#menuTextHeight;
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARDER', skilllevelMenuColor, skilllevelSelectedColor));
+		y+= MenuController.#menuTextHeight;
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARDEST', skilllevelMenuColor, skilllevelSelectedColor));
+
+		// Now define the top-level menu
 		let menuColor = new MenuColor(colorEnum.LIGHT_GRAY, colorEnum.BLACK);
 		let selectedColor = new MenuColor(colorEnum.BLACK, colorEnum.WHITE);
 		let menuTitle = new MenuItem(this.#ctx, 240, 115, 60, 10, 'MAIN MENU', menuColor, selectedColor);
 		this.#topMenu = new Menu(this.#ctx, 200, 100, 200, 100, menuColor, menuTitle);
 
-		let y = 135;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'NEW GAME', menuColor, selectedColor));
+		y = 135;
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'NEW GAME', menuColor, selectedColor, skilllevelMenuColor));
 		y+= MenuController.#menuTextHeight;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'SAVED GAME', menuColor, selectedColor));
 		y+= MenuController.#menuTextHeight;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'SOUND (ON)', menuColor, selectedColor));
 		y+= MenuController.#menuTextHeight;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'EXIT', menuColor, selectedColor));
-
-		let difficultyMenuColor = new MenuColor(colorEnum.GREEN, colorEnum.YELLOW);
-		let difficultySelectedColor = new MenuColor(colorEnum.CYAN, colorEnum.BLACK);
-
-		let difficultyMenuTitle = new MenuItem(this.#ctx, 350, 150, 60, 10, 'SKILL LEVEL', difficultyMenuColor, difficultySelectedColor);
-		this.#difficultyMenu = new Menu(this.#ctx, 320, 125, 120, 130, difficultyMenuColor, difficultyMenuTitle);
-
-		y = 175;
-		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'EASY', difficultyMenuColor, difficultySelectedColor));
-		y+= MenuController.#menuTextHeight;
-		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'MEDIUM', difficultyMenuColor, difficultySelectedColor));
-		y+= MenuController.#menuTextHeight;
-		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARD', difficultyMenuColor, difficultySelectedColor));
-		y+= MenuController.#menuTextHeight;
-		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARDER', difficultyMenuColor, difficultySelectedColor));
-		y+= MenuController.#menuTextHeight;
-		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARDEST', difficultyMenuColor, difficultySelectedColor));
 	}
 
 	handleInput(e) {
@@ -64,7 +64,6 @@ class MenuController {
 
 	renderMenu() {
 		this.#topMenu.renderMenu();
-		this.#difficultyMenu.renderMenu();
 	}
 }
 
@@ -95,6 +94,9 @@ class Menu {
 
 	// Store the index of the currently selected menu item
 	#selectedIndex = 0;
+
+	// If a submenu has been activated, store it here to render and handle input
+	#activeSubMenu;
 
 	constructor(ctx, x, y, w, h, c, title) {
 		this.#ctx = ctx;
@@ -175,7 +177,10 @@ class MenuItem {
 	// MenuItemColor object when selected
 	#selectedColor;
 
-	constructor(ctx, x, y, w, h, text, c, sc) {
+	// This could contain a callback to a function to execute, or another (sub)Menu
+	#action;
+
+	constructor(ctx, x, y, w, h, text, c, sc, action) {
 		this.#ctx = ctx;
 		this.#x = x;
 		this.#y = y;
@@ -184,6 +189,7 @@ class MenuItem {
 		this.#text = text;
 		this.#color = c;
 		this.#selectedColor = sc;
+		this.#action = action;
 	}
 
 	renderItem(selected) {
