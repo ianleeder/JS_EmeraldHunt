@@ -1,4 +1,4 @@
-import { colorEnum } from './enums.js';
+import { colorEnum, difficultyEnum } from './enums.js';
 
 class MenuController {
 	// Drawing context
@@ -7,11 +7,15 @@ class MenuController {
 	// Top level menu to render
 	#topMenu;
 
+	// Callback function to trigger a new game
+	#newGame;
+
 	static #menuTextFont = '10px courier new bold';
 	static #menuTextHeight = 13;
 
-	constructor(c) {
+	constructor(c, newGame) {
 		this.#ctx = c.getContext('2d');
+		this.#newGame = newGame;
 		this.init();
 	}
 
@@ -33,15 +37,15 @@ class MenuController {
 		let skilllevelMenu = new Menu(this.#ctx, 320, 125, 120, 130, skilllevelMenuColor, skilllevelMenuTitle);
 
 		y+= 2 * MenuController.#menuTextHeight;
-		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'EASY', skilllevelMenuColor, skilllevelSelectedColor));
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'EASY', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.EASY));
 		y+= MenuController.#menuTextHeight;
-		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'MEDIUM', skilllevelMenuColor, skilllevelSelectedColor));
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'MEDIUM', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.MEDIUM));
 		y+= MenuController.#menuTextHeight;
-		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARD', skilllevelMenuColor, skilllevelSelectedColor));
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARD', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARD));
 		y+= MenuController.#menuTextHeight;
-		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARDER', skilllevelMenuColor, skilllevelSelectedColor));
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARDER', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDER));
 		y+= MenuController.#menuTextHeight;
-		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARDEST', skilllevelMenuColor, skilllevelSelectedColor));
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARDEST', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDEST));
 
 		// Now define the top-level menu
 		let menuColor = new MenuColor(colorEnum.LIGHT_GRAY, colorEnum.BLACK);
@@ -151,8 +155,9 @@ class Menu {
 
 				if (action instanceof Menu) {
 					this.#activeSubMenu = action;
+				} else if (typeof action === 'function') {
+					mi.callAction();
 				}
-				
 				break;
 		}
 	}
@@ -205,7 +210,10 @@ class MenuItem {
 	// This could contain a callback to a function to execute, or another (sub)Menu
 	#action;
 
-	constructor(ctx, x, y, w, h, text, c, sc, action) {
+	// If the action is a callback function, pass this parameters
+	#actionParameter;
+
+	constructor(ctx, x, y, w, h, text, c, sc, action, actionParameter) {
 		this.#ctx = ctx;
 		this.#x = x;
 		this.#y = y;
@@ -215,10 +223,15 @@ class MenuItem {
 		this.#color = c;
 		this.#selectedColor = sc;
 		this.#action = action;
+		this.#actionParameter = actionParameter;
 	}
 
 	get Action() {
 		return this.#action;
+	}
+
+	callAction() {
+		this.#action(this.#actionParameter);
 	}
 
 	renderItem(selected) {

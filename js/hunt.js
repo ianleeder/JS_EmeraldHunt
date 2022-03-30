@@ -46,7 +46,7 @@ class EmeraldHunt {
 		this.#canvas = c;
 		this.#ctx = this.#canvas.getContext('2d');
 		this.scaleGame(1);
-		this.#menu = new MenuController(c);
+		this.#menu = new MenuController(c, this.newGame.bind(this));
 
 		this.#gameState = stateEnum.MENU;
 	}
@@ -185,9 +185,13 @@ class EmeraldHunt {
 		console.log('Player won callback');
 	}
 
-	newGame() {
+	newGame(difficulty) {
+
+		if (!difficulty) {
+			difficulty = difficultyEnum.HARD;
+		}
 		this.#gameState = stateEnum.RUNNING;
-		this.#gameField = new Field(this.#ctx, difficultyEnum.HARD, this.playerDying.bind(this), this.playerWon.bind(this));
+		this.#gameField = new Field(this.#ctx, difficulty, this.playerDying.bind(this), this.playerWon.bind(this));
 	}
 
 	updateLoop() {
