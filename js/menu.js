@@ -34,21 +34,22 @@ class MenuController {
 
 		let x = 350;
 		let y = 150;
-		let skilllevelMenuTitle = new MenuItem(this.#ctx, x, y, 60, 10, 'SKILL LEVEL', skilllevelMenuColor, skilllevelSelectedColor);
-		let skilllevelMenu = new Menu(this.#ctx, 320, 132, 120, 135, skilllevelMenuColor, skilllevelMenuTitle);
-
+		let w = 50;
+		let h = 10;
+		let skilllevelMenu = new Menu(this.#ctx, 320, 132, 120, 135, skilllevelMenuColor);
+		skilllevelMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'SKILL LEVEL', skilllevelMenuColor, skilllevelSelectedColor));
 		y+= 2 * MenuController.#menuTextHeight;
-		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 60, 10, 'EASY', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.EASY));
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'EASY', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.EASY));
 		y+= MenuController.#menuTextHeight;
-		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 60, 10, 'MEDIUM', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.MEDIUM));
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'MEDIUM', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.MEDIUM));
 		y+= MenuController.#menuTextHeight;
-		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 60, 10, 'HARD', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARD));
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'HARD', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARD));
 		y+= MenuController.#menuTextHeight;
-		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 60, 10, 'HARDER', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDER));
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'HARDER', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDER));
 		y+= MenuController.#menuTextHeight;
-		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 60, 10, 'HARDEST', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDEST));
+		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'HARDEST', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDEST));
 		y+= 2 * MenuController.#menuTextHeight;
-		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 60, 10, 'ESC = Cancel', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDEST));
+		skilllevelMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'ESC = Cancel', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDEST));
 
 		// Now define the top-level menu
 		let menuColor = new MenuColor(colorEnum.LIGHT_GRAY, colorEnum.BLACK);
@@ -56,17 +57,17 @@ class MenuController {
 
 		x = 260;
 		y = 115;
-		let menuTitle = new MenuItem(this.#ctx, x, y, 60, 10, 'MAIN MENU', menuColor, selectedColor);
-		this.#topMenu = new Menu(this.#ctx, 200, 100, 200, 100, menuColor, menuTitle);
-		
+		w = 75;
+		this.#topMenu = new Menu(this.#ctx, 200, 100, 200, 100, menuColor);
+		this.#topMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'MAIN MENU', menuColor, selectedColor));
 		y+= 2 * MenuController.#menuTextHeight;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 75, 10, 'NEW GAME', menuColor, selectedColor, skilllevelMenu));
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'NEW GAME', menuColor, selectedColor, skilllevelMenu));
 		y+= MenuController.#menuTextHeight;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 75, 10, 'SAVED GAME', menuColor, selectedColor));
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'SAVED GAME', menuColor, selectedColor));
 		y+= MenuController.#menuTextHeight;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 75, 10, 'SOUND (ON)', menuColor, selectedColor));
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'SOUND (ON)', menuColor, selectedColor));
 		y+= MenuController.#menuTextHeight;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, 75, 10, 'EXIT', menuColor, selectedColor));
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'EXIT', menuColor, selectedColor));
 	}
 
 	handleInput(e) {
@@ -83,11 +84,11 @@ class Menu {
 	// Drawing context
 	#ctx;
 
-	// Special case MenuItem containing Title text (can't be selected)
-	#title;
+	// MenuItems that can be selected
+	#menuitems = [];
 
-	// MenuItem array
-	#items = [];
+	// MenuItems that are for display only (eg Title)
+	#textItems = [];
 
 	// X Position of menu
 	#x;
@@ -110,18 +111,21 @@ class Menu {
 	// If a submenu has been activated, store it here to render and handle input
 	#activeSubMenu;
 
-	constructor(ctx, x, y, w, h, c, title) {
+	constructor(ctx, x, y, w, h, c) {
 		this.#ctx = ctx;
 		this.#x = x;
 		this.#y = y;
 		this.#w = w;
 		this.#h = h;
 		this.#color = c;
-		this.#title = title;
 	}
 
 	addMenuItem(item) {
-		this.#items.push(item);
+		this.#menuitems.push(item);
+	}
+
+	addTextItem(item) {
+		this.#textItems.push(item);
 	}
 
 	handleInput(e) {
@@ -150,7 +154,7 @@ class Menu {
 				// Decrement selected index, and wrap by menuitem length
 				// Javascript modulo negative number is still negative
 				// https://stackoverflow.com/a/4467559/5329728
-				this.#selectedIndex = ((--this.#selectedIndex % this.#items.length) + this.#items.length) % this.#items.length;
+				this.#selectedIndex = ((--this.#selectedIndex % this.#menuitems.length) + this.#menuitems.length) % this.#menuitems.length;
 				break;
 
 			// Down key
@@ -158,13 +162,13 @@ class Menu {
 			case 40:
 				e.preventDefault();
 				// Increment selected index, and wrap by menuitem length
-				this.#selectedIndex = ++this.#selectedIndex % this.#items.length;
+				this.#selectedIndex = ++this.#selectedIndex % this.#menuitems.length;
 				break;
 			
 			// Enter key
 			case 'Enter':
 				e.preventDefault();
-				var mi = this.#items[this.#selectedIndex];
+				var mi = this.#menuitems[this.#selectedIndex];
 				var action = mi.Action;
 
 				if (action instanceof Menu) {
@@ -185,9 +189,9 @@ class Menu {
 		this.#ctx.strokeStyle = this.#color.foreground;
 		this.#ctx.strokeRect(this.#x+3, this.#y+3, this.#w-6, this.#h-6);
 
-		this.#title.renderItem();
-
-		this.#items.forEach((item, index) => item.renderItem(index === this.#selectedIndex));
+		// Draw menu and text items
+		this.#menuitems.forEach((item, index) => item.renderItem(index === this.#selectedIndex));
+		this.#textItems.forEach(item => item.renderItem());
 
 		// If the active submenu is not null
 		if (this.#activeSubMenu) {
