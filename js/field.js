@@ -27,13 +27,13 @@ class Field {
 	#fieldInitialising;
 
 	// Amount of score accumulated in this game
-	#gameScore;
+	#gameScore = 0;
 
 	// Amount of score available at the start of the game
-	#availableScore;
+	#availableScore = 0;
 
 	// Target score to unlock the exit
-	#targetScore;
+	#targetScore = 0;
 
 	// Callback to the Hunt object playerDying function
 	#playerDyingCallback;
@@ -779,6 +779,35 @@ class Field {
 		this.#ctx.moveTo(0, EmeraldHunt.SPRITESIZE * this.#fieldY);
 		this.#ctx.lineTo(EmeraldHunt.SPRITESIZE * this.#fieldX, EmeraldHunt.SPRITESIZE * this.#fieldY);
 		this.#ctx.stroke();
+
+		let y = EmeraldHunt.SPRITESIZE * (this.#fieldY+1);
+		this.#ctx.font = EmeraldHunt.FONT;
+
+		// Write score
+		this.#ctx.fillStyle = colorEnum.WHITE;
+		this.#ctx.fillText('score :', 1, y);
+		this.#ctx.fillStyle = colorEnum.RED;
+		this.#ctx.fillText(this.#gameScore, 40, y);
+
+		// Write goal
+		this.#ctx.fillStyle = colorEnum.WHITE;
+		this.#ctx.fillText('goal :', 80, y);
+		this.#ctx.fillStyle = colorEnum.RED;
+		this.#ctx.fillText(this.#targetScore, 120, y);
+
+		// Write grenades
+		let grenades = 0;
+		if(this.#dozer) {
+			grenades = this.#dozer.grenades;
+		}
+		this.#ctx.fillStyle = colorEnum.WHITE;
+		this.#ctx.fillText('grenades :', 160, y);
+		this.#ctx.fillStyle = colorEnum.RED;
+		this.#ctx.fillText(grenades, 210, y);
+
+		// Write help text
+		// this.#ctx.fillStyle = colorEnum.WHITE;
+		// this.#ctx.fillText('F1=HELP  ESC=QUIT  ENTER=SAVE', 300, y);
 	}
 }
 
