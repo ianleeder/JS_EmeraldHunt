@@ -63,6 +63,7 @@ class MenuController {
 
 	handleInput(e) {
 		this.#topMenu.handleInput(e);
+		this.renderMenu();
 	}
 
 	renderMenu() {
@@ -116,6 +117,12 @@ class Menu {
 	}
 
 	handleInput(e) {
+		// If the active submenu is not null
+		if (this.#activeSubMenu) {
+			this.#activeSubMenu.handleInput(e);
+			return;
+		}
+
 		var key = e.key || e.keyCode;
 		switch (key) {
 			// Up key
@@ -140,9 +147,12 @@ class Menu {
 			case 'Enter':
 				e.preventDefault();
 				var mi = this.#items[this.#selectedIndex];
-				console.log(mi);
 				var action = mi.Action;
-				console.log(action);
+
+				if (action instanceof Menu) {
+					this.#activeSubMenu = action;
+				}
+				
 				break;
 		}
 	}
@@ -159,6 +169,11 @@ class Menu {
 		this.#title.renderItem();
 
 		this.#items.forEach((item, index) => item.renderItem(index === this.#selectedIndex));
+
+		// If the active submenu is not null
+		if (this.#activeSubMenu) {
+			this.#activeSubMenu.renderMenu();
+		}
 	}
 }
 
@@ -219,12 +234,6 @@ class MenuItem {
 		this.#ctx.fillStyle = color.foreground;
 		this.#ctx.font = MenuController.MenuTextFont;
 		this.#ctx.fillText(this.#text, this.#x+2, this.#y+2);
-
-		// DEBUG
-		if(this.#action instanceof Menu) {
-			this.#action.renderMenu();
-		}
-
 	}
 }
 
