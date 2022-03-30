@@ -113,11 +113,11 @@ class MenuController {
 		let y = 135;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'NEW GAME', menuColor, selectedColor));
 		y+= MenuController.#menuTextHeight;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 60, 10, 'SAVED GAME', menuColor, selectedColor));
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'SAVED GAME', menuColor, selectedColor));
 		y+= MenuController.#menuTextHeight;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 60, 10, 'SOUND (ON)', menuColor, selectedColor));
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'SOUND (ON)', menuColor, selectedColor));
 		y+= MenuController.#menuTextHeight;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 60, 10, 'EXIT', menuColor, selectedColor));
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, 240, y, 75, 10, 'EXIT', menuColor, selectedColor));
 
 		let difficultyMenuColor = new MenuColor(colorEnum.GREEN, colorEnum.YELLOW);
 		let difficultySelectedColor = new MenuColor(colorEnum.CYAN, colorEnum.BLACK);
@@ -137,8 +137,8 @@ class MenuController {
 		this.#difficultyMenu.addMenuItem(new MenuItem(this.#ctx, 350, y, 60, 10, 'HARDEST', difficultyMenuColor, difficultySelectedColor));
 	}
 
-	handleInput() {
-
+	handleInput(e) {
+		this.#topMenu.handleInput(e);
 	}
 
 	renderMenu() {
@@ -189,8 +189,29 @@ class Menu {
 		this.#items.push(item);
 	}
 
-	handleInput() {
+	handleInput(e) {
+		var key = e.key || e.keyCode;
+		switch (key) {
+			// Up key
+			case 'ArrowUp':
+			case 38:
+				e.preventDefault();
+				// Decrement selected index, and wrap by menuitem length
+				// Javascript modulo negative number is still negative
+				// https://stackoverflow.com/a/4467559/5329728
+				this.#selectedIndex = ((--this.#selectedIndex % this.#items.length) + this.#items.length) % this.#items.length;
+				console.log(this.#selectedIndex);
+				break;
 
+			// Down key
+			case 'ArrowDown':
+			case 40:
+				e.preventDefault();
+				// Increment selected index, and wrap by menuitem length
+				this.#selectedIndex = ++this.#selectedIndex % this.#items.length;
+				console.log(this.#selectedIndex);
+				break;
+		}
 	}
 
 	renderMenu() {
