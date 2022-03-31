@@ -241,8 +241,9 @@ class EmeraldHunt {
 		this.clearCanvas();
 		this.#gameField.renderField();
 
-		if (this.#gameState === stateEnum.MENU) {
-			this.#menu.renderMenu();
+		if (this.#gameState === stateEnum.MENU ||
+			this.#gameState === stateEnum.PAUSED) {
+			this.#menu.renderMenu(this.#gameState);
 		}
 	}
 }

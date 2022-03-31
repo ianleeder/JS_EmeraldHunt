@@ -1,4 +1,4 @@
-import { colorEnum, difficultyEnum } from './enums.js';
+import { colorEnum, difficultyEnum, stateEnum } from './enums.js';
 import { EmeraldHunt } from './hunt.js';
 
 class MenuController {
@@ -65,8 +65,12 @@ class MenuController {
 		this.renderMenu();
 	}
 
-	renderMenu() {
-		this.#topMenu.renderMenu();
+	renderMenu(gameState) {
+		if (gameState === stateEnum.MENU) {
+			this.#topMenu.renderMenu();
+		} else if (gameState === stateEnum.PAUSED) {
+			console.log('render pause menu');
+		}
 	}
 }
 
