@@ -54,7 +54,7 @@ class Field {
 	#difficultyScoreFactor = {};
 
 	// Maximum gain to set audio to
-	#audioLevel = 1;
+	#audioLevel = EmeraldHunt.STARTVOLUME;
 
 	constructor(c, diff, dyingCallback, wonCallback) {
 		this.#ctx = c;
@@ -67,7 +67,7 @@ class Field {
 
 		this.#audioContext = new (window.AudioContext || window.webkitAudioContext);
 		this.#gainNode = this.#audioContext.createGain();
-		this.#gainNode.gain.value = this.#audioLevel;
+		this.#gainNode.gain.setValueAtTime(this.#audioLevel, this.#audioContext.currentTime);
 		this.#gainNode.connect(this.#audioContext.destination);
 
 		// Types are stored in the same array order as the sprites
@@ -115,7 +115,7 @@ class Field {
 
 	setVolume(n) {
 		this.#audioLevel = n;
-		this.#gainNode.gain.value = this.#audioLevel;
+		this.#gainNode.gain.setValueAtTime(this.#audioLevel, this.#audioContext.currentTime);
 	}
 
 	initField() {
@@ -290,18 +290,15 @@ class Field {
 			Second tone, 80ms, 7 cycles: 87Hz for 87ms
 			Total time: 160ms
 		*/
-		let gainNode = this.#audioContext.createGain();
-		gainNode.gain.value = this.#audioLevel;
-
 		let osc = new OscillatorNode(this.#audioContext);
 		osc.connect(this.#gainNode);
 		osc.type = 'square';
 
 		osc.frequency.setValueAtTime(304, this.#audioContext.currentTime);
-		gainNode.gain.setValueAtTime(0, this.#audioContext.currentTime + 0.025);
+		this.#gainNode.gain.setValueAtTime(0, this.#audioContext.currentTime + 0.025);
 
 		osc.frequency.setValueAtTime(87.5, this.#audioContext.currentTime + 0.03);
-		gainNode.gain.setValueAtTime(this.#audioLevel, this.#audioContext.currentTime + 0.073);
+		this.#gainNode.gain.setValueAtTime(this.#audioLevel, this.#audioContext.currentTime + 0.073);
 		
 		this.startTone(osc);
 		setTimeout(disconnectOscillator.bind(this), 160);

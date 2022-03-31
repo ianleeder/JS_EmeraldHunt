@@ -58,6 +58,8 @@ class EmeraldHunt {
 	static #font = '10px courier new bold';
 	static #fontHeight = 13;
 
+	static #startVolume = 0.1;
+
 	constructor(c) {
 		this.#canvas = c;
 		this.#ctx = this.#canvas.getContext('2d');
@@ -94,6 +96,9 @@ class EmeraldHunt {
 		return EmeraldHunt.#fontHeight;
 	}
 
+	static get STARTVOLUME() {
+		return EmeraldHunt.#startVolume;
+	}
 
 	async init() {
 		addEventListener('keydown', this.handleInput.bind(this));
