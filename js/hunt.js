@@ -13,6 +13,7 @@ import {MenuController} from './menu.js';
 	Dynamic reload sprites from menu
 	Find a better font!
 	Help screen
+	Fix github page HTTPS
 */
 
 class EmeraldHunt {
