@@ -11,6 +11,12 @@ class MenuController {
 	// Pause menu when game is paused
 	#pauseMenu;
 
+	// Player died screen
+	#diedMenu;
+
+	// Game won screen!
+	#wonMenu;
+
 	// Callback function to trigger a new game
 	#newGame;
 
@@ -85,6 +91,14 @@ class MenuController {
 		this.#pauseMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'QUIT TO MENU', pauseMenuColor, pauseSelectedColor, this.#exitToMenu));
 		y+= 2 * EmeraldHunt.FONTHEIGHT;
 		this.#pauseMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'ESC = Unpause', pauseMenuColor, pauseMenuColor));
+
+		// Define a won menu
+		let wonMenuColor = new MenuColor(colorEnum.CYAN, colorEnum.BLUE);
+
+		this.#wonMenu = new Menu(this.#ctx, 140, 100, 360, 120, wonMenuColor);
+		this.#wonMenu.addTextItem(new MenuItem(this.#ctx, 275, 140, w, h, 'CONGRATULATIONS', wonMenuColor, wonMenuColor));
+		y+= 2 * EmeraldHunt.FONTHEIGHT;
+		this.#wonMenu.addMenuItem(new MenuItem(this.#ctx, 295, 190, w, h, 'Press enter', wonMenuColor, wonMenuColor, this.#exitToMenu));
 	}
 
 	handleInput(e, gameState) {
@@ -92,6 +106,8 @@ class MenuController {
 			this.#topMenu.handleInput(e);
 		} else if (gameState === stateEnum.PAUSED) {
 			this.#pauseMenu.handleInput(e);
+		} else if (gameState === stateEnum.WON) {
+			this.#wonMenu.handleInput(e);
 		}
 		
 		this.renderMenu();
@@ -102,6 +118,8 @@ class MenuController {
 			this.#topMenu.renderMenu();
 		} else if (gameState === stateEnum.PAUSED) {
 			this.#pauseMenu.renderMenu();
+		}  else if (gameState === stateEnum.WON) {
+			this.#wonMenu.renderMenu();
 		}
 	}
 }
@@ -365,7 +383,6 @@ class VolumeSelectMenuItem extends MenuItem {
 
 	callAction() {
 		this.Text = `${this.#originalText} ${this.#values[this.#valueIndex] * 100}%`;
-		console.log(this.Action);
 		this.Action(this.#values[this.#valueIndex]);
 	}
 }

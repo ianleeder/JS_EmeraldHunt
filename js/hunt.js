@@ -208,6 +208,7 @@ class EmeraldHunt {
 			case stateEnum.MENU:
 			case stateEnum.DEAD:
 			case stateEnum.PAUSED:
+			case stateEnum.WON:
 				this.#menu.handleInput(e, this.#gameState);
 				break;
 		}
@@ -224,7 +225,6 @@ class EmeraldHunt {
 	}
 
 	newGame(difficulty) {
-
 		if (!difficulty) {
 			difficulty = difficultyEnum.HARD;
 		}
@@ -253,9 +253,13 @@ class EmeraldHunt {
 		this.clearCanvas();
 		this.#gameField.renderField();
 
-		if (this.#gameState === stateEnum.MENU ||
-			this.#gameState === stateEnum.PAUSED) {
-			this.#menu.renderMenu(this.#gameState);
+		switch (this.#gameState) {
+			case stateEnum.MENU:
+			case stateEnum.DEAD:
+			case stateEnum.PAUSED:
+			case stateEnum.WON:
+				this.#menu.renderMenu(this.#gameState);
+				break;
 		}
 	}
 }
