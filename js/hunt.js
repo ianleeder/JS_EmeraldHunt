@@ -14,6 +14,7 @@ import {MenuController} from './menu.js';
 	Find a better font!
 	Help screen
 	Fix github page HTTPS
+	Add a timer and highscores per difficulty (like minesweeper)
 */
 
 class EmeraldHunt {
