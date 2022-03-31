@@ -9,7 +9,6 @@ import {MenuController} from './menu.js';
 	TODO:
 
 	Save/load game
-	Volume setting
 	Implement bug logic on hardest
 	Win/Lose screens
 	Dynamic reload sprites from menu
