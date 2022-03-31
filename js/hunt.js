@@ -16,7 +16,6 @@ import {MenuController} from './menu.js';
 	Dynamic reload sprites from menu
 	Find a better font!
 	Help screen
-	Color-code score once goal reached
 */
 
 class EmeraldHunt {
