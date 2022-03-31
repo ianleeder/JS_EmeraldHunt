@@ -99,6 +99,14 @@ class MenuController {
 		this.#wonMenu.addTextItem(new MenuItem(this.#ctx, 275, 140, w, h, 'CONGRATULATIONS', wonMenuColor, wonMenuColor));
 		y+= 2 * EmeraldHunt.FONTHEIGHT;
 		this.#wonMenu.addMenuItem(new MenuItem(this.#ctx, 295, 190, w, h, 'Press enter', wonMenuColor, wonMenuColor, this.#exitToMenu));
+
+		// Define a died menu
+		let diedMenuColor = new MenuColor(colorEnum.RED, colorEnum.YELLOW);
+
+		this.#diedMenu = new Menu(this.#ctx, 240, 120, 160, 80, diedMenuColor);
+		this.#diedMenu.addTextItem(new MenuItem(this.#ctx, 290, 155, w, h, 'GAME OVER', diedMenuColor, diedMenuColor));
+		y+= 2 * EmeraldHunt.FONTHEIGHT;
+		this.#diedMenu.addMenuItem(new MenuItem(this.#ctx, 295, 180, w, h, 'Press enter', diedMenuColor, diedMenuColor, this.#exitToMenu));
 	}
 
 	handleInput(e, gameState) {
@@ -108,6 +116,8 @@ class MenuController {
 			this.#pauseMenu.handleInput(e);
 		} else if (gameState === stateEnum.WON) {
 			this.#wonMenu.handleInput(e);
+		} else if (gameState === stateEnum.DEAD) {
+			this.#diedMenu.handleInput(e);
 		}
 		
 		this.renderMenu();
@@ -118,8 +128,10 @@ class MenuController {
 			this.#topMenu.renderMenu();
 		} else if (gameState === stateEnum.PAUSED) {
 			this.#pauseMenu.renderMenu();
-		}  else if (gameState === stateEnum.WON) {
+		} else if (gameState === stateEnum.WON) {
 			this.#wonMenu.renderMenu();
+		} else if (gameState === stateEnum.DEAD) {
+			this.#diedMenu.renderMenu();
 		}
 	}
 }

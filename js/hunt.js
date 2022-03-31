@@ -10,7 +10,6 @@ import {MenuController} from './menu.js';
 
 	Save/load game
 	Implement bug logic on hardest
-	Win/Lose screens
 	Dynamic reload sprites from menu
 	Find a better font!
 	Help screen
@@ -215,7 +214,7 @@ class EmeraldHunt {
 	}
 
 	playerDying(deathMessage) {
-		this.#gameState = stateEnum.DYING;
+		this.#gameState = stateEnum.DEAD;
 		console.log(`player died - ${deathMessage}`);
 	}
 
