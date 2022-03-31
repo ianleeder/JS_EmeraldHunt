@@ -5,15 +5,22 @@ class MenuController {
 	// Drawing context
 	#ctx;
 
-	// Top level menu to render
+	// Top level (home) menu to render
 	#topMenu;
+
+	// Pause menu when game is paused
+	#pauseMenu;
 
 	// Callback function to trigger a new game
 	#newGame;
 
-	constructor(c, newGame) {
+	// Callback function to exit to menu
+	#exitToMenu;
+
+	constructor(c, newGame, exitToMenu) {
 		this.#ctx = c.getContext('2d');
 		this.#newGame = newGame;
+		this.#exitToMenu = exitToMenu;
 		this.init();
 	}
 	
@@ -39,7 +46,7 @@ class MenuController {
 		y+= EmeraldHunt.FONTHEIGHT;
 		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'HARDEST', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDEST));
 		y+= 2 * EmeraldHunt.FONTHEIGHT;
-		skilllevelMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'ESC = Cancel', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.HARDEST));
+		skilllevelMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'ESC = Cancel', skilllevelMenuColor, skilllevelSelectedColor));
 
 		// Now define the top-level menu
 		let menuColor = new MenuColor(colorEnum.LIGHT_GRAY, colorEnum.BLACK);
@@ -58,10 +65,31 @@ class MenuController {
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'SOUND (ON)', menuColor, selectedColor));
 		y+= EmeraldHunt.FONTHEIGHT;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'EXIT', menuColor, selectedColor));
+
+		// Define a pause menu
+		let pauseMenuColor = new MenuColor(colorEnum.BLUE, colorEnum.YELLOW);
+		let pauseSelectedColor = new MenuColor(colorEnum.YELLOW, colorEnum.BLUE);
+
+		x = 260;
+		y = 115;
+		w = 75;
+		this.#pauseMenu = new Menu(this.#ctx, 200, 100, 200, 100, pauseMenuColor);
+		this.#pauseMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'PAUSED', pauseMenuColor, pauseSelectedColor));
+		y+= 2 * EmeraldHunt.FONTHEIGHT;
+		this.#pauseMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'VOLUME', pauseMenuColor, pauseSelectedColor));
+		y+= EmeraldHunt.FONTHEIGHT;
+		this.#pauseMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'EXIT', pauseMenuColor, pauseSelectedColor, this.#exitToMenu));
+		y+= 2 * EmeraldHunt.FONTHEIGHT;
+		this.#pauseMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'ESC = Unpause', pauseMenuColor, pauseMenuColor));
 	}
 
-	handleInput(e) {
-		this.#topMenu.handleInput(e);
+	handleInput(e, gameState) {
+		if (gameState === stateEnum.MENU) {
+			this.#topMenu.handleInput(e);
+		} else if (gameState === stateEnum.PAUSED) {
+			this.#pauseMenu.handleInput(e);
+		}
+		
 		this.renderMenu();
 	}
 
@@ -69,7 +97,7 @@ class MenuController {
 		if (gameState === stateEnum.MENU) {
 			this.#topMenu.renderMenu();
 		} else if (gameState === stateEnum.PAUSED) {
-			console.log('render pause menu');
+			this.#pauseMenu.renderMenu();
 		}
 	}
 }
@@ -137,6 +165,11 @@ class Menu {
 		// If the active submenu is not null
 		if (this.#activeSubMenu) {
 			this.#activeSubMenu.handleInput(e);
+
+			// If a submenu item was selected, clear the submenu so we can get back to top leve
+			if (key === 'Enter') {
+				this.#activeSubMenu = null;
+			}
 			return;
 		}
 

@@ -63,9 +63,7 @@ class EmeraldHunt {
 		this.#canvas = c;
 		this.#ctx = this.#canvas.getContext('2d');
 		this.scaleGame(1);
-		this.#menu = new MenuController(c, this.newGame.bind(this));
-
-		this.#gameState = stateEnum.MENU;
+		this.#menu = new MenuController(c, this.newGame.bind(this), this.exitToMenu.bind(this));
 	}
 
 	// Create a static property
@@ -113,9 +111,6 @@ class EmeraldHunt {
 			}
 		});
 
-		this.#gameField = new Field(this.#ctx, stateEnum.MENU, this.playerDying.bind(this), this.playerWon.bind(this));
-		this.#gameField.setVolume(0);
-
 		// Start the timer ticking
 		setInterval(() => {
 			this.updateLoop();
@@ -124,6 +119,14 @@ class EmeraldHunt {
 
 		// Do this last, since it calls newGame
 		await this.useImageUrl(EmeraldHunt.#defaultImageUrl);
+
+		this.exitToMenu();
+	}
+
+	exitToMenu() {
+		this.#gameState = stateEnum.MENU;
+		this.#gameField = new Field(this.#ctx, stateEnum.MENU, this.playerDying.bind(this), this.playerWon.bind(this));
+		this.#gameField.setVolume(0);
 	}
 
 	async useImageFile(file) {
@@ -196,7 +199,7 @@ class EmeraldHunt {
 			case stateEnum.MENU:
 			case stateEnum.DEAD:
 			case stateEnum.PAUSED:
-				this.#menu.handleInput(e);
+				this.#menu.handleInput(e, this.#gameState);
 				break;
 		}
 	}
