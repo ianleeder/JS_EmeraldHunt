@@ -8,7 +8,6 @@ import {MenuController} from './menu.js';
 /*
 	TODO:
 
-	ESC - Pause menu, exit
 	Save/load game
 	Volume setting
 	Implement bug logic on hardest
