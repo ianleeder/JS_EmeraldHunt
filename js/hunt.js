@@ -5,6 +5,20 @@ import {Field} from './field.js';
 import {loadImagesFromUrlAsync, loadImagesFromFileAsync} from './huntio.js';
 import {MenuController} from './menu.js';
 
+/*
+	TODO:
+
+	ESC - Pause menu, exit
+	Save/load game
+	Volume setting
+	Implement bug logic on hardest
+	Win/Lose screens
+	Dynamic reload sprites from menu
+	Find a better font!
+	Help screen
+	Color-code score once goal reached
+*/
+
 class EmeraldHunt {
 	// DOM Canvas element.  Required for scaling.
 	#canvas;
