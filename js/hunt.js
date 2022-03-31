@@ -15,6 +15,7 @@ import {MenuController} from './menu.js';
 	Help screen
 	Fix github page HTTPS
 	Add a timer and highscores per difficulty (like minesweeper)
+	Add favicon (base64 data?)
 */
 
 class EmeraldHunt {
