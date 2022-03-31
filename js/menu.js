@@ -17,10 +17,14 @@ class MenuController {
 	// Callback function to exit to menu
 	#exitToMenu;
 
-	constructor(c, newGame, exitToMenu) {
+	// Volume callback
+	#setVolume;
+
+	constructor(c, newGame, exitToMenu, volume) {
 		this.#ctx = c.getContext('2d');
 		this.#newGame = newGame;
 		this.#exitToMenu = exitToMenu;
+		this.#setVolume = volume;
 		this.init();
 	}
 	
@@ -62,7 +66,9 @@ class MenuController {
 		y+= EmeraldHunt.FONTHEIGHT;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'SAVED GAME', menuColor, selectedColor));
 		y+= EmeraldHunt.FONTHEIGHT;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'SOUND (ON)', menuColor, selectedColor));
+		let volumeArray = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
+		let selectedVolume = volumeArray.indexOf(EmeraldHunt.STARTVOLUME);
+		this.#topMenu.addMenuItem(new VolumeSelectMenuItem(this.#ctx, x, y, w, h, 'VOLUME ', menuColor, selectedColor, this.#setVolume, volumeArray, selectedVolume));
 		y+= EmeraldHunt.FONTHEIGHT;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'EXIT', menuColor, selectedColor));
 
@@ -191,11 +197,22 @@ class Menu {
 				// Increment selected index, and wrap by menuitem length
 				this.#selectedIndex = ++this.#selectedIndex % this.#menuitems.length;
 				break;
+
+			case 'ArrowLeft':
+			case 37:
+			case 'ArrowRight':
+			case 39:
+				e.preventDefault();
+				var mi = this.#menuitems[this.#selectedIndex];
+				if (mi instanceof VolumeSelectMenuItem) {
+					mi.handleInput(e);
+				}
+				break;
 			
 			// Enter key
 			case 'Enter':
 				e.preventDefault();
-				var mi = this.#menuitems[this.#selectedIndex];
+				mi = this.#menuitems[this.#selectedIndex];
 				var action = mi.Action;
 
 				if (action instanceof Menu) {
@@ -275,6 +292,14 @@ class MenuItem {
 		return this.#action;
 	}
 
+	set Action(val) {
+		this.#action = val;
+	}
+
+	set Text(val) {
+		this.#text = val;
+	}
+
 	callAction() {
 		this.#action(this.#actionParameter);
 	}
@@ -292,6 +317,58 @@ class MenuItem {
 		this.#ctx.fillStyle = color.foreground;
 		this.#ctx.font = EmeraldHunt.FONT;
 		this.#ctx.fillText(this.#text, this.#x+2, this.#y+2);
+	}
+}
+
+class VolumeSelectMenuItem extends MenuItem {
+	// Array of values to select through
+	#values;
+
+	// Currently selected index
+	#valueIndex;
+
+	// Store the original text so we can update it
+	#originalText;
+
+	constructor(ctx, x, y, w, h, text, c, sc, action, values, index) {
+		super(ctx, x, y, w, h, text, c, sc, action);
+
+		this.Action = action;
+		this.#values = values;
+		this.#valueIndex = index;
+		this.#originalText = text;
+
+		this.callAction();
+	}
+
+	handleInput(e) {
+		var key = e.key || e.keyCode;
+		switch (key) {
+			// Left key
+			case 'ArrowLeft':
+			case 37:
+				e.preventDefault();
+				// Decrement selected index, and wrap by menuitem length
+				// Javascript modulo negative number is still negative
+				// https://stackoverflow.com/a/4467559/5329728
+				this.#valueIndex = ((--this.#valueIndex % this.#values.length) + this.#values.length) % this.#values.length;
+				break;
+
+			// Right key
+			case 'ArrowRight':
+			case 39:
+				e.preventDefault();
+				// Increment selected index, and wrap by menuitem length
+				this.#valueIndex = ++this.#valueIndex % this.#values.length;
+				break;
+		}
+		this.callAction();
+	}
+
+	callAction() {
+		this.Text = `${this.#originalText} ${this.#values[this.#valueIndex] * 100}%`;
+		console.log(this.Action);
+		this.Action(this.#values[this.#valueIndex]);
 	}
 }
 
