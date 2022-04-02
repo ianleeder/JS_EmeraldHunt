@@ -18,6 +18,27 @@ import {MenuController} from './menu.js';
 	Add favicon (base64 data?)
 */
 
+/*
+	Font test text:
+		MAIN MENU
+		NEW GAME
+		SAVED GAME
+		SOUND (ON)
+		EXIT
+		Cancel
+		0123
+	
+	Closest matching fonts
+		https://int10h.org/oldschool-pc-fonts/fontlist/font?ibm_3270pc#-
+		https://int10h.org/oldschool-pc-fonts/fontlist/font?ibm_model3x_alt2#-
+		https://int10h.org/oldschool-pc-fonts/fontlist/font?ibm_dos_iso8#-
+		https://int10h.org/oldschool-pc-fonts/fontlist/font?ibm_dos_iso9#-
+		https://int10h.org/oldschool-pc-fonts/fontlist/font?dos-v_re_jpn12#-
+		https://int10h.org/oldschool-pc-fonts/fontlist/font?dos-v_twn16#-
+		https://int10h.org/oldschool-pc-fonts/fontlist/font?dos-v_twn19#-
+		https://int10h.org/oldschool-pc-fonts/fontlist/font?master_512#-
+*/
+
 class EmeraldHunt {
 	// DOM Canvas element.  Required for scaling.
 	#canvas;
@@ -56,8 +77,8 @@ class EmeraldHunt {
 	static #defaultImageUrl = 'resources/OBJECTS.DAT';
 
 	// Font details
-	static #font = '10px dos';
-	static #fontHeight = 13;
+	static #font = '16px dos';
+	static #fontHeight = 16;
 
 	static #startVolume = 0.1;
 
@@ -125,7 +146,7 @@ class EmeraldHunt {
 		// Do this last, since it calls newGame
 		await this.useImageUrl(EmeraldHunt.#defaultImageUrl);
 
-		let f = new FontFace('dos', 'url(resources/dos.ttf)');
+		let f = new FontFace('dos', 'url(resources/Px437_DOS-V_TWN16.ttf)');
 		await f.load();
 		document.fonts.add(f);
 
