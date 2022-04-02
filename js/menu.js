@@ -35,6 +35,7 @@ class MenuController {
 	}
 	
 	init() {
+		// Rough canvas dimensions are 40x20 sprites @16px = 640 * 320
 		// Define the skill level menu first
 		let skilllevelMenuColor = new MenuColor(colorEnum.GREEN, colorEnum.YELLOW);
 		let skilllevelSelectedColor = new MenuColor(colorEnum.CYAN, colorEnum.BLACK);
@@ -42,7 +43,7 @@ class MenuController {
 		let x = 350;
 		let y = 150;
 		let w = 50;
-		let h = 10;
+		let h = 15;
 		let skilllevelMenu = new Menu(this.#ctx, 320, 132, 120, 135, skilllevelMenuColor);
 		skilllevelMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'SKILL LEVEL', skilllevelMenuColor, skilllevelSelectedColor));
 		y+= 2 * EmeraldHunt.FONTHEIGHT;
@@ -63,9 +64,9 @@ class MenuController {
 		let selectedColor = new MenuColor(colorEnum.BLACK, colorEnum.WHITE);
 
 		x = 260;
-		y = 115;
-		w = 75;
-		this.#topMenu = new Menu(this.#ctx, 200, 100, 200, 100, menuColor);
+		y = 110;
+		w = 110;
+		this.#topMenu = new Menu(this.#ctx, 200, 80, 240, 160, menuColor);
 		this.#topMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'MAIN MENU', menuColor, selectedColor));
 		y+= 2 * EmeraldHunt.FONTHEIGHT;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'NEW GAME', menuColor, selectedColor, skilllevelMenu));

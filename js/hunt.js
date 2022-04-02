@@ -78,7 +78,7 @@ class EmeraldHunt {
 
 	// Font details
 	static #font = '16px dos';
-	static #fontHeight = 16;
+	static #fontHeight = 20;
 
 	static #startVolume = 0.1;
 
