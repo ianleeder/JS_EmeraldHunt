@@ -88,6 +88,8 @@ class MenuController {
 		this.#pauseMenu = new Menu(this.#ctx, 200, 100, 200, 100, pauseMenuColor);
 		this.#pauseMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'PAUSED', pauseMenuColor, pauseSelectedColor));
 		y+= 2 * EmeraldHunt.FONTHEIGHT;
+		this.#pauseMenu.addMenuItem(new VolumeSelectMenuItem(this.#ctx, x, y, w, h, 'VOLUME ', pauseMenuColor, pauseSelectedColor, this.#setVolume, volumeArray, selectedVolume));
+		y+= EmeraldHunt.FONTHEIGHT;
 		this.#pauseMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'QUIT TO MENU', pauseMenuColor, pauseSelectedColor, this.#exitToMenu));
 		y+= 2 * EmeraldHunt.FONTHEIGHT;
 		this.#pauseMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'ESC = Unpause', pauseMenuColor, pauseMenuColor));
