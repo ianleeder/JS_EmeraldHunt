@@ -789,13 +789,13 @@ class Field {
 		this.#ctx.fillText('score :', 1, y);
 		// Ensure targetscore has value, then compare to gamescore
 		this.#ctx.fillStyle = this.#targetScore && this.#gameScore >= this.#targetScore ? colorEnum.GREEN : colorEnum.RED;
-		this.#ctx.fillText(this.#gameScore, 40, y);
+		this.#ctx.fillText(this.#gameScore, 62, y);
 
 		// Write goal
 		this.#ctx.fillStyle = colorEnum.WHITE;
-		this.#ctx.fillText('goal :', 80, y);
+		this.#ctx.fillText('goal :', 100, y);
 		this.#ctx.fillStyle = colorEnum.RED;
-		this.#ctx.fillText(this.#targetScore, 120, y);
+		this.#ctx.fillText(this.#targetScore, 152, y);
 
 		// Write grenades
 		let grenades = 0;
@@ -803,9 +803,9 @@ class Field {
 			grenades = this.#dozer.numGrenades;
 		}
 		this.#ctx.fillStyle = colorEnum.WHITE;
-		this.#ctx.fillText('grenades :', 160, y);
+		this.#ctx.fillText('grenades :', 190, y);
 		this.#ctx.fillStyle = colorEnum.RED;
-		this.#ctx.fillText(grenades, 210, y);
+		this.#ctx.fillText(grenades, 275, y);
 
 		// Write help text
 		// this.#ctx.fillStyle = colorEnum.WHITE;
