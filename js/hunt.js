@@ -11,32 +11,10 @@ import {MenuController} from './menu.js';
 	Save/load game
 	Implement bug logic on hardest
 	Dynamic reload sprites from menu
-	Find a better font!
 	Help screen
 	Fix github page HTTPS
 	Add a timer and highscores per difficulty (like minesweeper)
 	Add favicon (base64 data?)
-*/
-
-/*
-	Font test text:
-		MAIN MENU
-		NEW GAME
-		SAVED GAME
-		SOUND (ON)
-		EXIT
-		Cancel
-		0123
-	
-	Closest matching fonts
-		https://int10h.org/oldschool-pc-fonts/fontlist/font?ibm_3270pc#-
-		https://int10h.org/oldschool-pc-fonts/fontlist/font?ibm_model3x_alt2#-
-		https://int10h.org/oldschool-pc-fonts/fontlist/font?ibm_dos_iso8#-
-		https://int10h.org/oldschool-pc-fonts/fontlist/font?ibm_dos_iso9#-
-		https://int10h.org/oldschool-pc-fonts/fontlist/font?dos-v_re_jpn12#-
-		https://int10h.org/oldschool-pc-fonts/fontlist/font?dos-v_twn16#-
-		https://int10h.org/oldschool-pc-fonts/fontlist/font?dos-v_twn19#-
-		https://int10h.org/oldschool-pc-fonts/fontlist/font?master_512#-
 */
 
 class EmeraldHunt {
@@ -77,6 +55,7 @@ class EmeraldHunt {
 	static #defaultImageUrl = 'resources/OBJECTS.DAT';
 
 	// Font details
+	// https://int10h.org/oldschool-pc-fonts/fontlist/font?dos-v_twn16#-
 	static #fontUrl = 'resources/Px437_DOS-V_TWN16.ttf';
 	static #font = '16px dos';
 	static #fontHeight = 20;
