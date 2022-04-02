@@ -85,8 +85,8 @@ class MenuController {
 
 		x = 260;
 		y = 115;
-		w = 75;
-		this.#pauseMenu = new Menu(this.#ctx, 200, 100, 200, 100, pauseMenuColor);
+		w = 120;
+		this.#pauseMenu = new Menu(this.#ctx, 220, 90, 200, 140, pauseMenuColor);
 		this.#pauseMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'PAUSED', pauseMenuColor, pauseSelectedColor));
 		y+= 2 * EmeraldHunt.FONTHEIGHT;
 		this.#pauseMenu.addMenuItem(new VolumeSelectMenuItem(this.#ctx, x, y, w, h, 'VOLUME', pauseMenuColor, pauseSelectedColor, this.#setVolume, volumeArray, selectedVolume));
