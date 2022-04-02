@@ -808,8 +808,8 @@ class Field {
 		this.#ctx.fillText(grenades, 275, y);
 
 		// Write help text
-		// this.#ctx.fillStyle = colorEnum.WHITE;
-		// this.#ctx.fillText('F1=HELP  ESC=QUIT  ENTER=SAVE', 300, y);
+		this.#ctx.fillStyle = colorEnum.WHITE;
+		//this.#ctx.fillText('F1=HELP  ESC=QUIT  ENTER=SAVE', 340, y);
 	}
 }
 
