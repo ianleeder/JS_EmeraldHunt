@@ -77,6 +77,7 @@ class EmeraldHunt {
 	static #defaultImageUrl = 'resources/OBJECTS.DAT';
 
 	// Font details
+	static #fontUrl = 'resources/Px437_DOS-V_TWN16.ttf';
 	static #font = '16px dos';
 	static #fontHeight = 20;
 
@@ -146,7 +147,7 @@ class EmeraldHunt {
 		// Do this last, since it calls newGame
 		await this.useImageUrl(EmeraldHunt.#defaultImageUrl);
 
-		let f = new FontFace('dos', 'url(resources/Px437_DOS-V_TWN16.ttf)');
+		let f = new FontFace('dos', `url(${EmeraldHunt.#fontUrl})`);
 		await f.load();
 		document.fonts.add(f);
 
