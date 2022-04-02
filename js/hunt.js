@@ -17,6 +17,7 @@ import {MenuController} from './menu.js';
 	Add a timer and highscores per difficulty (like minesweeper)
 	Add favicon (base64 data?)
 	Put volume in pause menu?
+	Make menu more responsive
 */
 
 class EmeraldHunt {
