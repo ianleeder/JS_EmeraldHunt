@@ -17,7 +17,6 @@ import {MenuController} from './menu.js';
 	Add a timer and highscores per difficulty (like minesweeper)
 	Add favicon (base64 data?)
 	Put volume in pause menu?
-	Make menu more responsive
 */
 
 class EmeraldHunt {
@@ -214,6 +213,7 @@ class EmeraldHunt {
 			case stateEnum.PAUSED:
 			case stateEnum.WON:
 				this.#menu.handleInput(e, this.#gameState);
+				this.#menu.renderMenu(this.#gameState);
 				break;
 		}
 	}
