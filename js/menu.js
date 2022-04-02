@@ -40,11 +40,11 @@ class MenuController {
 		let skilllevelMenuColor = new MenuColor(colorEnum.GREEN, colorEnum.YELLOW);
 		let skilllevelSelectedColor = new MenuColor(colorEnum.CYAN, colorEnum.BLACK);
 
-		let x = 350;
+		let x = 360;
 		let y = 150;
 		let w = 50;
 		let h = 15;
-		let skilllevelMenu = new Menu(this.#ctx, 320, 132, 120, 135, skilllevelMenuColor);
+		let skilllevelMenu = new Menu(this.#ctx, 335, 130, 140, 190, skilllevelMenuColor);
 		skilllevelMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'SKILL LEVEL', skilllevelMenuColor, skilllevelSelectedColor));
 		y+= 2 * EmeraldHunt.FONTHEIGHT;
 		skilllevelMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'EASY', skilllevelMenuColor, skilllevelSelectedColor, this.#newGame, difficultyEnum.EASY));
