@@ -75,7 +75,7 @@ class MenuController {
 		y+= EmeraldHunt.FONTHEIGHT;
 		let volumeArray = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
 		let selectedVolume = volumeArray.indexOf(EmeraldHunt.STARTVOLUME);
-		this.#topMenu.addMenuItem(new VolumeSelectMenuItem(this.#ctx, x, y, w, h, 'VOLUME ', menuColor, selectedColor, this.#setVolume, volumeArray, selectedVolume));
+		this.#topMenu.addMenuItem(new VolumeSelectMenuItem(this.#ctx, x, y, w, h, 'VOLUME', menuColor, selectedColor, this.#setVolume, volumeArray, selectedVolume));
 		y+= EmeraldHunt.FONTHEIGHT;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'EXIT', menuColor, selectedColor));
 
@@ -89,7 +89,7 @@ class MenuController {
 		this.#pauseMenu = new Menu(this.#ctx, 200, 100, 200, 100, pauseMenuColor);
 		this.#pauseMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'PAUSED', pauseMenuColor, pauseSelectedColor));
 		y+= 2 * EmeraldHunt.FONTHEIGHT;
-		this.#pauseMenu.addMenuItem(new VolumeSelectMenuItem(this.#ctx, x, y, w, h, 'VOLUME ', pauseMenuColor, pauseSelectedColor, this.#setVolume, volumeArray, selectedVolume));
+		this.#pauseMenu.addMenuItem(new VolumeSelectMenuItem(this.#ctx, x, y, w, h, 'VOLUME', pauseMenuColor, pauseSelectedColor, this.#setVolume, volumeArray, selectedVolume));
 		y+= EmeraldHunt.FONTHEIGHT;
 		this.#pauseMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'QUIT TO MENU', pauseMenuColor, pauseSelectedColor, this.#exitToMenu));
 		y+= 2 * EmeraldHunt.FONTHEIGHT;
@@ -397,7 +397,8 @@ class VolumeSelectMenuItem extends MenuItem {
 	}
 
 	callAction() {
-		this.Text = `${this.#originalText} ${this.#values[this.#valueIndex] * 100}%`;
+		let numText = (this.#values[this.#valueIndex] * 100).toString();
+		this.Text = `${this.#originalText} ${numText.padStart(3)}%`;
 		this.Action(this.#values[this.#valueIndex]);
 	}
 }
