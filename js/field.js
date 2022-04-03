@@ -753,8 +753,8 @@ class Field {
 		let s = EmeraldHunt.SPRITESIZE;
 		let x = p.x * s;
 		let y = p.y * s;
-		this.#ctx.fillStyle = '#000000';
-		this.#ctx.fillRect(x, y, s, s);
+		this.#ctx.fillStyle = colorEnum.BLACK;
+		this.#ctx.fillRect(x, y, s+1, s+1);
 	}
 
 	renderField() {
