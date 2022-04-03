@@ -1,7 +1,7 @@
 'use strict';
 
 import { stateEnum, difficultyEnum, colorEnum } from './enums.js';
-import { Dirt, Diamond, Gem, Rock, Exit, Dozer, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray } from './objects.js';
+import { Dirt, Diamond, Gem, Rock, Exit, Dozer, Explosion, Grenade, DroppedGrenade, Bug, spriteEnum, classArray } from './objects.js';
 import { EmeraldHunt } from './hunt.js';
 
 class Field {
@@ -365,6 +365,11 @@ class Field {
 			if (obj === spriteEnum.BLANK)
 				continue;
 
+			if (obj instanceof Bug) {
+				// Check if Dozer is next to bug
+
+			}
+
 			// Check if cell is an explosion
 			if (obj instanceof Explosion) {
 				changes = true;
@@ -488,6 +493,37 @@ class Field {
 		if (this.#fieldInitialising && !changes)
 			this.finaliseField();
 	}
+
+	checkBugDozerProximity(n) {
+		// If the passed in cell contains a Bug, we are looking for Dozer
+		let lookingFor = null;
+
+		if (this.#grid[n] instanceof Bug) {
+			lookingFor = Dozer;
+		} else if (this.#grid[n] instanceof Dozer) {
+			lookingFor = Bug;
+		} else {
+			return;
+		}
+
+		let rStart = this.checkEdgeTop(n) ? 0 : -1;
+		let rEnd = this.checkEdgeBottom(n) ? 0 : 1;
+		let cStart = this.checkEdgeLeft(n) ? 0 : -1;
+		let cEnd = this.checkEdgeRight(n) ? 0 : 1;
+
+		// Create a 3x3 explosion grid
+		for (let r = rStart; r <= rEnd; r++) {
+			for (let c = cStart; c <= cEnd; c++) {
+				let checkCell = n + (r * this.#fieldX) + c;
+				if (this.#grid[checkCell] instanceof lookingFor) {
+					// Center the explosion on the bug
+					let explosionCell = (this.#grid[checkCell] instanceof Bug) ? checkCell : n;
+					this.createExplosion(explosionCell);
+				}
+			}
+		}
+	}
+
 
 	checkEdgeLeft(n) {
 		return (n % this.#fieldX) === 0;
@@ -740,6 +776,8 @@ class Field {
 		if (!(newPosObj instanceof DroppedGrenade)) {
 			this.#grid[this.#dozer.pos] = this.#dozer;
 		}
+
+		this.checkBugDozerProximity(this.#dozer.pos);
 
 		// Explicitly clear the old dozer position 
 		// Otherwise we need to wait for the next game tick to clear the canvas
