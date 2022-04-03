@@ -523,7 +523,30 @@ class Field {
 				this.#grid[c] = 0;
 				this.checkBugDozerProximity(newCell);
 			}
-
+			// Move DOWN case
+			// (on right edge or right cell is not empty or bottom-right cell is not empty)
+			// AND
+			// (cell below is not edge and is empty)
+			else if ((this.checkEdgeRight(c) || this.#grid[c+1] || (!this.checkEdgeBottom(c) && this.#grid[c+this.#fieldX+1]))
+				&&
+				(!this.checkEdgeBottom(c) && !this.#grid[c+this.#fieldX])) {
+				let newCell = c+this.#fieldX;
+				this.#grid[newCell] = this.#grid[c];
+				this.#grid[c] = 0;
+				this.checkBugDozerProximity(newCell);
+			}
+			// Move LEFT case
+			// (on bottom edge or bottom cell is not empty or bottom-left cell is not empty)
+			// AND
+			// (cell left is not edge and is empty)
+			else if ((this.checkEdgeBottom(c) || this.#grid[c+this.#fieldX] || (!this.checkEdgeLeft(c) && this.#grid[c+this.#fieldX-1]))
+				&&
+				(!this.checkEdgeLeft(c) && !this.#grid[c-1])) {
+				let newCell = c-1;
+				this.#grid[newCell] = this.#grid[c];
+				this.#grid[c] = 0;
+				this.checkBugDozerProximity(newCell);
+			}
 		});
 	}
 
