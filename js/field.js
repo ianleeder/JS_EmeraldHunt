@@ -498,18 +498,32 @@ class Field {
 		var bugArray = this.findAllCellsOfType(spriteEnum.BUG);
 
 		bugArray.forEach((c) => {
-			// If 
-			// 		(on left edge or left cell is not empty)
-			// 		OR
-			//		()
-			// AND (cell above is not edge and is empty)
-			if ((this.checkEdgeLeft(c) || this.#grid[c-1]) && (!this.checkEdgeTop(c) && !this.#grid[c-this.#fieldX])) {
+
+			// Move UP case
+			// (on left edge or left cell is not empty or top-left cell is not empty)
+			// AND
+			// (cell above is not edge and is empty)
+			if ((this.checkEdgeLeft(c) || this.#grid[c-1] || (!this.checkEdgeTop(c) && this.#grid[c-this.#fieldX-1]))
+				&&
+				(!this.checkEdgeTop(c) && !this.#grid[c-this.#fieldX])) {
 				let newCell = c-this.#fieldX;
 				this.#grid[newCell] = this.#grid[c];
 				this.#grid[c] = 0;
 				this.checkBugDozerProximity(newCell);
-
 			}
+			// Move RIGHT case
+			// (on top edge or top cell is not empty or top-right cell is not empty)
+			// AND
+			// (cell right is not edge and is empty)
+			if ((this.checkEdgeTop(c) || this.#grid[c-this.#fieldX] || (!this.checkEdgeRight(c) && this.#grid[c-this.#fieldX+1]))
+				&&
+				(!this.checkEdgeRight(c) && !this.#grid[c+1])) {
+				let newCell = c+1;
+				this.#grid[newCell] = this.#grid[c];
+				this.#grid[c] = 0;
+				this.checkBugDozerProximity(newCell);
+			}
+
 		});
 	}
 
