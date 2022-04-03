@@ -62,6 +62,7 @@ class MenuController {
 		// Now define the top-level menu
 		let menuColor = new MenuColor(colorEnum.LIGHT_GRAY, colorEnum.BLACK);
 		let selectedColor = new MenuColor(colorEnum.BLACK, colorEnum.WHITE);
+		let disabledColor = new MenuColor(colorEnum.LIGHT_GRAY, colorEnum.DARK_GRAY);
 
 		x = 260;
 		y = 110;
@@ -71,13 +72,13 @@ class MenuController {
 		y+= 2 * EmeraldHunt.FONTHEIGHT;
 		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'NEW GAME', menuColor, selectedColor, skilllevelMenu));
 		y+= EmeraldHunt.FONTHEIGHT;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'SAVED GAME', menuColor, selectedColor));
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'SAVED GAME', disabledColor, selectedColor));
 		y+= EmeraldHunt.FONTHEIGHT;
 		let volumeArray = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
 		let selectedVolume = volumeArray.indexOf(EmeraldHunt.STARTVOLUME);
 		this.#topMenu.addMenuItem(new VolumeSelectMenuItem(this.#ctx, x, y, w, h, 'VOLUME', menuColor, selectedColor, this.#setVolume, volumeArray, selectedVolume));
 		y+= EmeraldHunt.FONTHEIGHT;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'EXIT', menuColor, selectedColor));
+		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'EXIT', disabledColor, selectedColor));
 
 		// Define a pause menu
 		let pauseMenuColor = new MenuColor(colorEnum.BLUE, colorEnum.YELLOW);
