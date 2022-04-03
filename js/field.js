@@ -359,16 +359,16 @@ class Field {
 		// so we know when the board has settled and we can place
 		// the dozer and exit.
 		let changes = false;
+
+		// Move the bugs separately, since they can move in any direction.
+		// Too tricky to avoid moving them twice in a single update (frame)
+		this.moveBugs();
+
 		for (let c = this.#grid.length - 1; c >= 0; c--) {
 			let obj = this.#grid[c];
 
 			if (obj === spriteEnum.BLANK)
 				continue;
-
-			if (obj instanceof Bug) {
-				// Check if Dozer is next to bug
-
-			}
 
 			// Check if cell is an explosion
 			if (obj instanceof Explosion) {
@@ -492,6 +492,25 @@ class Field {
 
 		if (this.#fieldInitialising && !changes)
 			this.finaliseField();
+	}
+
+	moveBugs() {
+		var bugArray = this.findAllCellsOfType(spriteEnum.BUG);
+
+		bugArray.forEach((c) => {
+			// If 
+			// 		(on left edge or left cell is not empty)
+			// 		OR
+			//		()
+			// AND (cell above is not edge and is empty)
+			if ((this.checkEdgeLeft(c) || this.#grid[c-1]) && (!this.checkEdgeTop(c) && !this.#grid[c-this.#fieldX])) {
+				let newCell = c-this.#fieldX;
+				this.#grid[newCell] = this.#grid[c];
+				this.#grid[c] = 0;
+				this.checkBugDozerProximity(newCell);
+
+			}
+		});
 	}
 
 	checkBugDozerProximity(n) {
