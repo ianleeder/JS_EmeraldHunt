@@ -42,7 +42,7 @@ class MenuController {
 
 		let x = 360;
 		let y = 150;
-		let w = 50;
+		let w = 60;
 		let h = 15;
 		let skilllevelMenu = new Menu(this.#ctx, 335, 130, 140, 190, skilllevelMenuColor);
 		skilllevelMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'SKILL LEVEL', skilllevelMenuColor, skilllevelSelectedColor));
