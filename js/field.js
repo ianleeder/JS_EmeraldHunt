@@ -515,7 +515,7 @@ class Field {
 			// (on top edge or top cell is not empty or top-right cell is not empty)
 			// AND
 			// (cell right is not edge and is empty)
-			if ((this.checkEdgeTop(c) || this.#grid[c-this.#fieldX] || (!this.checkEdgeRight(c) && this.#grid[c-this.#fieldX+1]))
+			else if ((this.checkEdgeTop(c) || this.#grid[c-this.#fieldX] || (!this.checkEdgeRight(c) && this.#grid[c-this.#fieldX+1]))
 				&&
 				(!this.checkEdgeRight(c) && !this.#grid[c+1])) {
 				let newCell = c+1;
