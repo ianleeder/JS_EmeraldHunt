@@ -360,10 +360,6 @@ class Field {
 		// the dozer and exit.
 		let changes = false;
 
-		// Move the bugs separately, since they can move in any direction.
-		// Too tricky to avoid moving them twice in a single update (frame)
-		this.moveBugs();
-
 		for (let c = this.#grid.length - 1; c >= 0; c--) {
 			let obj = this.#grid[c];
 
@@ -489,6 +485,11 @@ class Field {
 				obj.isFalling = false;
 			}
 		}
+
+		// Move the bugs separately, since they can move in any direction.
+		// Too tricky to avoid moving them twice in a single update (frame)
+		// Move only after all other updates.  Otherwise they dodge items being dropped on them.
+		this.moveBugs();
 
 		if (this.#fieldInitialising && !changes)
 			this.finaliseField();
