@@ -56,6 +56,9 @@ class Field {
 	// Maximum gain to set audio to
 	#audioLevel = EmeraldHunt.STARTVOLUME;
 
+	// Flag to track whether audio is currently playing, to ensure only one sound plays at a time
+	#audioPlaying = false;
+
 	constructor(c, diff, dyingCallback, wonCallback) {
 		this.#ctx = c;
 		this.#fieldX = EmeraldHunt.DEFAULTFIELDX;
@@ -143,6 +146,8 @@ class Field {
 	}
 
 	playGemFall() {
+		if (this.#audioPlaying) return;
+		this.#audioPlaying = true;
 		/*
 			First tone, 24ms, 26 cycles, 1,083Hz for 24ms
 			Second tone, 28ms, 25 cycles: 892Hz for 28ms
@@ -166,10 +171,13 @@ class Field {
 
 		function disconnectOscillator() {
 			osc.disconnect(this.#gainNode);
+			this.#audioPlaying = false;
 		}
 	}
 
 	playExplosion() {
+		if (this.#audioPlaying) return;
+		this.#audioPlaying = true;
 		/*
 			First tone, 22ms, 13 cycles: 590Hz for 23ms
 			Second tone, 53ms, 17 cycles: 320Hz for 54ms
@@ -197,10 +205,13 @@ class Field {
 
 		function disconnectOscillator() {
 			osc.disconnect(this.#gainNode);
+			this.#audioPlaying = false;
 		}
 	}
 
 	playDiamondCrushed() {
+		if (this.#audioPlaying) return;
+		this.#audioPlaying = true;
 		/*
 			First tone, 2ms, 1 cycle, 500Hz for 2ms
 			Second tone, 26ms, 63 cycles: 2,400Hz for 26ms
@@ -226,10 +237,13 @@ class Field {
 
 		function disconnectOscillator() {
 			osc.disconnect(this.#gainNode);
+			this.#audioPlaying = false;
 		}
 	}
 
 	playPlayerDie() {
+		if (this.#audioPlaying) return;
+		this.#audioPlaying = true;
 		/*
 			First tone, 25ms, 10 cycles: 400Hz for 25ms
 			Second tone, 27ms, 24 cycles: 889Hz for 27ms
@@ -257,6 +271,8 @@ class Field {
 	}
 
 	playDestroyDirt() {
+		if (this.#audioPlaying) return;
+		this.#audioPlaying = true;
 		/*
 			First tone, 30ms, 3 cycles: 100Hz for 30ms
 			Second tone, 26ms, 13 cycles: 500Hz for 26ms
@@ -280,10 +296,13 @@ class Field {
 
 		function disconnectOscillator() {
 			osc.disconnect(this.#gainNode);
+			this.#audioPlaying = false;
 		}
 	}
 
 	playRockFall() {
+		if (this.#audioPlaying) return;
+		this.#audioPlaying = true;
 		/*
 			First tone, 23ms, 7 cycles, 304Hz for 25ms
 			Off for 48ms
@@ -305,6 +324,7 @@ class Field {
 
 		function disconnectOscillator() {
 			osc.disconnect(this.#gainNode);
+			this.#audioPlaying = false;
 		}
 	}
 
