@@ -137,9 +137,14 @@ class Cobblestone extends BaseObject {
 }
 
 class Bug extends BaseObject {
+	#direction = 0;
+
 	constructor() {
-		super({isExplosive: true, image: EmeraldHunt.IMAGES[spriteEnum.BUG]});
+		super({isExplosive: true, canBeCrushed: true, isUneven: true, image: EmeraldHunt.IMAGES[spriteEnum.BUG]});
 	}
+
+	get Direction() { return this.#direction; }
+	set Direction(d) { this.#direction = d; }
 }
 
 class Explosion extends BaseObject {

@@ -1,7 +1,7 @@
 'use strict';
 
 import { stateEnum, difficultyEnum, colorEnum } from './enums.js';
-import { Dirt, Diamond, Gem, Rock, Exit, Dozer, Explosion, Grenade, DroppedGrenade, spriteEnum, classArray } from './objects.js';
+import { Dirt, Diamond, Gem, Rock, Exit, Dozer, Explosion, Grenade, DroppedGrenade, Bug, spriteEnum, classArray } from './objects.js';
 import { EmeraldHunt } from './hunt.js';
 
 class Field {
@@ -55,6 +55,9 @@ class Field {
 
 	// Maximum gain to set audio to
 	#audioLevel = EmeraldHunt.STARTVOLUME;
+
+	// Flag to track whether audio is currently playing, to ensure only one sound plays at a time
+	#audioPlaying = false;
 
 	constructor(c, diff, dyingCallback, wonCallback) {
 		this.#ctx = c;
@@ -143,6 +146,8 @@ class Field {
 	}
 
 	playGemFall() {
+		if (this.#audioPlaying) return;
+		this.#audioPlaying = true;
 		/*
 			First tone, 24ms, 26 cycles, 1,083Hz for 24ms
 			Second tone, 28ms, 25 cycles: 892Hz for 28ms
@@ -166,10 +171,13 @@ class Field {
 
 		function disconnectOscillator() {
 			osc.disconnect(this.#gainNode);
+			this.#audioPlaying = false;
 		}
 	}
 
 	playExplosion() {
+		if (this.#audioPlaying) return;
+		this.#audioPlaying = true;
 		/*
 			First tone, 22ms, 13 cycles: 590Hz for 23ms
 			Second tone, 53ms, 17 cycles: 320Hz for 54ms
@@ -197,10 +205,13 @@ class Field {
 
 		function disconnectOscillator() {
 			osc.disconnect(this.#gainNode);
+			this.#audioPlaying = false;
 		}
 	}
 
 	playDiamondCrushed() {
+		if (this.#audioPlaying) return;
+		this.#audioPlaying = true;
 		/*
 			First tone, 2ms, 1 cycle, 500Hz for 2ms
 			Second tone, 26ms, 63 cycles: 2,400Hz for 26ms
@@ -226,10 +237,13 @@ class Field {
 
 		function disconnectOscillator() {
 			osc.disconnect(this.#gainNode);
+			this.#audioPlaying = false;
 		}
 	}
 
 	playPlayerDie() {
+		if (this.#audioPlaying) return;
+		this.#audioPlaying = true;
 		/*
 			First tone, 25ms, 10 cycles: 400Hz for 25ms
 			Second tone, 27ms, 24 cycles: 889Hz for 27ms
@@ -257,6 +271,8 @@ class Field {
 	}
 
 	playDestroyDirt() {
+		if (this.#audioPlaying) return;
+		this.#audioPlaying = true;
 		/*
 			First tone, 30ms, 3 cycles: 100Hz for 30ms
 			Second tone, 26ms, 13 cycles: 500Hz for 26ms
@@ -280,10 +296,13 @@ class Field {
 
 		function disconnectOscillator() {
 			osc.disconnect(this.#gainNode);
+			this.#audioPlaying = false;
 		}
 	}
 
 	playRockFall() {
+		if (this.#audioPlaying) return;
+		this.#audioPlaying = true;
 		/*
 			First tone, 23ms, 7 cycles, 304Hz for 25ms
 			Off for 48ms
@@ -305,6 +324,7 @@ class Field {
 
 		function disconnectOscillator() {
 			osc.disconnect(this.#gainNode);
+			this.#audioPlaying = false;
 		}
 	}
 
@@ -359,6 +379,7 @@ class Field {
 		// so we know when the board has settled and we can place
 		// the dozer and exit.
 		let changes = false;
+
 		for (let c = this.#grid.length - 1; c >= 0; c--) {
 			let obj = this.#grid[c];
 
@@ -485,9 +506,130 @@ class Field {
 			}
 		}
 
+		// Move the bugs separately, since they can move in any direction.
+		// Too tricky to avoid moving them twice in a single update (frame)
+		// Move only after all other updates.  Otherwise they dodge items being dropped on them.
+		this.moveBugs();
+
 		if (this.#fieldInitialising && !changes)
 			this.finaliseField();
 	}
+
+	moveBugs() {
+		var bugArray = this.findAllCellsOfType(spriteEnum.BUG);
+		var movementFunctions = new Array(this.moveBugUp.bind(this), this.moveBugRight.bind(this), this.moveBugDown.bind(this), this.moveBugLeft.bind(this));
+
+		bugArray.forEach((c) => {
+			let bug = this.#grid[c];
+			// Always try to go "left" (relative to current direction) first,
+			for (const i of new Array(3, 0, 1, 2)) {
+				let tryDirection = (bug.Direction + i) % 4;
+				if (movementFunctions[tryDirection](c)) {
+					bug.Direction = tryDirection;
+					break;
+				}
+			}
+		});
+	}
+
+	moveBugUp(c) {
+		// Move UP case
+		// (on left edge or left cell is not empty or top-left cell is not empty)
+		// AND
+		// (cell above is not edge and is empty)
+		if ((this.checkEdgeLeft(c) || this.#grid[c-1] || (!this.checkEdgeTop(c) && this.#grid[c-this.#fieldX-1]))
+			&&
+			(!this.checkEdgeTop(c) && !this.#grid[c-this.#fieldX])) {
+			let newCell = c-this.#fieldX;
+			this.#grid[newCell] = this.#grid[c];
+			this.#grid[c] = 0;
+			this.checkBugDozerProximity(newCell);
+			return true;
+		}
+		return false;
+	}
+
+	moveBugRight(c) {
+		// Move RIGHT case
+		// (on top edge or top cell is not empty or top-right cell is not empty)
+		// AND
+		// (cell right is not edge and is empty)
+		if ((this.checkEdgeTop(c) || this.#grid[c-this.#fieldX] || (!this.checkEdgeRight(c) && this.#grid[c-this.#fieldX+1]))
+			&&
+			(!this.checkEdgeRight(c) && !this.#grid[c+1])) {
+			let newCell = c+1;
+			this.#grid[newCell] = this.#grid[c];
+			this.#grid[c] = 0;
+			this.checkBugDozerProximity(newCell);
+			return true;
+		}
+		return false;
+	}
+
+	moveBugDown(c) {
+		// Move DOWN case
+		// (on right edge or right cell is not empty or bottom-right cell is not empty)
+		// AND
+		// (cell below is not edge and is empty)
+		if ((this.checkEdgeRight(c) || this.#grid[c+1] || (!this.checkEdgeBottom(c) && this.#grid[c+this.#fieldX+1]))
+			&&
+			(!this.checkEdgeBottom(c) && !this.#grid[c+this.#fieldX])) {
+			let newCell = c+this.#fieldX;
+			this.#grid[newCell] = this.#grid[c];
+			this.#grid[c] = 0;
+			this.checkBugDozerProximity(newCell);
+			return true;
+		}
+		return false;
+	}
+
+	moveBugLeft(c) {
+		// Move LEFT case
+		// (on bottom edge or bottom cell is not empty or bottom-left cell is not empty)
+		// AND
+		// (cell left is not edge and is empty)
+		if ((this.checkEdgeBottom(c) || this.#grid[c+this.#fieldX] || (!this.checkEdgeLeft(c) && this.#grid[c+this.#fieldX-1]))
+			&&
+			(!this.checkEdgeLeft(c) && !this.#grid[c-1])) {
+			let newCell = c-1;
+			this.#grid[newCell] = this.#grid[c];
+			this.#grid[c] = 0;
+			this.checkBugDozerProximity(newCell);
+			return true;
+		}
+		return false;
+	}
+
+	checkBugDozerProximity(n) {
+		// If the passed in cell contains a Bug, we are looking for Dozer
+		let lookingFor = null;
+
+		if (this.#grid[n] instanceof Bug) {
+			lookingFor = Dozer;
+		} else if (this.#grid[n] instanceof Dozer) {
+			lookingFor = Bug;
+		} else {
+			return;
+		}
+
+		let rStart = this.checkEdgeTop(n) ? 0 : -1;
+		let rEnd = this.checkEdgeBottom(n) ? 0 : 1;
+		let cStart = this.checkEdgeLeft(n) ? 0 : -1;
+		let cEnd = this.checkEdgeRight(n) ? 0 : 1;
+
+		// Create a 3x3 explosion grid
+		for (let r = rStart; r <= rEnd; r++) {
+			for (let c = cStart; c <= cEnd; c++) {
+				let checkCell = n + (r * this.#fieldX) + c;
+				if (this.#grid[checkCell] instanceof lookingFor) {
+					// Center the explosion on the bug
+					let explosionCell = (this.#grid[checkCell] instanceof Bug) ? checkCell : n;
+					this.createExplosion(explosionCell);
+				}
+			}
+		}
+	}
+
 
 	checkEdgeLeft(n) {
 		return (n % this.#fieldX) === 0;
@@ -740,6 +882,8 @@ class Field {
 		if (!(newPosObj instanceof DroppedGrenade)) {
 			this.#grid[this.#dozer.pos] = this.#dozer;
 		}
+
+		this.checkBugDozerProximity(this.#dozer.pos);
 
 		// Explicitly clear the old dozer position 
 		// Otherwise we need to wait for the next game tick to clear the canvas
