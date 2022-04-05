@@ -496,58 +496,87 @@ class Field {
 
 	moveBugs() {
 		var bugArray = this.findAllCellsOfType(spriteEnum.BUG);
+		var movementFunctions = new Array(this.moveBugUp.bind(this), this.moveBugRight.bind(this), this.moveBugDown.bind(this), this.moveBugLeft.bind(this));
 
 		bugArray.forEach((c) => {
-
-			// Move UP case
-			// (on left edge or left cell is not empty or top-left cell is not empty)
-			// AND
-			// (cell above is not edge and is empty)
-			if ((this.checkEdgeLeft(c) || this.#grid[c-1] || (!this.checkEdgeTop(c) && this.#grid[c-this.#fieldX-1]))
-				&&
-				(!this.checkEdgeTop(c) && !this.#grid[c-this.#fieldX])) {
-				let newCell = c-this.#fieldX;
-				this.#grid[newCell] = this.#grid[c];
-				this.#grid[c] = 0;
-				this.checkBugDozerProximity(newCell);
-			}
-			// Move RIGHT case
-			// (on top edge or top cell is not empty or top-right cell is not empty)
-			// AND
-			// (cell right is not edge and is empty)
-			else if ((this.checkEdgeTop(c) || this.#grid[c-this.#fieldX] || (!this.checkEdgeRight(c) && this.#grid[c-this.#fieldX+1]))
-				&&
-				(!this.checkEdgeRight(c) && !this.#grid[c+1])) {
-				let newCell = c+1;
-				this.#grid[newCell] = this.#grid[c];
-				this.#grid[c] = 0;
-				this.checkBugDozerProximity(newCell);
-			}
-			// Move DOWN case
-			// (on right edge or right cell is not empty or bottom-right cell is not empty)
-			// AND
-			// (cell below is not edge and is empty)
-			else if ((this.checkEdgeRight(c) || this.#grid[c+1] || (!this.checkEdgeBottom(c) && this.#grid[c+this.#fieldX+1]))
-				&&
-				(!this.checkEdgeBottom(c) && !this.#grid[c+this.#fieldX])) {
-				let newCell = c+this.#fieldX;
-				this.#grid[newCell] = this.#grid[c];
-				this.#grid[c] = 0;
-				this.checkBugDozerProximity(newCell);
-			}
-			// Move LEFT case
-			// (on bottom edge or bottom cell is not empty or bottom-left cell is not empty)
-			// AND
-			// (cell left is not edge and is empty)
-			else if ((this.checkEdgeBottom(c) || this.#grid[c+this.#fieldX] || (!this.checkEdgeLeft(c) && this.#grid[c+this.#fieldX-1]))
-				&&
-				(!this.checkEdgeLeft(c) && !this.#grid[c-1])) {
-				let newCell = c-1;
-				this.#grid[newCell] = this.#grid[c];
-				this.#grid[c] = 0;
-				this.checkBugDozerProximity(newCell);
+			let bug = this.#grid[c];
+			// Always try to go "left" (relative to current direction) first,
+			for (const i of new Array(3, 0, 1, 2)) {
+				let tryDirection = (bug.Direction + i) % 4;
+				if (movementFunctions[tryDirection](c)) {
+					bug.Direction = tryDirection;
+					break;
+				}
 			}
 		});
+	}
+
+	moveBugUp(c) {
+		// Move UP case
+		// (on left edge or left cell is not empty or top-left cell is not empty)
+		// AND
+		// (cell above is not edge and is empty)
+		if ((this.checkEdgeLeft(c) || this.#grid[c-1] || (!this.checkEdgeTop(c) && this.#grid[c-this.#fieldX-1]))
+			&&
+			(!this.checkEdgeTop(c) && !this.#grid[c-this.#fieldX])) {
+			let newCell = c-this.#fieldX;
+			this.#grid[newCell] = this.#grid[c];
+			this.#grid[c] = 0;
+			this.checkBugDozerProximity(newCell);
+			return true;
+		}
+		return false;
+	}
+
+	moveBugRight(c) {
+		// Move RIGHT case
+		// (on top edge or top cell is not empty or top-right cell is not empty)
+		// AND
+		// (cell right is not edge and is empty)
+		if ((this.checkEdgeTop(c) || this.#grid[c-this.#fieldX] || (!this.checkEdgeRight(c) && this.#grid[c-this.#fieldX+1]))
+			&&
+			(!this.checkEdgeRight(c) && !this.#grid[c+1])) {
+			let newCell = c+1;
+			this.#grid[newCell] = this.#grid[c];
+			this.#grid[c] = 0;
+			this.checkBugDozerProximity(newCell);
+			return true;
+		}
+		return false;
+	}
+
+	moveBugDown(c) {
+		// Move DOWN case
+		// (on right edge or right cell is not empty or bottom-right cell is not empty)
+		// AND
+		// (cell below is not edge and is empty)
+		if ((this.checkEdgeRight(c) || this.#grid[c+1] || (!this.checkEdgeBottom(c) && this.#grid[c+this.#fieldX+1]))
+			&&
+			(!this.checkEdgeBottom(c) && !this.#grid[c+this.#fieldX])) {
+			let newCell = c+this.#fieldX;
+			this.#grid[newCell] = this.#grid[c];
+			this.#grid[c] = 0;
+			this.checkBugDozerProximity(newCell);
+			return true;
+		}
+		return false;
+	}
+
+	moveBugLeft(c) {
+		// Move LEFT case
+		// (on bottom edge or bottom cell is not empty or bottom-left cell is not empty)
+		// AND
+		// (cell left is not edge and is empty)
+		if ((this.checkEdgeBottom(c) || this.#grid[c+this.#fieldX] || (!this.checkEdgeLeft(c) && this.#grid[c+this.#fieldX-1]))
+			&&
+			(!this.checkEdgeLeft(c) && !this.#grid[c-1])) {
+			let newCell = c-1;
+			this.#grid[newCell] = this.#grid[c];
+			this.#grid[c] = 0;
+			this.checkBugDozerProximity(newCell);
+			return true;
+		}
+		return false;
 	}
 
 	checkBugDozerProximity(n) {
