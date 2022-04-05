@@ -9,13 +9,11 @@ import {MenuController} from './menu.js';
 	TODO:
 
 	Save/load game
-	Implement bug logic on hardest
 	Dynamic reload sprites from menu
 	Help screen
 	Fix github page HTTPS
 	Add a timer and highscores per difficulty (like minesweeper)
 	Add favicon (base64 data?)
-	Fix duplicate audio resulting in double-volume
 */
 
 class EmeraldHunt {
