@@ -26,11 +26,15 @@ class MenuController {
 	// Volume callback
 	#setVolume;
 
-	constructor(c, newGame, exitToMenu, volume) {
+	// Canvas scale callback
+	#scaleGame;
+
+	constructor(c, newGame, exitToMenu, volume, scale) {
 		this.#ctx = c.getContext('2d');
 		this.#newGame = newGame;
 		this.#exitToMenu = exitToMenu;
 		this.#setVolume = volume;
+		this.#scaleGame = scale;
 		this.init();
 	}
 	
@@ -76,9 +80,11 @@ class MenuController {
 		y+= EmeraldHunt.FONTHEIGHT;
 		let volumeArray = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
 		let selectedVolume = volumeArray.indexOf(EmeraldHunt.STARTVOLUME);
-		this.#topMenu.addMenuItem(new VolumeSelectMenuItem(this.#ctx, x, y, w, h, 'VOLUME', menuColor, selectedColor, this.#setVolume, volumeArray, selectedVolume));
+		this.#topMenu.addMenuItem(new HorizontalSelectMenuItem(this.#ctx, x, y, w, h, 'VOLUME', menuColor, selectedColor, this.#setVolume, volumeArray, selectedVolume));
 		y+= EmeraldHunt.FONTHEIGHT;
-		this.#topMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'EXIT', disabledColor, selectedColor));
+		let scaleArray = [1, 1.2, 1.4, 1.6, 1.8, 2];
+		let selectedScale = 2; // Index 2 = 140%
+		this.#topMenu.addMenuItem(new HorizontalSelectMenuItem(this.#ctx, x, y, w, h, 'SCALE ', menuColor, selectedColor, this.#scaleGame, scaleArray, selectedScale));
 
 		// Define a pause menu
 		let pauseMenuColor = new MenuColor(colorEnum.BLUE, colorEnum.YELLOW);
@@ -90,7 +96,7 @@ class MenuController {
 		this.#pauseMenu = new Menu(this.#ctx, 220, 90, 200, 140, pauseMenuColor);
 		this.#pauseMenu.addTextItem(new MenuItem(this.#ctx, x, y, w, h, 'PAUSED', pauseMenuColor, pauseSelectedColor));
 		y+= 2 * EmeraldHunt.FONTHEIGHT;
-		this.#pauseMenu.addMenuItem(new VolumeSelectMenuItem(this.#ctx, x, y, w, h, 'VOLUME', pauseMenuColor, pauseSelectedColor, this.#setVolume, volumeArray, selectedVolume));
+		this.#pauseMenu.addMenuItem(new HorizontalSelectMenuItem(this.#ctx, x, y, w, h, 'VOLUME', pauseMenuColor, pauseSelectedColor, this.#setVolume, volumeArray, selectedVolume));
 		y+= EmeraldHunt.FONTHEIGHT;
 		this.#pauseMenu.addMenuItem(new MenuItem(this.#ctx, x, y, w, h, 'QUIT TO MENU', pauseMenuColor, pauseSelectedColor, this.#exitToMenu));
 		y+= 2 * EmeraldHunt.FONTHEIGHT;
@@ -236,7 +242,7 @@ class Menu {
 			case 39:
 				e.preventDefault();
 				var mi = this.#menuitems[this.#selectedIndex];
-				if (mi instanceof VolumeSelectMenuItem) {
+				if (mi instanceof HorizontalSelectMenuItem) {
 					mi.handleInput(e);
 				}
 				break;
@@ -352,7 +358,7 @@ class MenuItem {
 	}
 }
 
-class VolumeSelectMenuItem extends MenuItem {
+class HorizontalSelectMenuItem extends MenuItem {
 	// Array of values to select through
 	#values;
 

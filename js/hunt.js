@@ -64,7 +64,7 @@ class EmeraldHunt {
 		this.#canvas = c;
 		this.#ctx = this.#canvas.getContext('2d');
 		this.scaleGame(1);
-		this.#menu = new MenuController(c, this.newGame.bind(this), this.exitToMenu.bind(this), this.setVolume.bind(this));
+		this.#menu = new MenuController(c, this.newGame.bind(this), this.exitToMenu.bind(this), this.setVolume.bind(this), this.scaleGame.bind(this));
 	}
 
 	// Create a static property
@@ -165,10 +165,12 @@ class EmeraldHunt {
 
 		// This is just debug fluff
 		const imageDiv = document.getElementById('imagesDiv');
-		imageDiv.innerHTML = '';
-		EmeraldHunt.IMAGES.forEach((item) => {
-			imageDiv.appendChild(item);
-		});
+		if(imageDiv) {
+			imageDiv.innerHTML = '';
+			EmeraldHunt.IMAGES.forEach((item) => {
+				imageDiv.appendChild(item);
+			});
+		}
 	}
 
 	async resetImageSource() {
