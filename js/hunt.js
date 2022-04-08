@@ -12,7 +12,6 @@ import {MenuController} from './menu.js';
 	Dynamic reload sprites from menu
 	Help screen
 	Add a timer and highscores per difficulty (like minesweeper)
-	Add favicon (base64 data?)
 	Style hosting page
 */
 
