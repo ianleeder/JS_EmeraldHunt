@@ -64,7 +64,7 @@ class EmeraldHunt {
 		this.#canvas = c;
 		this.#ctx = this.#canvas.getContext('2d');
 		this.scaleGame(1);
-		this.#menu = new MenuController(c, this.newGame.bind(this), this.exitToMenu.bind(this), this.setVolume.bind(this));
+		this.#menu = new MenuController(c, this.newGame.bind(this), this.exitToMenu.bind(this), this.setVolume.bind(this), this.scaleGame.bind(this));
 	}
 
 	// Create a static property
