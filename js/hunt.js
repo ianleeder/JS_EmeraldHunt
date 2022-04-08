@@ -165,10 +165,12 @@ class EmeraldHunt {
 
 		// This is just debug fluff
 		const imageDiv = document.getElementById('imagesDiv');
-		imageDiv.innerHTML = '';
-		EmeraldHunt.IMAGES.forEach((item) => {
-			imageDiv.appendChild(item);
-		});
+		if(imageDiv) {
+			imageDiv.innerHTML = '';
+			EmeraldHunt.IMAGES.forEach((item) => {
+				imageDiv.appendChild(item);
+			});
+		}
 	}
 
 	async resetImageSource() {
