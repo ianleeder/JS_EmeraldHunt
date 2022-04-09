@@ -16,7 +16,7 @@ This project was for personal pleasure, and to practice my JavaScript coding.  T
 
 During the original development (2014), the game got to the point where it was more fun to play than to develop, and development stopped.
 
-Sometime around 2019 I learnt about asynchronous programming, and that JavaScript could support some OOP design styles, so I started a rewrite.  I got a reasonable chunk done before development stalled again.
+Sometime around 2019 I learnt about asynchronous programming, and that JavaScript could support some OOP design styles, so I started a rewrite.  Between 2019-2020 I got a reasonable chunk done before development stalled again.
 
 I finally picked it up again in 2022, and "finished" it off.
 
