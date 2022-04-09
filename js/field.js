@@ -944,15 +944,24 @@ class Field {
 		this.#ctx.fillStyle = colorEnum.RED;
 		this.#ctx.fillText(this.#targetScore, 152, y);
 
+		// Write remaining available score
+		this.#ctx.fillStyle = colorEnum.WHITE;
+		this.#ctx.fillText('remaining :', 190, y);
+		let remaining = this.#targetScore && this.getRemainingScore();
+		this.#ctx.fillStyle = this.#targetScore && this.#targetScore < (this.#gameScore + remaining) ? colorEnum.GREEN : colorEnum.RED;
+		this.#ctx.fillText(remaining, 282, y);
+
 		// Write grenades
 		let grenades = 0;
 		if(this.#dozer) {
 			grenades = this.#dozer.numGrenades;
 		}
 		this.#ctx.fillStyle = colorEnum.WHITE;
-		this.#ctx.fillText('grenades :', 190, y);
+		this.#ctx.fillText('grenades :', 320, y);
 		this.#ctx.fillStyle = colorEnum.RED;
-		this.#ctx.fillText(grenades, 275, y);
+		this.#ctx.fillText(grenades, 405, y);
+
+		
 
 		// Write help text
 		this.#ctx.fillStyle = colorEnum.WHITE;
