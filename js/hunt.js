@@ -15,6 +15,7 @@ import {MenuController} from './menu.js';
 	Fix some Jekyll template text 
 	Fix hardest mode dozer spawn (not next to bugs)
 	Fix floating bugs that don't move
+	Embiggen congratulations text size/font
 */
 
 class EmeraldHunt {
