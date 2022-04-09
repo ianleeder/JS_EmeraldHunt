@@ -871,6 +871,9 @@ class Field {
 			this.#dozer.pickupGrenade();
 		} else if (newPosObj instanceof Gem) {
 			this.#gameScore += newPosObj.score;
+			// Dozer will be placed over top of gem below, but it affects remaining gem score
+			// Delete Gem that we just ate
+			this.#grid[this.#dozer.pos] = 0;
 			console.log(`Ate a gem, score ${this.#gameScore}/${this.#targetScore} (${this.getRemainingScore()} remaining)`);
 		}
 
