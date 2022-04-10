@@ -1,5 +1,7 @@
 # Emerald Hunt
 
+_Demo hosted at [https://emeraldhunt.ianleeder.com/](https://emeraldhunt.ianleeder.com/)._
+
 Emerald Hunt is a game I played a LOT in the 90s.
 
 ![Startup screen](resources/StartScreen.png)
