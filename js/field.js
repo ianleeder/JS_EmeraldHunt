@@ -348,6 +348,27 @@ class Field {
 		this.#dozer = new Dozer(index);
 		this.#grid[index] = this.#dozer;
 
+		// If on hardest level, surround player in dirt to protect from bugs
+		if (this.#difficulty == difficultyEnum.HARDEST) {
+			let rStart = this.checkEdgeTop(index) ? 0 : -1;
+			let rEnd = this.checkEdgeBottom(index) ? 0 : 1;
+			let cStart = this.checkEdgeLeft(index) ? 0 : -1;
+			let cEnd = this.checkEdgeRight(index) ? 0 : 1;
+	
+			// Create a 3x3 explosion grid
+			for (let r = rStart; r <= rEnd; r++) {
+				for (let c = cStart; c <= cEnd; c++) {
+					let checkCell = index + (r * this.#fieldX) + c;
+					// If the surrounding cell is empty or a bug, replace with Dirt
+					if (!this.#grid[checkCell] || this.#grid[checkCell] instanceof Bug) {
+						this.#grid[checkCell] = new Dirt();
+					}
+				}
+			}
+		}
+
+		// Get fresh list of empty cells
+		emptyCells = this.findAllCellsOfType(spriteEnum.BLANK);
 		// Pick another empty cell at random
 		rnd = Math.floor(Math.random() * emptyCells.length);
 		index = emptyCells.splice(rnd, 1)[0];

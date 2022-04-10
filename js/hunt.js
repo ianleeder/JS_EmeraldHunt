@@ -13,7 +13,6 @@ import {MenuController} from './menu.js';
 	Help screen
 	Add a timer and highscores per difficulty (like minesweeper)
 	Fix some Jekyll template text 
-	Fix hardest mode dozer spawn (not next to bugs)
 	Embiggen congratulations text size/font
 */
 
