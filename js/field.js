@@ -348,6 +348,27 @@ class Field {
 		this.#dozer = new Dozer(index);
 		this.#grid[index] = this.#dozer;
 
+		// If on hardest level, surround player in dirt to protect from bugs
+		if (this.#difficulty == difficultyEnum.HARDEST) {
+			let rStart = this.checkEdgeTop(index) ? 0 : -1;
+			let rEnd = this.checkEdgeBottom(index) ? 0 : 1;
+			let cStart = this.checkEdgeLeft(index) ? 0 : -1;
+			let cEnd = this.checkEdgeRight(index) ? 0 : 1;
+	
+			// Create a 3x3 explosion grid
+			for (let r = rStart; r <= rEnd; r++) {
+				for (let c = cStart; c <= cEnd; c++) {
+					let checkCell = index + (r * this.#fieldX) + c;
+					// If the surrounding cell is empty or a bug, replace with Dirt
+					if (!this.#grid[checkCell] || this.#grid[checkCell] instanceof Bug) {
+						this.#grid[checkCell] = new Dirt();
+					}
+				}
+			}
+		}
+
+		// Get fresh list of empty cells
+		emptyCells = this.findAllCellsOfType(spriteEnum.BLANK);
 		// Pick another empty cell at random
 		rnd = Math.floor(Math.random() * emptyCells.length);
 		index = emptyCells.splice(rnd, 1)[0];
@@ -521,23 +542,36 @@ class Field {
 
 		bugArray.forEach((c) => {
 			let bug = this.#grid[c];
+			let moved = false;
 			// Always try to go "left" (relative to current direction) first,
 			for (const i of new Array(3, 0, 1, 2)) {
 				let tryDirection = (bug.Direction + i) % 4;
-				if (movementFunctions[tryDirection](c)) {
+				if (movementFunctions[tryDirection](c, false)) {
 					bug.Direction = tryDirection;
+					moved = true;
 					break;
+				}
+			}
+
+			// If the bug didn't move, try again without following edges (fix floating bug issue, move freely)
+			if (!moved) {
+				for (const i of new Array(3, 0, 1, 2)) {
+					let tryDirection = (bug.Direction + i) % 4;
+					if (movementFunctions[tryDirection](c, true)) {
+						bug.Direction = tryDirection;
+						break;
+					}
 				}
 			}
 		});
 	}
 
-	moveBugUp(c) {
+	moveBugUp(c, ignoreFollowEdge) {
 		// Move UP case
-		// (on left edge or left cell is not empty or top-left cell is not empty)
+		// (ignore edge following OR (on left edge or left cell is not empty or top-left cell is not empty))
 		// AND
 		// (cell above is not edge and is empty)
-		if ((this.checkEdgeLeft(c) || this.#grid[c-1] || (!this.checkEdgeTop(c) && this.#grid[c-this.#fieldX-1]))
+		if ((ignoreFollowEdge || (this.checkEdgeLeft(c) || this.#grid[c-1] || (!this.checkEdgeTop(c) && this.#grid[c-this.#fieldX-1])))
 			&&
 			(!this.checkEdgeTop(c) && !this.#grid[c-this.#fieldX])) {
 			let newCell = c-this.#fieldX;
@@ -549,12 +583,12 @@ class Field {
 		return false;
 	}
 
-	moveBugRight(c) {
+	moveBugRight(c, ignoreFollowEdge) {
 		// Move RIGHT case
-		// (on top edge or top cell is not empty or top-right cell is not empty)
+		// (ignore edge following OR (on top edge or top cell is not empty or top-right cell is not empty))
 		// AND
 		// (cell right is not edge and is empty)
-		if ((this.checkEdgeTop(c) || this.#grid[c-this.#fieldX] || (!this.checkEdgeRight(c) && this.#grid[c-this.#fieldX+1]))
+		if ((ignoreFollowEdge || (this.checkEdgeTop(c) || this.#grid[c-this.#fieldX] || (!this.checkEdgeRight(c) && this.#grid[c-this.#fieldX+1])))
 			&&
 			(!this.checkEdgeRight(c) && !this.#grid[c+1])) {
 			let newCell = c+1;
@@ -566,12 +600,12 @@ class Field {
 		return false;
 	}
 
-	moveBugDown(c) {
+	moveBugDown(c, ignoreFollowEdge) {
 		// Move DOWN case
-		// (on right edge or right cell is not empty or bottom-right cell is not empty)
+		// (ignore edge following OR (on right edge or right cell is not empty or bottom-right cell is not empty))
 		// AND
 		// (cell below is not edge and is empty)
-		if ((this.checkEdgeRight(c) || this.#grid[c+1] || (!this.checkEdgeBottom(c) && this.#grid[c+this.#fieldX+1]))
+		if ((ignoreFollowEdge || (this.checkEdgeRight(c) || this.#grid[c+1] || (!this.checkEdgeBottom(c) && this.#grid[c+this.#fieldX+1])))
 			&&
 			(!this.checkEdgeBottom(c) && !this.#grid[c+this.#fieldX])) {
 			let newCell = c+this.#fieldX;
@@ -583,12 +617,12 @@ class Field {
 		return false;
 	}
 
-	moveBugLeft(c) {
+	moveBugLeft(c, ignoreFollowEdge) {
 		// Move LEFT case
-		// (on bottom edge or bottom cell is not empty or bottom-left cell is not empty)
+		// (ignore edge following OR (on bottom edge or bottom cell is not empty or bottom-left cell is not empty))
 		// AND
 		// (cell left is not edge and is empty)
-		if ((this.checkEdgeBottom(c) || this.#grid[c+this.#fieldX] || (!this.checkEdgeLeft(c) && this.#grid[c+this.#fieldX-1]))
+		if ((ignoreFollowEdge || (this.checkEdgeBottom(c) || this.#grid[c+this.#fieldX] || (!this.checkEdgeLeft(c) && this.#grid[c+this.#fieldX-1])))
 			&&
 			(!this.checkEdgeLeft(c) && !this.#grid[c-1])) {
 			let newCell = c-1;
@@ -914,6 +948,7 @@ class Field {
 			this.#ctx.drawImage(e.image, x, y);
 		});
 		this.renderScoreBar();
+		
 	}
 
 	renderScoreBar() {
