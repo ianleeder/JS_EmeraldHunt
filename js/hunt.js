@@ -11,7 +11,7 @@ import {MenuController} from './menu.js';
 	Save/load game
 	Dynamic reload sprites from menu
 	Help screen
-	Add a timer and highscores per difficulty (like minesweeper)
+	Add a timer and persistent highscores per difficulty (like minesweeper)
 	Embiggen congratulations text size/font
 */
 
