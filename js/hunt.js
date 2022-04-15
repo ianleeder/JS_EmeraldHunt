@@ -13,6 +13,7 @@ import {MenuController} from './menu.js';
 	Help screen
 	Add a timer and persistent highscores per difficulty (like minesweeper)
 	Embiggen congratulations text size/font
+	Add new menu background(s), eg falling rocks/bombs
 */
 
 class EmeraldHunt {
