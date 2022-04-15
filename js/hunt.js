@@ -12,7 +12,6 @@ import {MenuController} from './menu.js';
 	Dynamic reload sprites from menu
 	Help screen
 	Add a timer and highscores per difficulty (like minesweeper)
-	Fix some Jekyll template text 
 	Embiggen congratulations text size/font
 */
 
